@@ -19,7 +19,7 @@ if|else|for		printf("keyword %s\n",yytext);
 {ID} 			printf("identifier %s\n",yytext);
 
 "("				printf("Left Parenthesis (\n");
-")" 			printf("Right Parenthesis)\n");
+")"				printf("Right Parenthesis)\n");
 "{"				printf("Left Curly Brace {\n");
 "}"				printf("Right Curly Brace }\n");
 "."				printf("Dot .\n");
