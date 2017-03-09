@@ -18,14 +18,15 @@ if|else|for		printf("keyword %s\n",yytext);
 
 {ID} 			printf("identifier %s\n",yytext);
 
-"("				printf("Left Parenthesis (");
-")" 			printf("Right Parenthesis)");
-"{"				printf("Left Curly Brace {");
-"}"				printf("Right Curly Brace }");
-"."				printf("Dot .");
-"+"				printf("Plus +");
-"-"				printf("Minus -");
-"*"				printf("Times *");
+"("				printf("Left Parenthesis (\n");
+")" 			printf("Right Parenthesis)\n");
+"{"				printf("Left Curly Brace {\n");
+"}"				printf("Right Curly Brace }\n");
+"."				printf("Dot .\n");
+"+"				printf("Plus +\n");
+"-"				printf("Minus -\n");
+"*"				printf("Times *\n");
+"/"				printf("Division /\n");
 
 
 
