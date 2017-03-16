@@ -1,5 +1,6 @@
 begin
-	b := 10
-	a := 10
-	ifi := (120324)
+	var a is int[10]
+	var b is byte[424342]
+	b[0]:=12
+	g := ((12))
 end

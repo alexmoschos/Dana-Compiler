@@ -1,7 +1,5 @@
 Terminals unused in grammar
 
-   INT
-   BYTE
    IF
    ELSE
    LOOP
@@ -34,66 +32,75 @@ Grammar
     5     | STRINGLITERAL
     6     | lval '[' expression ']'
 
-    7 stmt: SKIP
-    8     | expression
-    9     | lval ASSIGNMENT expression
+    7 type: INT '[' CONST ']'
+    8     | BYTE '[' CONST ']'
+    9     | INT
+   10     | BYTE
 
-   10 expression: IDENTIFIER
-   11           | STRINGLITERAL
-   12           | CONST
-   13           | '(' expression ')'
+   11 stmt: SKIP
+   12     | lval ASSIGNMENT expression
+   13     | VAR lval IS type
+
+   14 expression: IDENTIFIER
+   15           | STRINGLITERAL
+   16           | CONST
+   17           | '(' expression ')'
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'(' (40) 13
-')' (41) 13
-'[' (91) 6
-']' (93) 6
+'(' (40) 17
+')' (41) 17
+'[' (91) 6 7 8
+']' (93) 6 7 8
 error (256)
-IDENTIFIER (258) 4 10
-INT (259)
-BYTE (260)
+IDENTIFIER (258) 4 14
+INT (259) 7 9
+BYTE (260) 8 10
 IF (261)
 ELSE (262)
-STRINGLITERAL (263) 5 11
+STRINGLITERAL (263) 5 15
 LOOP (264)
 AS (265)
-SKIP (266) 7
+SKIP (266) 11
 DECL (267)
 DEF (268)
 BEG (269) 1
 END (270) 1
-ADD (271)
-MUL (272)
-DIV (273)
-SUB (274)
-EQ (275)
-DIFF (276)
-LARGER (277)
-SMALLER (278)
-LARGEREQ (279)
-SMALLEREQ (280)
-COLON (281)
-ASSIGNMENT (282) 9
-CONST (283) 12
+VAR (271) 13
+IS (272) 13
+ADD (273)
+MUL (274)
+DIV (275)
+SUB (276)
+EQ (277)
+DIFF (278)
+LARGER (279)
+SMALLER (280)
+LARGEREQ (281)
+SMALLEREQ (282)
+COLON (283)
+ASSIGNMENT (284) 12
+CONST (285) 7 8 16
 
 
 Nonterminals, with rules where they appear
 
-$accept (33)
+$accept (35)
     on left: 0
-body (34)
+body (36)
     on left: 1, on right: 0
-stmt_list (35)
+stmt_list (37)
     on left: 2 3, on right: 1 3
-lval (36)
-    on left: 4 5 6, on right: 6 9
-stmt (37)
-    on left: 7 8 9, on right: 2 3
-expression (38)
-    on left: 10 11 12 13, on right: 6 8 9 13
+lval (38)
+    on left: 4 5 6, on right: 6 12 13
+type (39)
+    on left: 7 8 9 10, on right: 13
+stmt (40)
+    on left: 11 12 13, on right: 2 3
+expression (41)
+    on left: 14 15 16 17, on right: 6 12 17
 
 
 State 0
@@ -112,69 +119,52 @@ State 1
     IDENTIFIER     shift, and go to state 3
     STRINGLITERAL  shift, and go to state 4
     SKIP           shift, and go to state 5
-    CONST          shift, and go to state 6
-    '('            shift, and go to state 7
+    VAR            shift, and go to state 6
 
-    stmt_list   go to state 8
-    lval        go to state 9
-    stmt        go to state 10
-    expression  go to state 11
+    stmt_list  go to state 7
+    lval       go to state 8
+    stmt       go to state 9
 
 
 State 2
 
     0 $accept: body . $end
 
-    $end  shift, and go to state 12
+    $end  shift, and go to state 10
 
 
 State 3
 
     4 lval: IDENTIFIER .
-   10 expression: IDENTIFIER .
 
-    ASSIGNMENT  reduce using rule 4 (lval)
-    '['         reduce using rule 4 (lval)
-    $default    reduce using rule 10 (expression)
+    $default  reduce using rule 4 (lval)
 
 
 State 4
 
     5 lval: STRINGLITERAL .
-   11 expression: STRINGLITERAL .
 
-    ASSIGNMENT  reduce using rule 5 (lval)
-    '['         reduce using rule 5 (lval)
-    $default    reduce using rule 11 (expression)
+    $default  reduce using rule 5 (lval)
 
 
 State 5
 
-    7 stmt: SKIP .
+   11 stmt: SKIP .
 
-    $default  reduce using rule 7 (stmt)
+    $default  reduce using rule 11 (stmt)
 
 
 State 6
 
-   12 expression: CONST .
+   13 stmt: VAR . lval IS type
 
-    $default  reduce using rule 12 (expression)
+    IDENTIFIER     shift, and go to state 3
+    STRINGLITERAL  shift, and go to state 4
+
+    lval  go to state 11
 
 
 State 7
-
-   13 expression: '(' . expression ')'
-
-    IDENTIFIER     shift, and go to state 13
-    STRINGLITERAL  shift, and go to state 14
-    CONST          shift, and go to state 6
-    '('            shift, and go to state 7
-
-    expression  go to state 15
-
-
-State 8
 
     1 body: BEG stmt_list . END
     3 stmt_list: stmt_list . stmt
@@ -182,127 +172,225 @@ State 8
     IDENTIFIER     shift, and go to state 3
     STRINGLITERAL  shift, and go to state 4
     SKIP           shift, and go to state 5
-    END            shift, and go to state 16
-    CONST          shift, and go to state 6
-    '('            shift, and go to state 7
+    END            shift, and go to state 12
+    VAR            shift, and go to state 6
 
-    lval        go to state 9
-    stmt        go to state 17
-    expression  go to state 11
+    lval  go to state 8
+    stmt  go to state 13
+
+
+State 8
+
+    6 lval: lval . '[' expression ']'
+   12 stmt: lval . ASSIGNMENT expression
+
+    ASSIGNMENT  shift, and go to state 14
+    '['         shift, and go to state 15
 
 
 State 9
-
-    6 lval: lval . '[' expression ']'
-    9 stmt: lval . ASSIGNMENT expression
-
-    ASSIGNMENT  shift, and go to state 18
-    '['         shift, and go to state 19
-
-
-State 10
 
     2 stmt_list: stmt .
 
     $default  reduce using rule 2 (stmt_list)
 
 
-State 11
-
-    8 stmt: expression .
-
-    $default  reduce using rule 8 (stmt)
-
-
-State 12
+State 10
 
     0 $accept: body $end .
 
     $default  accept
 
 
-State 13
+State 11
 
-   10 expression: IDENTIFIER .
+    6 lval: lval . '[' expression ']'
+   13 stmt: VAR lval . IS type
 
-    $default  reduce using rule 10 (expression)
-
-
-State 14
-
-   11 expression: STRINGLITERAL .
-
-    $default  reduce using rule 11 (expression)
+    IS   shift, and go to state 16
+    '['  shift, and go to state 15
 
 
-State 15
-
-   13 expression: '(' expression . ')'
-
-    ')'  shift, and go to state 20
-
-
-State 16
+State 12
 
     1 body: BEG stmt_list END .
 
     $default  reduce using rule 1 (body)
 
 
-State 17
+State 13
 
     3 stmt_list: stmt_list stmt .
 
     $default  reduce using rule 3 (stmt_list)
 
 
-State 18
+State 14
 
-    9 stmt: lval ASSIGNMENT . expression
+   12 stmt: lval ASSIGNMENT . expression
 
-    IDENTIFIER     shift, and go to state 13
-    STRINGLITERAL  shift, and go to state 14
-    CONST          shift, and go to state 6
-    '('            shift, and go to state 7
+    IDENTIFIER     shift, and go to state 17
+    STRINGLITERAL  shift, and go to state 18
+    CONST          shift, and go to state 19
+    '('            shift, and go to state 20
 
     expression  go to state 21
 
 
-State 19
+State 15
 
     6 lval: lval '[' . expression ']'
 
-    IDENTIFIER     shift, and go to state 13
-    STRINGLITERAL  shift, and go to state 14
-    CONST          shift, and go to state 6
-    '('            shift, and go to state 7
+    IDENTIFIER     shift, and go to state 17
+    STRINGLITERAL  shift, and go to state 18
+    CONST          shift, and go to state 19
+    '('            shift, and go to state 20
 
     expression  go to state 22
 
 
+State 16
+
+   13 stmt: VAR lval IS . type
+
+    INT   shift, and go to state 23
+    BYTE  shift, and go to state 24
+
+    type  go to state 25
+
+
+State 17
+
+   14 expression: IDENTIFIER .
+
+    $default  reduce using rule 14 (expression)
+
+
+State 18
+
+   15 expression: STRINGLITERAL .
+
+    $default  reduce using rule 15 (expression)
+
+
+State 19
+
+   16 expression: CONST .
+
+    $default  reduce using rule 16 (expression)
+
+
 State 20
 
-   13 expression: '(' expression ')' .
+   17 expression: '(' . expression ')'
 
-    $default  reduce using rule 13 (expression)
+    IDENTIFIER     shift, and go to state 17
+    STRINGLITERAL  shift, and go to state 18
+    CONST          shift, and go to state 19
+    '('            shift, and go to state 20
+
+    expression  go to state 26
 
 
 State 21
 
-    9 stmt: lval ASSIGNMENT expression .
+   12 stmt: lval ASSIGNMENT expression .
 
-    $default  reduce using rule 9 (stmt)
+    $default  reduce using rule 12 (stmt)
 
 
 State 22
 
     6 lval: lval '[' expression . ']'
 
-    ']'  shift, and go to state 23
+    ']'  shift, and go to state 27
 
 
 State 23
 
+    7 type: INT . '[' CONST ']'
+    9     | INT .
+
+    '['  shift, and go to state 28
+
+    $default  reduce using rule 9 (type)
+
+
+State 24
+
+    8 type: BYTE . '[' CONST ']'
+   10     | BYTE .
+
+    '['  shift, and go to state 29
+
+    $default  reduce using rule 10 (type)
+
+
+State 25
+
+   13 stmt: VAR lval IS type .
+
+    $default  reduce using rule 13 (stmt)
+
+
+State 26
+
+   17 expression: '(' expression . ')'
+
+    ')'  shift, and go to state 30
+
+
+State 27
+
     6 lval: lval '[' expression ']' .
 
     $default  reduce using rule 6 (lval)
+
+
+State 28
+
+    7 type: INT '[' . CONST ']'
+
+    CONST  shift, and go to state 31
+
+
+State 29
+
+    8 type: BYTE '[' . CONST ']'
+
+    CONST  shift, and go to state 32
+
+
+State 30
+
+   17 expression: '(' expression ')' .
+
+    $default  reduce using rule 17 (expression)
+
+
+State 31
+
+    7 type: INT '[' CONST . ']'
+
+    ']'  shift, and go to state 33
+
+
+State 32
+
+    8 type: BYTE '[' CONST . ']'
+
+    ']'  shift, and go to state 34
+
+
+State 33
+
+    7 type: INT '[' CONST ']' .
+
+    $default  reduce using rule 7 (type)
+
+
+State 34
+
+    8 type: BYTE '[' CONST ']' .
+
+    $default  reduce using rule 8 (type)

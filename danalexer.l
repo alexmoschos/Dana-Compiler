@@ -16,7 +16,7 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 \n 				{nl++;}
 [ \t]			;
 
-[1-9][0-9]*		{printf("Integer %s\n",yytext);return(CONST);}
+[0-9][0-9]* 		{printf("Integer %s\n",yytext);return(CONST);}
 
 if				{printf("Keyword: if\n");return(IF);}
 else			{printf("Keyword: else\n");return(ELSE);}
@@ -29,14 +29,15 @@ decl			{printf("Keyword: decl\n");return(DECL);}
 begin			{printf("Keyword: begin\n");return(BEG);}
 end				{printf("Keyword: end\n");return(END);}
 def				{printf("Keyword: def\n");return(DEF);}
-
+is				{printf("Keyword: is\n");return(IS);}
+var				{printf("Keyword: var\n");return(VAR);}
 
 {ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 
 "("				{printf("Left Parenthesis (\n");return('(');}
 ")"				{printf("Right Parenthesis )\n");return(')');}
-"{"				{printf("Left Curly Brace {\n");return('}');}
-"}"				printf("Right Curly Brace }\n");
+"{"				{printf("Left Curly Brace {\n");return('{');}
+"}"				{printf("Right Curly Brace }\n");return('}');}
 "."				printf("Dot .\n");
 ","				printf("Comma ,\n");
 "+"				printf("Plus +\n");
@@ -47,9 +48,9 @@ def				{printf("Keyword: def\n");return(DEF);}
 "=="			printf("Equality operator ==\n");
 "<"				printf("Less than operator <\n");
 ">"				printf("Greater than operator >\n");
-":"				printf("Colon :\n");
-"["				printf("Left [\n");
-"]"				printf("Right ]\n");
+":"				{printf("Colon :\n");return(':');}
+"["				{printf("Left [\n");return('[');}
+"]"				{printf("Right ]\n");return(']');}
 \"(\\.|[^\\"])*\"	printf("String Literal %s \n",yytext);
 
 .				printf("Unexpected Character %s\n",yytext);
