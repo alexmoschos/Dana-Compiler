@@ -1,0 +1,308 @@
+Terminals unused in grammar
+
+   INT
+   BYTE
+   IF
+   ELSE
+   LOOP
+   AS
+   DECL
+   DEF
+   ADD
+   MUL
+   DIV
+   SUB
+   EQ
+   DIFF
+   LARGER
+   SMALLER
+   LARGEREQ
+   SMALLEREQ
+   COLON
+
+
+Grammar
+
+    0 $accept: body $end
+
+    1 body: BEG stmt_list END
+
+    2 stmt_list: stmt
+    3          | stmt_list stmt
+
+    4 lval: IDENTIFIER
+    5     | STRINGLITERAL
+    6     | lval '[' expression ']'
+
+    7 stmt: SKIP
+    8     | expression
+    9     | lval ASSIGNMENT expression
+
+   10 expression: IDENTIFIER
+   11           | STRINGLITERAL
+   12           | CONST
+   13           | '(' expression ')'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 13
+')' (41) 13
+'[' (91) 6
+']' (93) 6
+error (256)
+IDENTIFIER (258) 4 10
+INT (259)
+BYTE (260)
+IF (261)
+ELSE (262)
+STRINGLITERAL (263) 5 11
+LOOP (264)
+AS (265)
+SKIP (266) 7
+DECL (267)
+DEF (268)
+BEG (269) 1
+END (270) 1
+ADD (271)
+MUL (272)
+DIV (273)
+SUB (274)
+EQ (275)
+DIFF (276)
+LARGER (277)
+SMALLER (278)
+LARGEREQ (279)
+SMALLEREQ (280)
+COLON (281)
+ASSIGNMENT (282) 9
+CONST (283) 12
+
+
+Nonterminals, with rules where they appear
+
+$accept (33)
+    on left: 0
+body (34)
+    on left: 1, on right: 0
+stmt_list (35)
+    on left: 2 3, on right: 1 3
+lval (36)
+    on left: 4 5 6, on right: 6 9
+stmt (37)
+    on left: 7 8 9, on right: 2 3
+expression (38)
+    on left: 10 11 12 13, on right: 6 8 9 13
+
+
+State 0
+
+    0 $accept: . body $end
+
+    BEG  shift, and go to state 1
+
+    body  go to state 2
+
+
+State 1
+
+    1 body: BEG . stmt_list END
+
+    IDENTIFIER     shift, and go to state 3
+    STRINGLITERAL  shift, and go to state 4
+    SKIP           shift, and go to state 5
+    CONST          shift, and go to state 6
+    '('            shift, and go to state 7
+
+    stmt_list   go to state 8
+    lval        go to state 9
+    stmt        go to state 10
+    expression  go to state 11
+
+
+State 2
+
+    0 $accept: body . $end
+
+    $end  shift, and go to state 12
+
+
+State 3
+
+    4 lval: IDENTIFIER .
+   10 expression: IDENTIFIER .
+
+    ASSIGNMENT  reduce using rule 4 (lval)
+    '['         reduce using rule 4 (lval)
+    $default    reduce using rule 10 (expression)
+
+
+State 4
+
+    5 lval: STRINGLITERAL .
+   11 expression: STRINGLITERAL .
+
+    ASSIGNMENT  reduce using rule 5 (lval)
+    '['         reduce using rule 5 (lval)
+    $default    reduce using rule 11 (expression)
+
+
+State 5
+
+    7 stmt: SKIP .
+
+    $default  reduce using rule 7 (stmt)
+
+
+State 6
+
+   12 expression: CONST .
+
+    $default  reduce using rule 12 (expression)
+
+
+State 7
+
+   13 expression: '(' . expression ')'
+
+    IDENTIFIER     shift, and go to state 13
+    STRINGLITERAL  shift, and go to state 14
+    CONST          shift, and go to state 6
+    '('            shift, and go to state 7
+
+    expression  go to state 15
+
+
+State 8
+
+    1 body: BEG stmt_list . END
+    3 stmt_list: stmt_list . stmt
+
+    IDENTIFIER     shift, and go to state 3
+    STRINGLITERAL  shift, and go to state 4
+    SKIP           shift, and go to state 5
+    END            shift, and go to state 16
+    CONST          shift, and go to state 6
+    '('            shift, and go to state 7
+
+    lval        go to state 9
+    stmt        go to state 17
+    expression  go to state 11
+
+
+State 9
+
+    6 lval: lval . '[' expression ']'
+    9 stmt: lval . ASSIGNMENT expression
+
+    ASSIGNMENT  shift, and go to state 18
+    '['         shift, and go to state 19
+
+
+State 10
+
+    2 stmt_list: stmt .
+
+    $default  reduce using rule 2 (stmt_list)
+
+
+State 11
+
+    8 stmt: expression .
+
+    $default  reduce using rule 8 (stmt)
+
+
+State 12
+
+    0 $accept: body $end .
+
+    $default  accept
+
+
+State 13
+
+   10 expression: IDENTIFIER .
+
+    $default  reduce using rule 10 (expression)
+
+
+State 14
+
+   11 expression: STRINGLITERAL .
+
+    $default  reduce using rule 11 (expression)
+
+
+State 15
+
+   13 expression: '(' expression . ')'
+
+    ')'  shift, and go to state 20
+
+
+State 16
+
+    1 body: BEG stmt_list END .
+
+    $default  reduce using rule 1 (body)
+
+
+State 17
+
+    3 stmt_list: stmt_list stmt .
+
+    $default  reduce using rule 3 (stmt_list)
+
+
+State 18
+
+    9 stmt: lval ASSIGNMENT . expression
+
+    IDENTIFIER     shift, and go to state 13
+    STRINGLITERAL  shift, and go to state 14
+    CONST          shift, and go to state 6
+    '('            shift, and go to state 7
+
+    expression  go to state 21
+
+
+State 19
+
+    6 lval: lval '[' . expression ']'
+
+    IDENTIFIER     shift, and go to state 13
+    STRINGLITERAL  shift, and go to state 14
+    CONST          shift, and go to state 6
+    '('            shift, and go to state 7
+
+    expression  go to state 22
+
+
+State 20
+
+   13 expression: '(' expression ')' .
+
+    $default  reduce using rule 13 (expression)
+
+
+State 21
+
+    9 stmt: lval ASSIGNMENT expression .
+
+    $default  reduce using rule 9 (stmt)
+
+
+State 22
+
+    6 lval: lval '[' expression . ']'
+
+    ']'  shift, and go to state 23
+
+
+State 23
+
+    6 lval: lval '[' expression ']' .
+
+    $default  reduce using rule 6 (lval)

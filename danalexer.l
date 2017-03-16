@@ -5,28 +5,33 @@
 ID [a-zA-Z_][a-zA-Z0-9_]*
 
 
+%{
+#include <stdio.h>
+#include "parser.h"	
+%}
+
 
 %%
 
 \n 				{nl++;}
 [ \t]			;
 
-[1-9][0-9]*		printf("Integer %s\n",yytext);
+[1-9][0-9]*		{printf("Integer %s\n",yytext);return(CONST);}
 
-if				printf("Keyword: if\n");
-else			printf("Keyword: else\n");
+if				{printf("Keyword: if\n");return(IF);}
+else			{printf("Keyword: else\n");return(ELSE);}
 loop			printf("Keyword: loop\n");
 int				printf("Keyword: int\n");
 byte			printf("Keyword: byte\n");
 as				printf("Keyword: as\n");
-skip			printf("Keyword: skip\n");
+skip			{printf("Keyword: skip\n");return(SKIP);}
 decl			printf("Keyword: decl\n");
-begin			printf("Keyword: begin\n");
-end				printf("Keyword: end\n");
+begin			{printf("Keyword: begin\n");return(BEG);}
+end				{printf("Keyword: end\n");return(END);}
 def				printf("Keyword: def\n");
 
 
-{ID} 			printf("Identifier: %s\n",yytext);
+{ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 
 "("				printf("Left Parenthesis (\n");
 ")"				printf("Right Parenthesis )\n");
@@ -38,7 +43,7 @@ def				printf("Keyword: def\n");
 "-"				printf("Minus -\n");
 "*"				printf("Times *\n");
 "/"				printf("Division /\n");
-":="			printf("Assignment Operator :=\n");
+":="			{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
 "=="			printf("Equality operator ==\n");
 "<"				printf("Less than operator <\n");
 ">"				printf("Greater than operator >\n");
@@ -52,8 +57,3 @@ def				printf("Keyword: def\n");
 %%
 
 
-int main(){
-	yylex();
-	printf("Read %d lines",nl);
-	return 0;
-}
