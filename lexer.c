@@ -808,22 +808,22 @@ YY_RULE_SETUP
 case 6:
 YY_RULE_SETUP
 #line 23 "danalexer.l"
-printf("Keyword: loop\n");
+{printf("Keyword: loop\n");return(LOOP);}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 24 "danalexer.l"
-printf("Keyword: int\n");
+{printf("Keyword: int\n");return(INT);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 25 "danalexer.l"
-printf("Keyword: byte\n");
+{printf("Keyword: byte\n");return(BYTE);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 26 "danalexer.l"
-printf("Keyword: as\n");
+{printf("Keyword: as\n");return(AS);}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
@@ -833,7 +833,7 @@ YY_RULE_SETUP
 case 11:
 YY_RULE_SETUP
 #line 28 "danalexer.l"
-printf("Keyword: decl\n");
+{printf("Keyword: decl\n");return(DECL);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
@@ -848,7 +848,7 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 31 "danalexer.l"
-printf("Keyword: def\n");
+{printf("Keyword: def\n");return(DEF);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
@@ -858,17 +858,17 @@ YY_RULE_SETUP
 case 16:
 YY_RULE_SETUP
 #line 36 "danalexer.l"
-printf("Left Parenthesis (\n");
+{printf("Left Parenthesis (\n");return('(');}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 37 "danalexer.l"
-printf("Right Parenthesis )\n");
+{printf("Right Parenthesis )\n");return(')');}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 38 "danalexer.l"
-printf("Left Curly Brace {\n");
+{printf("Left Curly Brace {\n");return('}');}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP

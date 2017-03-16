@@ -20,22 +20,22 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
 if				{printf("Keyword: if\n");return(IF);}
 else			{printf("Keyword: else\n");return(ELSE);}
-loop			printf("Keyword: loop\n");
-int				printf("Keyword: int\n");
-byte			printf("Keyword: byte\n");
-as				printf("Keyword: as\n");
+loop			{printf("Keyword: loop\n");return(LOOP);}
+int				{printf("Keyword: int\n");return(INT);}
+byte			{printf("Keyword: byte\n");return(BYTE);}
+as				{printf("Keyword: as\n");return(AS);}
 skip			{printf("Keyword: skip\n");return(SKIP);}
-decl			printf("Keyword: decl\n");
+decl			{printf("Keyword: decl\n");return(DECL);}
 begin			{printf("Keyword: begin\n");return(BEG);}
 end				{printf("Keyword: end\n");return(END);}
-def				printf("Keyword: def\n");
+def				{printf("Keyword: def\n");return(DEF);}
 
 
 {ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 
-"("				printf("Left Parenthesis (\n");
-")"				printf("Right Parenthesis )\n");
-"{"				printf("Left Curly Brace {\n");
+"("				{printf("Left Parenthesis (\n");return('(');}
+")"				{printf("Right Parenthesis )\n");return(')');}
+"{"				{printf("Left Curly Brace {\n");return('}');}
 "}"				printf("Right Curly Brace }\n");
 "."				printf("Dot .\n");
 ","				printf("Comma ,\n");
