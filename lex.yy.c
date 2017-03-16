@@ -368,8 +368,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 34
-#define YY_END_OF_BUFFER 35
+#define YY_NUM_RULES 35
+#define YY_END_OF_BUFFER 36
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -379,7 +379,7 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[67] =
     {   0,
-        0,    0,   35,   34,    2,    1,   34,   16,   17,   24,
+        0,    0,   36,   34,    2,    1,   34,   16,   17,   24,
        22,   21,   23,   20,   25,    3,   30,   28,   34,   29,
        15,   31,   32,   15,   15,   15,   15,   15,   15,   15,
        18,   19,    0,   33,    0,    3,   26,   27,   15,    9,
@@ -944,10 +944,15 @@ printf("String Literal %s \n",yytext);
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
+#line 50 "danalexer.l"
+printf("Unexpected Character %s\n",yytext);
+	YY_BREAK
+case 35:
+YY_RULE_SETUP
 #line 52 "danalexer.l"
 ECHO;
 	YY_BREAK
-#line 951 "lex.yy.c"
+#line 956 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

@@ -13,14 +13,14 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
 [1-9][0-9]*		printf("Integer %s\n",yytext);
 
-if             	printf("Keyword: if\n");
+if				printf("Keyword: if\n");
 else			printf("Keyword: else\n");
-loop 			printf("Keyword: loop\n");
-int 			printf("Keyword: int\n");
+loop			printf("Keyword: loop\n");
+int				printf("Keyword: int\n");
 byte			printf("Keyword: byte\n");
-as 				printf("Keyword: as\n");
+as				printf("Keyword: as\n");
 skip			printf("Keyword: skip\n");
-decl 			printf("Keyword: decl\n");
+decl			printf("Keyword: decl\n");
 begin			printf("Keyword: begin\n");
 end				printf("Keyword: end\n");
 def				printf("Keyword: def\n");
@@ -47,7 +47,7 @@ def				printf("Keyword: def\n");
 "]"				printf("Right ]\n");
 \"(\\.|[^\\"])*\"	printf("String Literal %s \n",yytext);
 
-
+.				printf("Unexpected Character %s\n",yytext);
 
 %%
 
