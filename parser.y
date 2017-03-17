@@ -36,9 +36,14 @@ type
 
 stmt
 	: SKIP
+	| mif 
 	| lval ASSIGNMENT expression	{printf("Found assignment\n");}
 	| VAR lval IS type {printf("Found type decl\n");}
 
+
+
+mif
+	: IF expression BEG stmt_list END ELSE BEG stmt_list END	{printf("Found matched if\n");}
 
 expression
 	: IDENTIFIER 	{printf("expression with identifier\n");}

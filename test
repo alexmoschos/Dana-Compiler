@@ -1,6 +1,13 @@
 begin
-	var a is int[10]
-	var b is byte[424342]
-	b[0]:=12
-	g := ((12))
+	if 1 begin
+		var a is int[10]
+		var b is byte[424342]
+		"dsfas" := 5
+	end
+	else begin
+		var c is byte
+		c := 42
+	end
+
+	
 end

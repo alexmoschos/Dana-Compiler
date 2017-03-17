@@ -38,22 +38,24 @@ var				{printf("Keyword: var\n");return(VAR);}
 ")"				{printf("Right Parenthesis )\n");return(')');}
 "{"				{printf("Left Curly Brace {\n");return('{');}
 "}"				{printf("Right Curly Brace }\n");return('}');}
-"."				printf("Dot .\n");
-","				printf("Comma ,\n");
-"+"				printf("Plus +\n");
-"-"				printf("Minus -\n");
-"*"				printf("Times *\n");
-"/"				printf("Division /\n");
+"."				{printf("Dot .\n");return('.');}
+","				{printf("Comma ,\n");return(',');}
+"+"				{printf("Plus +\n");return('+');}
+"-"				{printf("Minus -\n");return('-');}
+"*"				{printf("Times *\n");return('*');}
+"/"				{printf("Division /\n");return('/');}
 ":="			{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
-"=="			printf("Equality operator ==\n");
-"<"				printf("Less than operator <\n");
-">"				printf("Greater than operator >\n");
+"=="			{printf("Equality operator ==\n");return(EQ);}
+"!"				{printf("Bang !\n");return('!');}
+
+"<"				{printf("Less than operator <\n");return(SMALLER);}
+">"				{printf("Greater than operator >\n");return(LARGER);}
 ":"				{printf("Colon :\n");return(':');}
 "["				{printf("Left [\n");return('[');}
 "]"				{printf("Right ]\n");return(']');}
-\"(\\.|[^\\"])*\"	printf("String Literal %s \n",yytext);
+\"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
 
-.				printf("Unexpected Character %s\n",yytext);
+.				{printf("Unexpected Character %s\n",yytext);exit(-1);}
 
 %%
 
