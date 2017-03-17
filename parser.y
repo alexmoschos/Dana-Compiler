@@ -52,7 +52,7 @@ expression
 	| expression '-' expression	{printf("subtraction\n");}
 	| expression '*' expression	{printf("multiplication\n");}
 	| expression '/' expression	{printf("division \n");}
-	|IDENTIFIER 	{printf("expression with identifier\n");}
+	| IDENTIFIER 	{printf("expression with identifier\n");}
 	| STRINGLITERAL	{printf("String literal\n");}
 	| CONST 		{printf("Const\n");}
 	| '(' expression ')'
