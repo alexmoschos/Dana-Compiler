@@ -11,6 +11,8 @@
 %token LOOP AS SKIP DECL DEF BEG END VAR IS
 %token ADD MUL DIV SUB EQ DIFF LARGER SMALLER
 %token LARGEREQ SMALLEREQ COLON ASSIGNMENT CONST
+%left '+' '-'
+%left '*' '/' 
 
 %%
 body
@@ -43,10 +45,14 @@ stmt
 
 
 mif
-	: IF expression BEG stmt_list END ELSE BEG stmt_list END	{printf("Found matched if\n");}
+	: IF expression ':' BEG stmt_list END ELSE ':' BEG stmt_list END	{printf("Found matched if\n");}
 
 expression
-	: IDENTIFIER 	{printf("expression with identifier\n");}
+	: expression '+' expression {printf("addition\n");}
+	| expression '-' expression	{printf("subtraction\n");}
+	| expression '*' expression	{printf("multiplication\n");}
+	| expression '/' expression	{printf("division \n");}
+	|IDENTIFIER 	{printf("expression with identifier\n");}
 	| STRINGLITERAL	{printf("String literal\n");}
 	| CONST 		{printf("Const\n");}
 	| '(' expression ')'
