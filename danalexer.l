@@ -36,23 +36,6 @@ is				{printf("Keyword: is\n");return(IS);}
 var				{printf("Keyword: var\n");return(VAR);}
 
 {ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
-
-
-\"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
-
-"#".*            {printf("comment found\n");}
-
-"(*"             { ++comment_nesting; BEGIN(COMMENT); }
-
-<COMMENT>{
-  "(*"           { ++comment_nesting; }
-  "*"+")"        { --comment_nesting; if(!comment_nesting) BEGIN(INITIAL);} 
-  "*"+           ; /* Line 11 - ignore */
-  [^(*\n]+       ; /* Line 12  - also ignore*/
-  [(]            ; /* Line 13 */
-  "\n"             ; {nl++;}
-  <<EOF>>        ; {if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
-}
 "("				{printf("Left Parenthesis (\n");return('(');}
 ")"				{printf("Right Parenthesis )\n");return(')');}
 "{"				{printf("Left Curly Brace {\n");return('{');}
@@ -73,22 +56,27 @@ var				{printf("Keyword: var\n");return(VAR);}
 "["				{printf("Left [\n");return('[');}
 "]"				{printf("Right ]\n");return(']');}
 
-.				printf("Unexpected Character %s\n",yytext);
+\"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
+
+"#".*            {printf("comment found\n");}
+
+"(*"             { ++comment_nesting; BEGIN(COMMENT); }
+
+<COMMENT>{
+  "(*"           { ++comment_nesting; }
+  "*"+")"        { --comment_nesting; if(!comment_nesting) BEGIN(INITIAL);} 
+  "*"+           ; /* Line 11 - ignore */
+  [^(*\n]+       ; /* Line 12  - also ignore*/
+  [(]            ; /* Line 13 */
+  "\n"             ; {nl++;}
+  <<EOF>>        ; {if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
+}
+
+ <<EOF>> 		{printf("Read %d lines\n",nl);exit(0);}
+.				{printf("Unexpected Character %s\n",yytext);exit(-1);}
 
 
 
 
 
 %%
-static void comment(void){
-	int c;
-	while((c = input()) != 0){
-		if(c == '*'){
-			
-			while((c = input()) == '*');
-			if(c == ')') return;
-			if(c==0) break;
-		}
-	}
-	printf("x");
-}

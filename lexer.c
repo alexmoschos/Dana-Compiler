@@ -380,13 +380,13 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[85] =
     {   0,
-        0,    0,    0,    0,   47,   45,    2,    1,   39,   45,
-       19,   27,   28,   35,   33,   32,   34,   31,   36,    3,
-       42,   40,   45,   41,   17,   43,   44,   17,   17,   17,
-       17,   17,   17,   17,   17,   29,   30,   24,   26,   25,
-       23,    0,   18,    0,   19,   20,    3,   37,   38,   17,
+        0,    0,    0,    0,   47,   45,    2,    1,   30,   45,
+       37,   18,   19,   26,   24,   23,   25,   22,   27,    3,
+       33,   31,   45,   32,   17,   34,   35,   17,   17,   17,
+       17,   17,   17,   17,   17,   20,   21,   42,   44,   43,
+       41,    0,   36,    0,   37,   38,    3,   28,   29,   17,
         9,   17,   17,   17,   17,   17,    4,   17,   15,   17,
-       17,   17,   24,   21,   22,   23,   17,   17,   17,   14,
+       17,   17,   42,   39,   40,   41,   17,   17,   17,   14,
        17,   13,    7,   17,   17,   16,   17,    8,   11,    5,
         6,   10,   12,    0
     } ;
@@ -883,161 +883,163 @@ YY_RULE_SETUP
 {printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 	YY_BREAK
 case 18:
-/* rule 18 can match eol */
 YY_RULE_SETUP
-#line 41 "danalexer.l"
-{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
+#line 39 "danalexer.l"
+{printf("Left Parenthesis (\n");return('(');}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 43 "danalexer.l"
-{printf("comment found\n");}
+#line 40 "danalexer.l"
+{printf("Right Parenthesis )\n");return(')');}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 45 "danalexer.l"
-{ ++comment_nesting; BEGIN(COMMENT); }
+#line 41 "danalexer.l"
+{printf("Left Curly Brace {\n");return('{');}
 	YY_BREAK
-
 case 21:
 YY_RULE_SETUP
-#line 48 "danalexer.l"
-{ ++comment_nesting; }
+#line 42 "danalexer.l"
+{printf("Right Curly Brace }\n");return('}');}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 49 "danalexer.l"
-{ --comment_nesting; if(!comment_nesting) BEGIN(INITIAL);} 
+#line 43 "danalexer.l"
+{printf("Dot .\n");return('.');}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 50 "danalexer.l"
-; /* Line 11 - ignore */
+#line 44 "danalexer.l"
+{printf("Comma ,\n");return(',');}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 51 "danalexer.l"
-; /* Line 12  - also ignore*/
+#line 45 "danalexer.l"
+{printf("Plus +\n");return('+');}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 52 "danalexer.l"
-; /* Line 13 */
+#line 46 "danalexer.l"
+{printf("Minus -\n");return('-');}
 	YY_BREAK
 case 26:
-/* rule 26 can match eol */
 YY_RULE_SETUP
-#line 53 "danalexer.l"
-; {nl++;}
+#line 47 "danalexer.l"
+{printf("Times *\n");return('*');}
 	YY_BREAK
-case YY_STATE_EOF(COMMENT):
-#line 54 "danalexer.l"
-; {if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
-	YY_BREAK
-
 case 27:
 YY_RULE_SETUP
-#line 56 "danalexer.l"
-{printf("Left Parenthesis (\n");return('(');}
+#line 48 "danalexer.l"
+{printf("Division /\n");return('/');}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 57 "danalexer.l"
-{printf("Right Parenthesis )\n");return(')');}
+#line 49 "danalexer.l"
+{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 58 "danalexer.l"
-{printf("Left Curly Brace {\n");return('{');}
+#line 50 "danalexer.l"
+{printf("Equality operator ==\n");return(EQ);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 59 "danalexer.l"
-{printf("Right Curly Brace }\n");return('}');}
+#line 51 "danalexer.l"
+{printf("Bang !\n");return('!');}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 60 "danalexer.l"
-{printf("Dot .\n");return('.');}
+#line 53 "danalexer.l"
+{printf("Less than operator <\n");return(SMALLER);}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 61 "danalexer.l"
-{printf("Comma ,\n");return(',');}
+#line 54 "danalexer.l"
+{printf("Greater than operator >\n");return(LARGER);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 62 "danalexer.l"
-{printf("Plus +\n");return('+');}
+#line 55 "danalexer.l"
+{printf("Colon :\n");return(':');}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 63 "danalexer.l"
-{printf("Minus -\n");return('-');}
+#line 56 "danalexer.l"
+{printf("Left [\n");return('[');}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 64 "danalexer.l"
-{printf("Times *\n");return('*');}
+#line 57 "danalexer.l"
+{printf("Right ]\n");return(']');}
 	YY_BREAK
 case 36:
+/* rule 36 can match eol */
 YY_RULE_SETUP
-#line 65 "danalexer.l"
-{printf("Division /\n");return('/');}
+#line 59 "danalexer.l"
+{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 66 "danalexer.l"
-{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
+#line 61 "danalexer.l"
+{printf("comment found\n");}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 67 "danalexer.l"
-{printf("Equality operator ==\n");return(EQ);}
+#line 63 "danalexer.l"
+{ ++comment_nesting; BEGIN(COMMENT); }
 	YY_BREAK
+
 case 39:
 YY_RULE_SETUP
-#line 68 "danalexer.l"
-{printf("Bang !\n");return('!');}
+#line 66 "danalexer.l"
+{ ++comment_nesting; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 70 "danalexer.l"
-{printf("Less than operator <\n");return(SMALLER);}
+#line 67 "danalexer.l"
+{ --comment_nesting; if(!comment_nesting) BEGIN(INITIAL);} 
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 71 "danalexer.l"
-{printf("Greater than operator >\n");return(LARGER);}
+#line 68 "danalexer.l"
+; /* Line 11 - ignore */
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 72 "danalexer.l"
-{printf("Colon :\n");return(':');}
+#line 69 "danalexer.l"
+; /* Line 12  - also ignore*/
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 73 "danalexer.l"
-{printf("Left [\n");return('[');}
+#line 70 "danalexer.l"
+; /* Line 13 */
 	YY_BREAK
 case 44:
+/* rule 44 can match eol */
 YY_RULE_SETUP
-#line 74 "danalexer.l"
-{printf("Right ]\n");return(']');}
+#line 71 "danalexer.l"
+; {nl++;}
+	YY_BREAK
+case YY_STATE_EOF(COMMENT):
+#line 72 "danalexer.l"
+; {if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
+	YY_BREAK
+
+case YY_STATE_EOF(INITIAL):
+#line 75 "danalexer.l"
+{printf("Read %d lines\n",nl);exit(0);}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 76 "danalexer.l"
-printf("Unexpected Character %s\n",yytext);
+{printf("Unexpected Character %s\n",yytext);exit(-1);}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 82 "danalexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1039 "lexer.c"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 1043 "lexer.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2036,15 +2038,4 @@ void yyfree (void * ptr )
 #line 82 "danalexer.l"
 
 
-static void comment(void){
-	int c;
-	while((c = input()) != 0){
-		if(c == '*'){
-			
-			while((c = input()) == '*');
-			if(c == ')') return;
-			if(c==0) break;
-		}
-	}
-	printf("x");
-}
+
