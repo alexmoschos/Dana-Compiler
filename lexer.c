@@ -1002,17 +1002,17 @@ YY_RULE_SETUP
 case 41:
 YY_RULE_SETUP
 #line 68 "danalexer.l"
-; /* Line 11 - ignore */
+; 
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 69 "danalexer.l"
-; /* Line 12  - also ignore*/
+; 
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 70 "danalexer.l"
-; /* Line 13 */
+; 
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
@@ -1022,7 +1022,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
 #line 72 "danalexer.l"
-; {if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
+; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
 	YY_BREAK
 
 case YY_STATE_EOF(INITIAL):
