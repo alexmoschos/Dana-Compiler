@@ -1,7 +1,7 @@
 simple: lexer.o parser.o
 	gcc -o $@ $^ -lfl
 
-lexer: lex.yy.c
+lexer: lexer.c
 	gcc $< -lfl -o lexer
 
 lexer.c: danalexer.l
