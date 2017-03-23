@@ -1,4 +1,4 @@
-def main is int[10] : a as int, b as byte
+def main is int[10] : a as int
 begin
 	skip
 	if 3 < 5:
@@ -9,16 +9,19 @@ begin
 	begin
 		if 1 < 2:
 		begin 
-			break
+			break : a
+			continue: a
 		end
 	end
 	def hello is byte: a as int, b as byte
 	begin
 		def world is byte: a as byte
 		begin
-			skip
+			decl helloworld is byte[14]: a as byte[12]
 		end
 	end
-
+	helloworld: 42, 15, "hello world"
+	return : 42 + 17
+	exit 
 	
 end

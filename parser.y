@@ -11,7 +11,7 @@
 
 %token IDENTIFIER INT BYTE IF ELSE STRINGLITERAL
 %token LOOP AS SKIP DECL DEF BEG END VAR IS
-%token EQ DIFF LARGER SMALLER
+%token EQ DIFF LARGER SMALLER RETURN EXIT
 %token LARGEREQ SMALLEREQ ASSIGNMENT CONST
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT
 
@@ -31,25 +31,26 @@ fdef
 	:DEF header BEG stmt_list END
 	;
 
+fdecl
+	:DECL header
+	;
 
 header
 	:IDENTIFIER opt
 	|IDENTIFIER
 	;
 opt
-	:IS type optparam
+	:IS type ':' optparam 
 	|IS type
 	;
 
 optparam
-	: ':' IDENTIFIER AS type
-	| ':' IDENTIFIER AS type ',' moreparams
+	: IDENTIFIER AS type
+	| IDENTIFIER AS type ',' optparam
 	;
 
-moreparams
-	: IDENTIFIER AS type 
-	| IDENTIFIER AS type ',' moreparams
-	;
+
+
 
 stmt_list
 	: stmt
@@ -69,15 +70,32 @@ type
 	| BYTE		
 	;
 
+
+pc
+	: IDENTIFIER ':' param
+	| IDENTIFIER
+	;
+
+param
+	: expression ',' param
+	| expression
+	;
+
 stmt
 	: SKIP 
+	| pc
 	| mif
 	| fdef
 	| loop
 	| lval ASSIGNMENT expression	{printf("Found assignment\n");}
 	| VAR lval IS type {printf("Found type decl\n");}
 	| BREAK
+	| BREAK ':' IDENTIFIER
 	| CONT
+	| CONT ':' IDENTIFIER
+	| fdecl
+	| EXIT
+	| RETURN ':' expression
 	;
 
 loop
