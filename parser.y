@@ -124,7 +124,7 @@ loop
 
 mif
 	: IF condition ':' BEG stmt_list END ELSE ':' BEG stmt_list END	{printf("Found matched if\n");}
-	| IF expression ':' BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
+	| IF condition ':' BEG stmt_list END ELIF condition ':' BEG stmt_list END eliftstmt
 	| IF condition ':' BEG stmt_list END	{printf("Found unmatched if\n");}
 	;
 
@@ -143,10 +143,9 @@ condition
 	| '('condition ')'
 	;
 
-
 eliftstmt
 	: ELSE ':' BEG stmt_list END
-	| ELIF expression ':' BEG stmt_list END eliftstmt
+	| ELIF condition ':' BEG stmt_list END eliftstmt
 	;
 
 expression
