@@ -47,6 +47,7 @@ stmt
 
 loop
 	: LOOP IDENTIFIER ':' BEG stmt_list END
+	| LOOP ':' BEG stmt_list END
 
 
 mif
