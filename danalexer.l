@@ -62,6 +62,9 @@ continue	{printf("Keyword: continue\n");return(CONT);}
 "|"			{printf("Kagkelo |\n");return('|');}
 
 "<"			{printf("Less than operator <\n");return(SMALLER);}
+"<="		{printf("Less than or equal <=\n");return(SMALLEREQ);}
+">="		{printf("Greateer than or equal >=\n");return(LARGEREQ);}
+"<>"		{printf("Inequality <>\n");return(DIFF);}
 ">"			{printf("Greater than operator >\n");return(LARGER);}
 ":"			{printf("Colon :\n");return(':');}
 "["			{printf("Left [\n");return('[');}

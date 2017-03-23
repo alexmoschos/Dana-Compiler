@@ -1,8 +1,6 @@
+def main 
 begin
-	if true and false or true and not false:
-	begin 
-		a := +5 - 5 & 25 | !24
-	end
+	skip
 
 	
 end

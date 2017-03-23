@@ -11,14 +11,14 @@
 
 %token IDENTIFIER INT BYTE IF ELSE STRINGLITERAL
 %token LOOP AS SKIP DECL DEF BEG END VAR IS
-%token ADD MUL DIV SUB EQ DIFF LARGER SMALLER
-%token LARGEREQ SMALLEREQ COLON ASSIGNMENT CONST
+%token EQ DIFF LARGER SMALLER
+%token LARGEREQ SMALLEREQ ASSIGNMENT CONST
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT
 
 %left OR
 %left AND
 %nonassoc NOT
-%nonassoc '<' '>'
+%nonassoc SMALLER LARGER LARGEREQ SMALLEREQ EQ DIFF
 %left '+' '-' '|'
 %left '*' '/' '&'
 %precedence UNARYPL 
@@ -27,26 +27,29 @@
 
 
 %%
+fdef
+	:DEF IDENTIFIER BEG stmt_list END
 body
 	: BEG stmt_list END	{printf("BODY FOUND\n");}
-
+	;
 
 stmt_list
 	: stmt
 	| stmt_list stmt
-
+	;
 
 lval
 	: IDENTIFIER
 	| STRINGLITERAL
 	| lval '['expression']'
+	;
 
 type
 	:INT '[' CONST ']'	
 	| BYTE '[' CONST ']'
 	| INT
 	| BYTE		
-
+	;
 
 stmt
 	: SKIP 
@@ -54,32 +57,41 @@ stmt
 	| loop
 	| lval ASSIGNMENT expression	{printf("Found assignment\n");}
 	| VAR lval IS type {printf("Found type decl\n");}
-
+	| BREAK
+	| CONT
+	;
 
 loop
 	: LOOP IDENTIFIER ':' BEG stmt_list END {printf("Found loop\n");}
 	| LOOP ':' BEG stmt_list END	{printf("Found loop without identifier\n");}
-
+	;
 
 mif
 	: IF condition ':' BEG stmt_list END ELSE ':' BEG stmt_list END	{printf("Found matched if\n");}
 	| IF expression ':' BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
 	| IF condition ':' BEG stmt_list END	{printf("Found unmatched if\n");}
-
+	;
 
 condition
-	: expression '>' expression
-	| expression '<' expression
+	: expression LARGER expression
+	| expression SMALLER expression
+	| expression LARGEREQ expression
+	| expression SMALLEREQ expression
+	| expression EQ expression
+	| expression DIFF expression
 	| TRUE
 	| FALSE
 	| condition AND condition
 	| condition OR condition
 	| NOT condition
+	| '('condition ')'
+	;
 
 
 eliftstmt
 	: ELSE ':' BEG stmt_list END
 	| ELIF expression ':' BEG stmt_list END eliftstmt
+	;
 
 expression
 	: expression '+' expression {printf("addition\n");}
