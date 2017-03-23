@@ -28,9 +28,27 @@
 
 %%
 fdef
-	:DEF IDENTIFIER BEG stmt_list END
-body
-	: BEG stmt_list END	{printf("BODY FOUND\n");}
+	:DEF header BEG stmt_list END
+	;
+
+
+header
+	:IDENTIFIER opt
+	|IDENTIFIER
+	;
+opt
+	:IS type optparam
+	|IS type
+	;
+
+optparam
+	: ':' IDENTIFIER AS type
+	| ':' IDENTIFIER AS type ',' moreparams
+	;
+
+moreparams
+	: IDENTIFIER AS type 
+	| IDENTIFIER AS type ',' moreparams
 	;
 
 stmt_list
@@ -54,6 +72,7 @@ type
 stmt
 	: SKIP 
 	| mif
+	| fdef
 	| loop
 	| lval ASSIGNMENT expression	{printf("Found assignment\n");}
 	| VAR lval IS type {printf("Found type decl\n");}

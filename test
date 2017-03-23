@@ -1,6 +1,24 @@
-def main 
+def main is int[10] : a as int, b as byte
 begin
 	skip
+	if 3 < 5:
+	begin
+		skip
+	end
+	loop a:
+	begin
+		if 1 < 2:
+		begin 
+			break
+		end
+	end
+	def hello is byte: a as int, b as byte
+	begin
+		def world is byte: a as byte
+		begin
+			skip
+		end
+	end
 
 	
 end
