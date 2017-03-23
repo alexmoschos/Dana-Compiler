@@ -64,35 +64,41 @@ Grammar
    31           | expression '-' expression
    32           | expression '*' expression
    33           | expression '/' expression
-   34           | '+' expression
-   35           | '-' expression
-   36           | IDENTIFIER
-   37           | STRINGLITERAL
-   38           | CONST
-   39           | '(' expression ')'
+   34           | expression '&' expression
+   35           | expression '|' expression
+   36           | '+' expression
+   37           | '-' expression
+   38           | '!' expression
+   39           | IDENTIFIER
+   40           | STRINGLITERAL
+   41           | CONST
+   42           | '(' expression ')'
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'(' (40) 39
-')' (41) 39
+'!' (33) 38
+'&' (38) 34
+'(' (40) 42
+')' (41) 42
 '*' (42) 32
-'+' (43) 30 34
-'-' (45) 31 35
+'+' (43) 30 36
+'-' (45) 31 37
 '/' (47) 33
 ':' (58) 16 17 18 19 20 28 29
 '<' (60) 22
 '>' (62) 21
 '[' (91) 6 7 8
 ']' (93) 6 7 8
+'|' (124) 35
 error (256)
-IDENTIFIER (258) 4 16 36
+IDENTIFIER (258) 4 16 39
 INT (259) 7 9
 BYTE (260) 8 10
 IF (261) 18 19 20
 ELSE (262) 18 28
-STRINGLITERAL (263) 5 37
+STRINGLITERAL (263) 5 40
 LOOP (264) 16 17
 AS (265)
 SKIP (266) 11
@@ -114,7 +120,7 @@ LARGEREQ (281)
 SMALLEREQ (282)
 COLON (283)
 ASSIGNMENT (284) 14
-CONST (285) 7 8 38
+CONST (285) 7 8 41
 AND (286) 25
 NOT (287) 27
 OR (288) 26
@@ -125,33 +131,34 @@ BREAK (292)
 CONT (293)
 UNARYPL (294)
 UNARYMINUS (295)
+BANGBANG (296)
 
 
 Nonterminals, with rules where they appear
 
-$accept (52)
+$accept (56)
     on left: 0
-body (53)
+body (57)
     on left: 1, on right: 0
-stmt_list (54)
+stmt_list (58)
     on left: 2 3, on right: 1 3 16 17 18 19 20 28 29
-lval (55)
+lval (59)
     on left: 4 5 6, on right: 6 14 15
-type (56)
+type (60)
     on left: 7 8 9 10, on right: 15
-stmt (57)
+stmt (61)
     on left: 11 12 13 14 15, on right: 2 3
-loop (58)
+loop (62)
     on left: 16 17, on right: 13
-mif (59)
+mif (63)
     on left: 18 19 20, on right: 12
-condition (60)
+condition (64)
     on left: 21 22 23 24 25 26 27, on right: 18 20 25 26 27
-eliftstmt (61)
+eliftstmt (65)
     on left: 28 29, on right: 19 29
-expression (62)
-    on left: 30 31 32 33 34 35 36 37 38 39, on right: 6 14 19 21 22
-    29 30 31 32 33 34 35 39
+expression (66)
+    on left: 30 31 32 33 34 35 36 37 38 39 40 41 42, on right: 6 14
+    19 21 22 29 30 31 32 33 34 35 36 37 38 42
 
 
 State 0
@@ -209,10 +216,11 @@ State 4
     FALSE          shift, and go to state 20
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    condition   go to state 24
-    expression  go to state 25
+    condition   go to state 25
+    expression  go to state 26
 
 
 State 5
@@ -227,8 +235,8 @@ State 6
    16 loop: LOOP . IDENTIFIER ':' BEG stmt_list END
    17     | LOOP . ':' BEG stmt_list END
 
-    IDENTIFIER  shift, and go to state 26
-    ':'         shift, and go to state 27
+    IDENTIFIER  shift, and go to state 27
+    ':'         shift, and go to state 28
 
 
 State 7
@@ -245,7 +253,7 @@ State 8
     IDENTIFIER     shift, and go to state 3
     STRINGLITERAL  shift, and go to state 5
 
-    lval  go to state 28
+    lval  go to state 29
 
 
 State 9
@@ -258,11 +266,11 @@ State 9
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 29
+    END            shift, and go to state 30
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
@@ -272,8 +280,8 @@ State 10
     6 lval: lval . '[' expression ']'
    14 stmt: lval . ASSIGNMENT expression
 
-    ASSIGNMENT  shift, and go to state 31
-    '['         shift, and go to state 32
+    ASSIGNMENT  shift, and go to state 32
+    '['         shift, and go to state 33
 
 
 State 11
@@ -306,23 +314,23 @@ State 14
 
 State 15
 
-   36 expression: IDENTIFIER .
+   39 expression: IDENTIFIER .
 
-    $default  reduce using rule 36 (expression)
+    $default  reduce using rule 39 (expression)
 
 
 State 16
 
-   37 expression: STRINGLITERAL .
+   40 expression: STRINGLITERAL .
 
-    $default  reduce using rule 37 (expression)
+    $default  reduce using rule 40 (expression)
 
 
 State 17
 
-   38 expression: CONST .
+   41 expression: CONST .
 
-    $default  reduce using rule 38 (expression)
+    $default  reduce using rule 41 (expression)
 
 
 State 18
@@ -337,10 +345,11 @@ State 18
     FALSE          shift, and go to state 20
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    condition   go to state 33
-    expression  go to state 34
+    condition   go to state 34
+    expression  go to state 35
 
 
 State 19
@@ -359,59 +368,77 @@ State 20
 
 State 21
 
-   34 expression: '+' . expression
+   36 expression: '+' . expression
 
     IDENTIFIER     shift, and go to state 15
     STRINGLITERAL  shift, and go to state 16
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
-
-    expression  go to state 35
-
-
-State 22
-
-   35 expression: '-' . expression
-
-    IDENTIFIER     shift, and go to state 15
-    STRINGLITERAL  shift, and go to state 16
-    CONST          shift, and go to state 17
-    '+'            shift, and go to state 21
-    '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
     expression  go to state 36
 
 
-State 23
+State 22
 
-   39 expression: '(' . expression ')'
+   37 expression: '-' . expression
 
     IDENTIFIER     shift, and go to state 15
     STRINGLITERAL  shift, and go to state 16
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
     expression  go to state 37
 
 
+State 23
+
+   38 expression: '!' . expression
+
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
+
+    expression  go to state 38
+
+
 State 24
+
+   42 expression: '(' . expression ')'
+
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
+
+    expression  go to state 39
+
+
+State 25
 
    18 mif: IF condition . ':' BEG stmt_list END ELSE ':' BEG stmt_list END
    20    | IF condition . ':' BEG stmt_list END
    25 condition: condition . AND condition
    26          | condition . OR condition
 
-    AND  shift, and go to state 38
-    OR   shift, and go to state 39
-    ':'  shift, and go to state 40
+    AND  shift, and go to state 40
+    OR   shift, and go to state 41
+    ':'  shift, and go to state 42
 
 
-State 25
+State 26
 
    19 mif: IF expression . ':' BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
    21 condition: expression . '>' expression
@@ -420,54 +447,58 @@ State 25
    31           | expression . '-' expression
    32           | expression . '*' expression
    33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-    '<'  shift, and go to state 45
-    '>'  shift, and go to state 46
-    ':'  shift, and go to state 47
-
-
-State 26
-
-   16 loop: LOOP IDENTIFIER . ':' BEG stmt_list END
-
-    ':'  shift, and go to state 48
+    '<'  shift, and go to state 43
+    '>'  shift, and go to state 44
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+    ':'  shift, and go to state 51
 
 
 State 27
 
-   17 loop: LOOP ':' . BEG stmt_list END
+   16 loop: LOOP IDENTIFIER . ':' BEG stmt_list END
 
-    BEG  shift, and go to state 49
+    ':'  shift, and go to state 52
 
 
 State 28
 
-    6 lval: lval . '[' expression ']'
-   15 stmt: VAR lval . IS type
+   17 loop: LOOP ':' . BEG stmt_list END
 
-    IS   shift, and go to state 50
-    '['  shift, and go to state 32
+    BEG  shift, and go to state 53
 
 
 State 29
+
+    6 lval: lval . '[' expression ']'
+   15 stmt: VAR lval . IS type
+
+    IS   shift, and go to state 54
+    '['  shift, and go to state 33
+
+
+State 30
 
     1 body: BEG stmt_list END .
 
     $default  reduce using rule 1 (body)
 
 
-State 30
+State 31
 
     3 stmt_list: stmt_list stmt .
 
     $default  reduce using rule 3 (stmt_list)
 
 
-State 31
+State 32
 
    14 stmt: lval ASSIGNMENT . expression
 
@@ -476,12 +507,13 @@ State 31
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    expression  go to state 51
+    expression  go to state 55
 
 
-State 32
+State 33
 
     6 lval: lval '[' . expression ']'
 
@@ -490,24 +522,22 @@ State 32
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    expression  go to state 52
+    expression  go to state 56
 
 
-State 33
+State 34
 
    25 condition: condition . AND condition
    26          | condition . OR condition
    27          | NOT condition .
 
-    AND  shift, and go to state 38
-    OR   shift, and go to state 39
-
     $default  reduce using rule 27 (condition)
 
 
-State 34
+State 35
 
    21 condition: expression . '>' expression
    22          | expression . '<' expression
@@ -515,29 +545,17 @@ State 34
    31           | expression . '-' expression
    32           | expression . '*' expression
    33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-    '<'  shift, and go to state 45
-    '>'  shift, and go to state 46
-
-
-State 35
-
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   33           | expression . '/' expression
-   34           | '+' expression .
-
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-
-    $default  reduce using rule 34 (expression)
+    '<'  shift, and go to state 43
+    '>'  shift, and go to state 44
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
 
 
 State 36
@@ -546,14 +564,11 @@ State 36
    31           | expression . '-' expression
    32           | expression . '*' expression
    33           | expression . '/' expression
-   35           | '-' expression .
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+   36           | '+' expression .
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-
-    $default  reduce using rule 35 (expression)
+    $default  reduce using rule 36 (expression)
 
 
 State 37
@@ -562,16 +577,46 @@ State 37
    31           | expression . '-' expression
    32           | expression . '*' expression
    33           | expression . '/' expression
-   39           | '(' expression . ')'
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+   37           | '-' expression .
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-    ')'  shift, and go to state 53
+    $default  reduce using rule 37 (expression)
 
 
 State 38
+
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+   38           | '!' expression .
+
+    $default  reduce using rule 38 (expression)
+
+
+State 39
+
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+   42           | '(' expression . ')'
+
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+    ')'  shift, and go to state 57
+
+
+State 40
 
    25 condition: condition AND . condition
 
@@ -583,13 +628,14 @@ State 38
     FALSE          shift, and go to state 20
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    condition   go to state 54
-    expression  go to state 34
+    condition   go to state 58
+    expression  go to state 35
 
 
-State 39
+State 41
 
    26 condition: condition OR . condition
 
@@ -601,77 +647,22 @@ State 39
     FALSE          shift, and go to state 20
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    condition   go to state 55
-    expression  go to state 34
-
-
-State 40
-
-   18 mif: IF condition ':' . BEG stmt_list END ELSE ':' BEG stmt_list END
-   20    | IF condition ':' . BEG stmt_list END
-
-    BEG  shift, and go to state 56
-
-
-State 41
-
-   30 expression: expression '+' . expression
-
-    IDENTIFIER     shift, and go to state 15
-    STRINGLITERAL  shift, and go to state 16
-    CONST          shift, and go to state 17
-    '+'            shift, and go to state 21
-    '-'            shift, and go to state 22
-    '('            shift, and go to state 23
-
-    expression  go to state 57
+    condition   go to state 59
+    expression  go to state 35
 
 
 State 42
 
-   31 expression: expression '-' . expression
+   18 mif: IF condition ':' . BEG stmt_list END ELSE ':' BEG stmt_list END
+   20    | IF condition ':' . BEG stmt_list END
 
-    IDENTIFIER     shift, and go to state 15
-    STRINGLITERAL  shift, and go to state 16
-    CONST          shift, and go to state 17
-    '+'            shift, and go to state 21
-    '-'            shift, and go to state 22
-    '('            shift, and go to state 23
-
-    expression  go to state 58
+    BEG  shift, and go to state 60
 
 
 State 43
-
-   32 expression: expression '*' . expression
-
-    IDENTIFIER     shift, and go to state 15
-    STRINGLITERAL  shift, and go to state 16
-    CONST          shift, and go to state 17
-    '+'            shift, and go to state 21
-    '-'            shift, and go to state 22
-    '('            shift, and go to state 23
-
-    expression  go to state 59
-
-
-State 44
-
-   33 expression: expression '/' . expression
-
-    IDENTIFIER     shift, and go to state 15
-    STRINGLITERAL  shift, and go to state 16
-    CONST          shift, and go to state 17
-    '+'            shift, and go to state 21
-    '-'            shift, and go to state 22
-    '('            shift, and go to state 23
-
-    expression  go to state 60
-
-
-State 45
 
    22 condition: expression '<' . expression
 
@@ -680,12 +671,13 @@ State 45
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
     expression  go to state 61
 
 
-State 46
+State 44
 
    21 condition: expression '>' . expression
 
@@ -694,215 +686,119 @@ State 46
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
     expression  go to state 62
 
 
+State 45
+
+   30 expression: expression '+' . expression
+
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
+
+    expression  go to state 63
+
+
+State 46
+
+   31 expression: expression '-' . expression
+
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
+
+    expression  go to state 64
+
+
 State 47
 
-   19 mif: IF expression ':' . BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
+   35 expression: expression '|' . expression
 
-    BEG  shift, and go to state 63
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
+
+    expression  go to state 65
 
 
 State 48
 
-   16 loop: LOOP IDENTIFIER ':' . BEG stmt_list END
+   32 expression: expression '*' . expression
 
-    BEG  shift, and go to state 64
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
+
+    expression  go to state 66
 
 
 State 49
 
-   17 loop: LOOP ':' BEG . stmt_list END
+   33 expression: expression '/' . expression
 
-    IDENTIFIER     shift, and go to state 3
-    IF             shift, and go to state 4
-    STRINGLITERAL  shift, and go to state 5
-    LOOP           shift, and go to state 6
-    SKIP           shift, and go to state 7
-    VAR            shift, and go to state 8
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    stmt_list  go to state 65
-    lval       go to state 10
-    stmt       go to state 11
-    loop       go to state 12
-    mif        go to state 13
+    expression  go to state 67
 
 
 State 50
 
-   15 stmt: VAR lval IS . type
+   34 expression: expression '&' . expression
 
-    INT   shift, and go to state 66
-    BYTE  shift, and go to state 67
+    IDENTIFIER     shift, and go to state 15
+    STRINGLITERAL  shift, and go to state 16
+    CONST          shift, and go to state 17
+    '+'            shift, and go to state 21
+    '-'            shift, and go to state 22
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    type  go to state 68
+    expression  go to state 68
 
 
 State 51
 
-   14 stmt: lval ASSIGNMENT expression .
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   33           | expression . '/' expression
+   19 mif: IF expression ':' . BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-
-    $default  reduce using rule 14 (stmt)
+    BEG  shift, and go to state 69
 
 
 State 52
 
-    6 lval: lval '[' expression . ']'
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   33           | expression . '/' expression
+   16 loop: LOOP IDENTIFIER ':' . BEG stmt_list END
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-    ']'  shift, and go to state 69
+    BEG  shift, and go to state 70
 
 
 State 53
 
-   39 expression: '(' expression ')' .
-
-    $default  reduce using rule 39 (expression)
-
-
-State 54
-
-   25 condition: condition . AND condition
-   25          | condition AND condition .
-   26          | condition . OR condition
-
-    OR  shift, and go to state 39
-
-    $default  reduce using rule 25 (condition)
-
-
-State 55
-
-   25 condition: condition . AND condition
-   26          | condition . OR condition
-   26          | condition OR condition .
-
-    $default  reduce using rule 26 (condition)
-
-
-State 56
-
-   18 mif: IF condition ':' BEG . stmt_list END ELSE ':' BEG stmt_list END
-   20    | IF condition ':' BEG . stmt_list END
-
-    IDENTIFIER     shift, and go to state 3
-    IF             shift, and go to state 4
-    STRINGLITERAL  shift, and go to state 5
-    LOOP           shift, and go to state 6
-    SKIP           shift, and go to state 7
-    VAR            shift, and go to state 8
-
-    stmt_list  go to state 70
-    lval       go to state 10
-    stmt       go to state 11
-    loop       go to state 12
-    mif        go to state 13
-
-
-State 57
-
-   30 expression: expression . '+' expression
-   30           | expression '+' expression .
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   33           | expression . '/' expression
-
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-
-    $default  reduce using rule 30 (expression)
-
-
-State 58
-
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   31           | expression '-' expression .
-   32           | expression . '*' expression
-   33           | expression . '/' expression
-
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-
-    $default  reduce using rule 31 (expression)
-
-
-State 59
-
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   32           | expression '*' expression .
-   33           | expression . '/' expression
-
-    $default  reduce using rule 32 (expression)
-
-
-State 60
-
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   33           | expression . '/' expression
-   33           | expression '/' expression .
-
-    $default  reduce using rule 33 (expression)
-
-
-State 61
-
-   22 condition: expression '<' expression .
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   33           | expression . '/' expression
-
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-
-    $default  reduce using rule 22 (condition)
-
-
-State 62
-
-   21 condition: expression '>' expression .
-   30 expression: expression . '+' expression
-   31           | expression . '-' expression
-   32           | expression . '*' expression
-   33           | expression . '/' expression
-
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-
-    $default  reduce using rule 21 (condition)
-
-
-State 63
-
-   19 mif: IF expression ':' BEG . stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
+   17 loop: LOOP ':' BEG . stmt_list END
 
     IDENTIFIER     shift, and go to state 3
     IF             shift, and go to state 4
@@ -918,7 +814,250 @@ State 63
     mif        go to state 13
 
 
+State 54
+
+   15 stmt: VAR lval IS . type
+
+    INT   shift, and go to state 72
+    BYTE  shift, and go to state 73
+
+    type  go to state 74
+
+
+State 55
+
+   14 stmt: lval ASSIGNMENT expression .
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+
+    $default  reduce using rule 14 (stmt)
+
+
+State 56
+
+    6 lval: lval '[' expression . ']'
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+    ']'  shift, and go to state 75
+
+
+State 57
+
+   42 expression: '(' expression ')' .
+
+    $default  reduce using rule 42 (expression)
+
+
+State 58
+
+   25 condition: condition . AND condition
+   25          | condition AND condition .
+   26          | condition . OR condition
+
+    $default  reduce using rule 25 (condition)
+
+
+State 59
+
+   25 condition: condition . AND condition
+   26          | condition . OR condition
+   26          | condition OR condition .
+
+    AND  shift, and go to state 40
+
+    $default  reduce using rule 26 (condition)
+
+
+State 60
+
+   18 mif: IF condition ':' BEG . stmt_list END ELSE ':' BEG stmt_list END
+   20    | IF condition ':' BEG . stmt_list END
+
+    IDENTIFIER     shift, and go to state 3
+    IF             shift, and go to state 4
+    STRINGLITERAL  shift, and go to state 5
+    LOOP           shift, and go to state 6
+    SKIP           shift, and go to state 7
+    VAR            shift, and go to state 8
+
+    stmt_list  go to state 76
+    lval       go to state 10
+    stmt       go to state 11
+    loop       go to state 12
+    mif        go to state 13
+
+
+State 61
+
+   22 condition: expression '<' expression .
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+
+    $default  reduce using rule 22 (condition)
+
+
+State 62
+
+   21 condition: expression '>' expression .
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+
+    $default  reduce using rule 21 (condition)
+
+
+State 63
+
+   30 expression: expression . '+' expression
+   30           | expression '+' expression .
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+
+    $default  reduce using rule 30 (expression)
+
+
 State 64
+
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   31           | expression '-' expression .
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+
+    $default  reduce using rule 31 (expression)
+
+
+State 65
+
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+   35           | expression '|' expression .
+
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+
+    $default  reduce using rule 35 (expression)
+
+
+State 66
+
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   32           | expression '*' expression .
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    $default  reduce using rule 32 (expression)
+
+
+State 67
+
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   33           | expression '/' expression .
+   34           | expression . '&' expression
+   35           | expression . '|' expression
+
+    $default  reduce using rule 33 (expression)
+
+
+State 68
+
+   30 expression: expression . '+' expression
+   31           | expression . '-' expression
+   32           | expression . '*' expression
+   33           | expression . '/' expression
+   34           | expression . '&' expression
+   34           | expression '&' expression .
+   35           | expression . '|' expression
+
+    $default  reduce using rule 34 (expression)
+
+
+State 69
+
+   19 mif: IF expression ':' BEG . stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
+
+    IDENTIFIER     shift, and go to state 3
+    IF             shift, and go to state 4
+    STRINGLITERAL  shift, and go to state 5
+    LOOP           shift, and go to state 6
+    SKIP           shift, and go to state 7
+    VAR            shift, and go to state 8
+
+    stmt_list  go to state 77
+    lval       go to state 10
+    stmt       go to state 11
+    loop       go to state 12
+    mif        go to state 13
+
+
+State 70
 
    16 loop: LOOP IDENTIFIER ':' BEG . stmt_list END
 
@@ -929,14 +1068,14 @@ State 64
     SKIP           shift, and go to state 7
     VAR            shift, and go to state 8
 
-    stmt_list  go to state 72
+    stmt_list  go to state 78
     lval       go to state 10
     stmt       go to state 11
     loop       go to state 12
     mif        go to state 13
 
 
-State 65
+State 71
 
     3 stmt_list: stmt_list . stmt
    17 loop: LOOP ':' BEG stmt_list . END
@@ -946,50 +1085,50 @@ State 65
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 73
+    END            shift, and go to state 79
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 66
+State 72
 
     7 type: INT . '[' CONST ']'
     9     | INT .
 
-    '['  shift, and go to state 74
+    '['  shift, and go to state 80
 
     $default  reduce using rule 9 (type)
 
 
-State 67
+State 73
 
     8 type: BYTE . '[' CONST ']'
    10     | BYTE .
 
-    '['  shift, and go to state 75
+    '['  shift, and go to state 81
 
     $default  reduce using rule 10 (type)
 
 
-State 68
+State 74
 
    15 stmt: VAR lval IS type .
 
     $default  reduce using rule 15 (stmt)
 
 
-State 69
+State 75
 
     6 lval: lval '[' expression ']' .
 
     $default  reduce using rule 6 (lval)
 
 
-State 70
+State 76
 
     3 stmt_list: stmt_list . stmt
    18 mif: IF condition ':' BEG stmt_list . END ELSE ':' BEG stmt_list END
@@ -1000,16 +1139,16 @@ State 70
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 76
+    END            shift, and go to state 82
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 71
+State 77
 
     3 stmt_list: stmt_list . stmt
    19 mif: IF expression ':' BEG stmt_list . END ELIF expression ':' BEG stmt_list END eliftstmt
@@ -1019,16 +1158,16 @@ State 71
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 77
+    END            shift, and go to state 83
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 72
+State 78
 
     3 stmt_list: stmt_list . stmt
    16 loop: LOOP IDENTIFIER ':' BEG stmt_list . END
@@ -1038,82 +1177,82 @@ State 72
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 78
+    END            shift, and go to state 84
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 73
+State 79
 
    17 loop: LOOP ':' BEG stmt_list END .
 
     $default  reduce using rule 17 (loop)
 
 
-State 74
+State 80
 
     7 type: INT '[' . CONST ']'
 
-    CONST  shift, and go to state 79
+    CONST  shift, and go to state 85
 
 
-State 75
+State 81
 
     8 type: BYTE '[' . CONST ']'
 
-    CONST  shift, and go to state 80
+    CONST  shift, and go to state 86
 
 
-State 76
+State 82
 
    18 mif: IF condition ':' BEG stmt_list END . ELSE ':' BEG stmt_list END
    20    | IF condition ':' BEG stmt_list END .
 
-    ELSE  shift, and go to state 81
+    ELSE  shift, and go to state 87
 
     $default  reduce using rule 20 (mif)
 
 
-State 77
+State 83
 
    19 mif: IF expression ':' BEG stmt_list END . ELIF expression ':' BEG stmt_list END eliftstmt
 
-    ELIF  shift, and go to state 82
+    ELIF  shift, and go to state 88
 
 
-State 78
+State 84
 
    16 loop: LOOP IDENTIFIER ':' BEG stmt_list END .
 
     $default  reduce using rule 16 (loop)
 
 
-State 79
+State 85
 
     7 type: INT '[' CONST . ']'
 
-    ']'  shift, and go to state 83
+    ']'  shift, and go to state 89
 
 
-State 80
+State 86
 
     8 type: BYTE '[' CONST . ']'
 
-    ']'  shift, and go to state 84
+    ']'  shift, and go to state 90
 
 
-State 81
+State 87
 
    18 mif: IF condition ':' BEG stmt_list END ELSE . ':' BEG stmt_list END
 
-    ':'  shift, and go to state 85
+    ':'  shift, and go to state 91
 
 
-State 82
+State 88
 
    19 mif: IF expression ':' BEG stmt_list END ELIF . expression ':' BEG stmt_list END eliftstmt
 
@@ -1122,48 +1261,53 @@ State 82
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    expression  go to state 86
+    expression  go to state 92
 
 
-State 83
+State 89
 
     7 type: INT '[' CONST ']' .
 
     $default  reduce using rule 7 (type)
 
 
-State 84
+State 90
 
     8 type: BYTE '[' CONST ']' .
 
     $default  reduce using rule 8 (type)
 
 
-State 85
+State 91
 
    18 mif: IF condition ':' BEG stmt_list END ELSE ':' . BEG stmt_list END
 
-    BEG  shift, and go to state 87
+    BEG  shift, and go to state 93
 
 
-State 86
+State 92
 
    19 mif: IF expression ':' BEG stmt_list END ELIF expression . ':' BEG stmt_list END eliftstmt
    30 expression: expression . '+' expression
    31           | expression . '-' expression
    32           | expression . '*' expression
    33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-    ':'  shift, and go to state 88
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+    ':'  shift, and go to state 94
 
 
-State 87
+State 93
 
    18 mif: IF condition ':' BEG stmt_list END ELSE ':' BEG . stmt_list END
 
@@ -1174,21 +1318,21 @@ State 87
     SKIP           shift, and go to state 7
     VAR            shift, and go to state 8
 
-    stmt_list  go to state 89
+    stmt_list  go to state 95
     lval       go to state 10
     stmt       go to state 11
     loop       go to state 12
     mif        go to state 13
 
 
-State 88
+State 94
 
    19 mif: IF expression ':' BEG stmt_list END ELIF expression ':' . BEG stmt_list END eliftstmt
 
-    BEG  shift, and go to state 90
+    BEG  shift, and go to state 96
 
 
-State 89
+State 95
 
     3 stmt_list: stmt_list . stmt
    18 mif: IF condition ':' BEG stmt_list END ELSE ':' BEG stmt_list . END
@@ -1198,16 +1342,16 @@ State 89
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 91
+    END            shift, and go to state 97
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 90
+State 96
 
    19 mif: IF expression ':' BEG stmt_list END ELIF expression ':' BEG . stmt_list END eliftstmt
 
@@ -1218,21 +1362,21 @@ State 90
     SKIP           shift, and go to state 7
     VAR            shift, and go to state 8
 
-    stmt_list  go to state 92
+    stmt_list  go to state 98
     lval       go to state 10
     stmt       go to state 11
     loop       go to state 12
     mif        go to state 13
 
 
-State 91
+State 97
 
    18 mif: IF condition ':' BEG stmt_list END ELSE ':' BEG stmt_list END .
 
     $default  reduce using rule 18 (mif)
 
 
-State 92
+State 98
 
     3 stmt_list: stmt_list . stmt
    19 mif: IF expression ':' BEG stmt_list END ELIF expression ':' BEG stmt_list . END eliftstmt
@@ -1242,33 +1386,33 @@ State 92
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 93
+    END            shift, and go to state 99
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 93
+State 99
 
    19 mif: IF expression ':' BEG stmt_list END ELIF expression ':' BEG stmt_list END . eliftstmt
 
-    ELSE  shift, and go to state 94
-    ELIF  shift, and go to state 95
+    ELSE  shift, and go to state 100
+    ELIF  shift, and go to state 101
 
-    eliftstmt  go to state 96
+    eliftstmt  go to state 102
 
 
-State 94
+State 100
 
    28 eliftstmt: ELSE . ':' BEG stmt_list END
 
-    ':'  shift, and go to state 97
+    ':'  shift, and go to state 103
 
 
-State 95
+State 101
 
    29 eliftstmt: ELIF . expression ':' BEG stmt_list END eliftstmt
 
@@ -1277,41 +1421,46 @@ State 95
     CONST          shift, and go to state 17
     '+'            shift, and go to state 21
     '-'            shift, and go to state 22
-    '('            shift, and go to state 23
+    '!'            shift, and go to state 23
+    '('            shift, and go to state 24
 
-    expression  go to state 98
+    expression  go to state 104
 
 
-State 96
+State 102
 
    19 mif: IF expression ':' BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt .
 
     $default  reduce using rule 19 (mif)
 
 
-State 97
+State 103
 
    28 eliftstmt: ELSE ':' . BEG stmt_list END
 
-    BEG  shift, and go to state 99
+    BEG  shift, and go to state 105
 
 
-State 98
+State 104
 
    29 eliftstmt: ELIF expression . ':' BEG stmt_list END eliftstmt
    30 expression: expression . '+' expression
    31           | expression . '-' expression
    32           | expression . '*' expression
    33           | expression . '/' expression
+   34           | expression . '&' expression
+   35           | expression . '|' expression
 
-    '+'  shift, and go to state 41
-    '-'  shift, and go to state 42
-    '*'  shift, and go to state 43
-    '/'  shift, and go to state 44
-    ':'  shift, and go to state 100
+    '+'  shift, and go to state 45
+    '-'  shift, and go to state 46
+    '|'  shift, and go to state 47
+    '*'  shift, and go to state 48
+    '/'  shift, and go to state 49
+    '&'  shift, and go to state 50
+    ':'  shift, and go to state 106
 
 
-State 99
+State 105
 
    28 eliftstmt: ELSE ':' BEG . stmt_list END
 
@@ -1322,21 +1471,21 @@ State 99
     SKIP           shift, and go to state 7
     VAR            shift, and go to state 8
 
-    stmt_list  go to state 101
+    stmt_list  go to state 107
     lval       go to state 10
     stmt       go to state 11
     loop       go to state 12
     mif        go to state 13
 
 
-State 100
+State 106
 
    29 eliftstmt: ELIF expression ':' . BEG stmt_list END eliftstmt
 
-    BEG  shift, and go to state 102
+    BEG  shift, and go to state 108
 
 
-State 101
+State 107
 
     3 stmt_list: stmt_list . stmt
    28 eliftstmt: ELSE ':' BEG stmt_list . END
@@ -1346,16 +1495,16 @@ State 101
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 103
+    END            shift, and go to state 109
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 102
+State 108
 
    29 eliftstmt: ELIF expression ':' BEG . stmt_list END eliftstmt
 
@@ -1366,21 +1515,21 @@ State 102
     SKIP           shift, and go to state 7
     VAR            shift, and go to state 8
 
-    stmt_list  go to state 104
+    stmt_list  go to state 110
     lval       go to state 10
     stmt       go to state 11
     loop       go to state 12
     mif        go to state 13
 
 
-State 103
+State 109
 
    28 eliftstmt: ELSE ':' BEG stmt_list END .
 
     $default  reduce using rule 28 (eliftstmt)
 
 
-State 104
+State 110
 
     3 stmt_list: stmt_list . stmt
    29 eliftstmt: ELIF expression ':' BEG stmt_list . END eliftstmt
@@ -1390,26 +1539,26 @@ State 104
     STRINGLITERAL  shift, and go to state 5
     LOOP           shift, and go to state 6
     SKIP           shift, and go to state 7
-    END            shift, and go to state 105
+    END            shift, and go to state 111
     VAR            shift, and go to state 8
 
     lval  go to state 10
-    stmt  go to state 30
+    stmt  go to state 31
     loop  go to state 12
     mif   go to state 13
 
 
-State 105
+State 111
 
    29 eliftstmt: ELIF expression ':' BEG stmt_list END . eliftstmt
 
-    ELSE  shift, and go to state 94
-    ELIF  shift, and go to state 95
+    ELSE  shift, and go to state 100
+    ELIF  shift, and go to state 101
 
-    eliftstmt  go to state 106
+    eliftstmt  go to state 112
 
 
-State 106
+State 112
 
    29 eliftstmt: ELIF expression ':' BEG stmt_list END eliftstmt .
 

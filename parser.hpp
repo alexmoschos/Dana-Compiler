@@ -82,7 +82,8 @@ extern int yydebug;
     BREAK = 292,
     CONT = 293,
     UNARYPL = 294,
-    UNARYMINUS = 295
+    UNARYMINUS = 295,
+    BANGBANG = 296
   };
 #endif
 

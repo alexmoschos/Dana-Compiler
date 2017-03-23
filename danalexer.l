@@ -58,6 +58,8 @@ continue	{printf("Keyword: continue\n");return(CONT);}
 "=="			{printf("Equality operator ==\n");return(EQ);}
 "!"			{printf("Bang !\n");return('!');}
 'x25'			{printf("Mod Operator!\n");return('%');}
+"&" 		{printf("Ampersand &\n");return('&');}
+"|"			{printf("Kagkelo |\n");return('|');}
 
 "<"			{printf("Less than operator <\n");return(SMALLER);}
 ">"			{printf("Greater than operator >\n");return(LARGER);}

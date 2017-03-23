@@ -15,14 +15,16 @@
 %token LARGEREQ SMALLEREQ COLON ASSIGNMENT CONST
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT
 
+%left OR
+%left AND
+%nonassoc NOT
+%nonassoc '<' '>'
+%left '+' '-' '|'
+%left '*' '/' '&'
 %precedence UNARYPL 
 %precedence UNARYMINUS
-%left '+' '-'
-%left '*' '/' 
-%nonassoc '<' '>'
-%nonassoc NOT
-%left AND
-%left OR
+%precedence BANGBANG
+
 
 %%
 body
@@ -84,8 +86,11 @@ expression
 	| expression '-' expression	{printf("subtraction\n");}
 	| expression '*' expression	{printf("multiplication\n");}
 	| expression '/' expression	{printf("division \n");}
+	| expression '&' expression {printf("Bitwise &\n");}
+	| expression '|' expression {printf("Bitwise OR\n");}
 	| '+' expression %prec UNARYPL	{printf("unary plus\n");}
 	| '-' expression %prec UNARYMINUS	{printf("unary minus\n");}
+	| '!' expression %prec BANGBANG	{printf("Bang !\n");/*pew pew!*/}
 	| IDENTIFIER 	{printf("expression with identifier\n");}
 	| STRINGLITERAL	{printf("String literal\n");}
 	| CONST 		{printf("Const\n");}
