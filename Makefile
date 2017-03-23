@@ -1,18 +1,18 @@
 simple: lexer.o parser.o
-	gcc -o $@ $^ -lfl
+	g++ -o $@ $^ -lfl
 
-lexer: lexer.c
-	gcc $< -lfl -o lexer
+lexer: lexer.cpp
+	g++ $< -lfl -o lexer
 
-lexer.c: danalexer.l
-	flex -s -o lexer.c danalexer.l
+lexer.cpp: danalexer.l
+	flex -s -o lexer.cpp danalexer.l
 
-parser.h parser.c: parser.y
-	bison -dv -o parser.c parser.y
+parser.hpp parser.cpp: parser.y
+	bison -dv -o parser.cpp parser.y
 
-lexer.o: lexer.c parser.h
+lexer.o: lexer.cpp parser.hpp
 clean : 
-	$(RM) lexer.c parser.c parser.h parser.output *.o *~
+	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o *~
 
 distclean: clean
 	$(RM) simple

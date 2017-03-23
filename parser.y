@@ -1,5 +1,7 @@
 %{
 	#include <stdio.h>
+	#include <iostream>
+	using namespace std;
 	int yylex(void);
 	void yyerror (char const *s) {
 	 	fprintf (stderr, "%s\n", s);
@@ -46,8 +48,8 @@ stmt
 
 
 loop
-	: LOOP IDENTIFIER ':' BEG stmt_list END
-	| LOOP ':' BEG stmt_list END
+	: LOOP IDENTIFIER ':' BEG stmt_list END {printf("Found loop\n");}
+	| LOOP ':' BEG stmt_list END	{printf("Found loop without identifier\n");}
 
 
 mif
@@ -74,6 +76,7 @@ expression
 
 
 int main(){
-	return yyparse();
+	cout << "Parser Version 0.0.0.0001" << endl;
+	yyparse();
 	printf("Hello World");
 }

@@ -9,7 +9,7 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
 %{
 #include <stdio.h>
-#include "parser.h"	
+#include "parser.hpp"	
 static void comment();
 %}
 
@@ -40,6 +40,8 @@ and			{printf("Keyword: and\n");return(AND);}
 or 			{printf("Keyword: or\n");return(OR);}
 true		{printf("Keyword: true\n");return(TRUE);}
 false		{printf("Keyword: false\n");return(FALSE);}
+break		{printf("Keyword: break\n");return(BREAK);}
+continue	{printf("Keyword: continue\n");return(CONT);}
 
 {ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 "("			{printf("Left Parenthesis (\n");return('(');}

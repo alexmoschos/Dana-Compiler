@@ -1,24 +1,16 @@
 begin
-	a := 1 + 2*3 / 4*3
-	# this is a comment
-	if 1: 
+
+	loop arxidi:
 	begin
-		hello := 3
+		skip
+		if 1:
+		begin 
+			skip 
+		end
 	end
-	else:
+	loop:
 	begin
-		ls := 42
+		skip
 	end
-	(* this should be a multiline comment
-
-
-
-		*)
-	if 1:
-	begin 
-		hello := 5 
-	end
-
-
 	
 end
