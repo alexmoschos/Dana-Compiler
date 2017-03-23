@@ -22,6 +22,10 @@ begin
 	end
 	helloworld: 42, 15, "hello world"
 	return : 42 + 17
-	exit 
+	exit
+	if 1:
+	begin
+		skip
+	end 
 	
 end

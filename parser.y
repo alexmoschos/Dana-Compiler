@@ -24,6 +24,7 @@
 %precedence UNARYPL 
 %precedence UNARYMINUS
 %precedence BANGBANG
+%precedence ff
 
 
 %%
@@ -129,8 +130,8 @@ mif
 	;
 
 condition
-	: expression LARGER expression
-	| expression SMALLER expression
+	: expression LARGER expression 
+	| expression SMALLER expression 
 	| expression LARGEREQ expression
 	| expression SMALLEREQ expression
 	| expression EQ expression
@@ -141,6 +142,7 @@ condition
 	| condition OR condition
 	| NOT condition
 	| '('condition ')'
+	| expression 	{printf("This fucking rule\n");}
 	;
 
 eliftstmt
