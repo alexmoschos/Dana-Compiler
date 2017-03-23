@@ -1091,7 +1091,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
 #line 81 "danalexer.l"
-; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
+; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 	YY_BREAK
 
 case YY_STATE_EOF(INITIAL):

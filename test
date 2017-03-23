@@ -1,16 +1,8 @@
 begin
+	if true and false or true and not false:
+	begin 
+		a := +5 - (-5)
+	end
 
-	loop arxidi:
-	begin
-		skip
-		if 1:
-		begin 
-			skip 
-		end
-	end
-	loop:
-	begin
-		skip
-	end
 	
 end

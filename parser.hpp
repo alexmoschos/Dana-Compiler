@@ -80,7 +80,9 @@ extern int yydebug;
     TRUE = 290,
     FALSE = 291,
     BREAK = 292,
-    CONT = 293
+    CONT = 293,
+    UNARYPL = 294,
+    UNARYMINUS = 295
   };
 #endif
 

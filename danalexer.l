@@ -78,7 +78,7 @@ continue	{printf("Keyword: continue\n");return(CONT);}
   [^(*\n]+       	; 
   [(]            	; 
   "\n"             	; {nl++;}
-  <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return 0;}
+  <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 }
 
  <<EOF>> 		{printf("Read %d lines\n",nl);exit(0);}

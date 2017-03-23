@@ -14,8 +14,15 @@
 %token ADD MUL DIV SUB EQ DIFF LARGER SMALLER
 %token LARGEREQ SMALLEREQ COLON ASSIGNMENT CONST
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT
+
+%precedence UNARYPL 
+%precedence UNARYMINUS
 %left '+' '-'
 %left '*' '/' 
+%nonassoc '<' '>'
+%nonassoc NOT
+%left AND
+%left OR
 
 %%
 body
@@ -53,9 +60,20 @@ loop
 
 
 mif
-	: IF expression ':' BEG stmt_list END ELSE ':' BEG stmt_list END	{printf("Found matched if\n");}
+	: IF condition ':' BEG stmt_list END ELSE ':' BEG stmt_list END	{printf("Found matched if\n");}
 	| IF expression ':' BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
-	| IF expression ':' BEG stmt_list END	{printf("Found unmatched if\n");}
+	| IF condition ':' BEG stmt_list END	{printf("Found unmatched if\n");}
+
+
+condition
+	: expression '>' expression
+	| expression '<' expression
+	| TRUE
+	| FALSE
+	| condition AND condition
+	| condition OR condition
+	| NOT condition
+
 
 eliftstmt
 	: ELSE ':' BEG stmt_list END
@@ -66,6 +84,8 @@ expression
 	| expression '-' expression	{printf("subtraction\n");}
 	| expression '*' expression	{printf("multiplication\n");}
 	| expression '/' expression	{printf("division \n");}
+	| '+' expression %prec UNARYPL	{printf("unary plus\n");}
+	| '-' expression %prec UNARYMINUS	{printf("unary minus\n");}
 	| IDENTIFIER 	{printf("expression with identifier\n");}
 	| STRINGLITERAL	{printf("String literal\n");}
 	| CONST 		{printf("Const\n");}
