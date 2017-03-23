@@ -11,6 +11,7 @@
 %token LOOP AS SKIP DECL DEF BEG END VAR IS
 %token ADD MUL DIV SUB EQ DIFF LARGER SMALLER
 %token LARGEREQ SMALLEREQ COLON ASSIGNMENT CONST
+%token AND NOT OR ELIF TRUE FALSE BREAK CONT
 %left '+' '-'
 %left '*' '/' 
 
@@ -37,15 +38,25 @@ type
 
 
 stmt
-	: SKIP
-	| mif 
+	: SKIP 
+	| mif
+	| loop
 	| lval ASSIGNMENT expression	{printf("Found assignment\n");}
 	| VAR lval IS type {printf("Found type decl\n");}
 
 
+loop
+	: LOOP IDENTIFIER ':' BEG stmt_list END
+
 
 mif
 	: IF expression ':' BEG stmt_list END ELSE ':' BEG stmt_list END	{printf("Found matched if\n");}
+	| IF expression ':' BEG stmt_list END ELIF expression ':' BEG stmt_list END eliftstmt
+	| IF expression ':' BEG stmt_list END	{printf("Found unmatched if\n");}
+
+eliftstmt
+	: ELSE ':' BEG stmt_list END
+	| ELIF expression ':' BEG stmt_list END eliftstmt
 
 expression
 	: expression '+' expression {printf("addition\n");}

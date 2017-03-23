@@ -1,7 +1,7 @@
 %x COMMENT
 
 	int nl = 1;
-	int comment_nesting = 0;  /* Line 4 */
+	int comment_nesting = 0;  
 
 
 ID [a-zA-Z_][a-zA-Z0-9_]*
@@ -23,6 +23,7 @@ static void comment();
 
 if			{printf("Keyword: if\n");return(IF);}
 else			{printf("Keyword: else\n");return(ELSE);}
+elif			{printf("Keyword: elif\n");return(ELIF);}
 loop			{printf("Keyword: loop\n");return(LOOP);}
 int			{printf("Keyword: int\n");return(INT);}
 byte			{printf("Keyword: byte\n");return(BYTE);}
@@ -34,6 +35,11 @@ end			{printf("Keyword: end\n");return(END);}
 def			{printf("Keyword: def\n");return(DEF);}
 is			{printf("Keyword: is\n");return(IS);}
 var			{printf("Keyword: var\n");return(VAR);}
+not			{printf("Keyword: not\n");return(NOT);}
+and			{printf("Keyword: and\n");return(AND);}
+or 			{printf("Keyword: or\n");return(OR);}
+true		{printf("Keyword: true\n");return(TRUE);}
+false		{printf("Keyword: false\n");return(FALSE);}
 
 {ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 "("			{printf("Left Parenthesis (\n");return('(');}
@@ -49,6 +55,7 @@ var			{printf("Keyword: var\n");return(VAR);}
 ":="			{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
 "=="			{printf("Equality operator ==\n");return(EQ);}
 "!"			{printf("Bang !\n");return('!');}
+'x25'			{printf("Mod Operator!\n");return('%');}
 
 "<"			{printf("Less than operator <\n");return(SMALLER);}
 ">"			{printf("Greater than operator >\n");return(LARGER);}

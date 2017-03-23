@@ -72,7 +72,15 @@ extern int yydebug;
     SMALLEREQ = 282,
     COLON = 283,
     ASSIGNMENT = 284,
-    CONST = 285
+    CONST = 285,
+    AND = 286,
+    NOT = 287,
+    OR = 288,
+    ELIF = 289,
+    TRUE = 290,
+    FALSE = 291,
+    BREAK = 292,
+    CONT = 293
   };
 #endif
 
