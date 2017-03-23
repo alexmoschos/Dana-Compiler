@@ -1,8 +1,8 @@
 def solve
 begin
-	def hanoi: rings as int, source as byte [12]
+	def hanoi: rings as int, source target aux as byte []
 	begin
-		def move: source as byte [11]
+		def move: source as byte []
 		begin
 			writeString: "Moving From"
 			writeString: source
@@ -19,6 +19,6 @@ begin
 	end
 	var numberOfRings is int
 	writeString: "Rings: "
-	numberOfRings := readInteger
+	numberOfRings := readInteger()
 	hanoi: numberOfRings, "left","right","middle"
 end

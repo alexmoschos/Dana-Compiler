@@ -45,6 +45,7 @@ break		{printf("Keyword: break\n");return(BREAK);}
 continue	{printf("Keyword: continue\n");return(CONT);}
 exit		{printf("Keyword: exit\n");return(EXIT);}
 return		{printf("Keyword: return\n");return(RETURN);}
+ref 		{printf("Keyword: ref\n");return(REF);}
 
 {ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 "("			{printf("Left Parenthesis (\n");return('(');}

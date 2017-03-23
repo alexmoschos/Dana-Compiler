@@ -11,7 +11,7 @@
 
 %token IDENTIFIER INT BYTE IF ELSE STRINGLITERAL
 %token LOOP AS SKIP DECL DEF BEG END VAR IS
-%token EQ DIFF LARGER SMALLER RETURN EXIT
+%token EQ DIFF LARGER SMALLER RETURN EXIT REF
 %token LARGEREQ SMALLEREQ ASSIGNMENT CONST
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT
 
@@ -46,13 +46,21 @@ opt
 	;
 
 optparam
-	: IDENTIFIER AS type
-	| IDENTIFIER AS type ',' optparam
+	: idlist AS ftype
+	| idlist AS ftype ',' optparam
 	;
 
+ftype
+	: type
+	| REF INT
+	| REF BYTE
+	| INT '['']' bp
+	| BYTE '['']' bp
 
-
-
+bp
+	: %empty
+	| '['CONST']'
+	;
 stmt_list
 	: stmt
 	| stmt_list stmt
@@ -97,6 +105,12 @@ stmt
 	| fdecl
 	| EXIT
 	| RETURN ':' expression
+	| fcall
+	;
+
+fcall
+	: IDENTIFIER '(' param ')'
+	| IDENTIFIER '(' ')'
 	;
 
 idlist
@@ -149,6 +163,7 @@ expression
 	| STRINGLITERAL	{printf("String literal\n");}
 	| CONST 		{printf("Const\n");}
 	| '(' expression ')'
+	| fcall
 	;
 
 %%
