@@ -17,6 +17,7 @@ static void comment();
 %%
 
 \n 			{nl++;}
+\r 				;
 [ \t]			;
 
 [0-9][0-9]* 		{printf("Integer %s\n",yytext);return(CONST);}
@@ -89,7 +90,7 @@ return		{printf("Keyword: return\n");return(RETURN);}
 }
 
  <<EOF>> 		{printf("Read %d lines\n",nl);exit(0);}
-.			{printf("Unexpected Character %s\n",yytext);exit(-1);}
+.			{printf("Unexpected Character %d\n",yytext[0]);exit(-1);}
 
 
 

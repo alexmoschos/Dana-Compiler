@@ -36,8 +36,9 @@ fdecl
 	;
 
 header
-	:IDENTIFIER opt
-	|IDENTIFIER
+	: IDENTIFIER opt
+	| IDENTIFIER ':' optparam
+	| IDENTIFIER
 	;
 opt
 	:IS type ':' optparam 
@@ -88,7 +89,7 @@ stmt
 	| fdef
 	| loop
 	| lval ASSIGNMENT expression	{printf("Found assignment\n");}
-	| VAR lval IS type {printf("Found type decl\n");}
+	| VAR idlist IS type {printf("Found type decl\n");}
 	| BREAK
 	| BREAK ':' IDENTIFIER
 	| CONT
@@ -98,6 +99,10 @@ stmt
 	| RETURN ':' expression
 	;
 
+idlist
+	: IDENTIFIER
+	| IDENTIFIER idlist
+	;
 loop
 	: LOOP IDENTIFIER ':' BEG stmt_list END {printf("Found loop\n");}
 	| LOOP ':' BEG stmt_list END	{printf("Found loop without identifier\n");}
