@@ -2,10 +2,12 @@
 	#include <stdio.h>
 	#include <iostream>
 	using namespace std;
+	extern int nl;
 	int yylex(void);
 	void yyerror (char const *s) {
-	 	fprintf (stderr, "%s\n", s);
+	 	fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
+	
 %}
 %expect 1
 

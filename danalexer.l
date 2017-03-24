@@ -10,7 +10,6 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 %{
 #include <stdio.h>
 #include "parser.hpp"	
-static void comment();
 %}
 
 
