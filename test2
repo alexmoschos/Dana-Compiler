@@ -20,5 +20,7 @@ begin
 	var numberOfRings is int
 	writeString: "Rings: "
 	numberOfRings := readInteger()
+	hello there
 	hanoi: numberOfRings, "left","right","middle"
+
 end

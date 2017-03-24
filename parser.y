@@ -1,21 +1,28 @@
 %{
+	#define YYSTYPE astNode*
 	#include <stdio.h>
 	#include <iostream>
+	#include <stdlib.h>
+	#include "ast.hpp"
+	#include <string>
 	using namespace std;
 	extern int nl;
 	int yylex(void);
+	
 	void yyerror (char const *s) {
-	 	fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
+	 	fprintf (stderr, "%s on line %d\n",s, nl);
 	}
 	
 %}
 %expect 1
+
 
 %token IDENTIFIER INT BYTE IF ELSE STRINGLITERAL
 %token LOOP AS SKIP DECL DEF BEG END VAR IS
 %token EQ DIFF LARGER SMALLER RETURN EXIT REF
 %token LARGEREQ SMALLEREQ ASSIGNMENT CONST
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT
+
 
 %left OR
 %left AND
@@ -58,13 +65,15 @@ ftype
 	| REF BYTE
 	| INT '['']' bp
 	| BYTE '['']' bp
-	| INT
-	| BYTE
+	| INT bp
+	| BYTE bp
 
 bp
 	: %empty
 	| '['CONST']'
 	;
+
+
 stmt_list
 	: stmt
 	| stmt_list stmt
@@ -95,7 +104,7 @@ param
 
 stmt
 	: SKIP 
-	| pc
+	| pc 		{printf("HERE BOY\n");}
 	| mif
 	| fdef
 	| loop
@@ -153,18 +162,18 @@ eliftstmt
 	;
 
 expression
-	: expression '+' expression {printf("addition\n");}
-	| expression '-' expression	{printf("subtraction\n");}
-	| expression '*' expression	{printf("multiplication\n");}
-	| expression '/' expression	{printf("division \n");}
+	: expression '+' expression 
+	| expression '-' expression	
+	| expression '*' expression	
+	| expression '/' expression	
 	| expression '&' expression {printf("Bitwise &\n");}
 	| expression '|' expression {printf("Bitwise OR\n");}
-	| '+' expression %prec UNARYPL	{printf("unary plus\n");}
-	| '-' expression %prec UNARYMINUS	{printf("unary minus\n");}
+	| '+' expression %prec UNARYPL	
+	| '-' expression %prec UNARYMINUS	
 	| '!' expression %prec BANGBANG	{printf("Bang !\n");/*pew pew!*/}
 	| IDENTIFIER 	{printf("expression with identifier\n");}
 	| STRINGLITERAL	{printf("String literal\n");}
-	| CONST 		{printf("Const\n");}
+	| CONST 		{}
 	| '(' expression ')'
 	| fcall
 	;

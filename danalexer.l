@@ -8,8 +8,11 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
 
 %{
+#define YYSTYPE astNode*
 #include <stdio.h>
+#include "ast.hpp"
 #include "parser.hpp"	
+
 %}
 
 
@@ -19,7 +22,7 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 \r 				;
 [ \t]			;
 
-[0-9][0-9]* 		{printf("Integer %s\n",yytext);return(CONST);}
+[0-9][0-9]* 		{yylval = new astNode(AST_num,NULL,NULL,"",atoi(yytext));return(CONST);}
 
 if			{printf("Keyword: if\n");return(IF);}
 else			{printf("Keyword: else\n");return(ELSE);}
@@ -75,7 +78,7 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 
 \"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
 
-"#".*            	{printf("comment found\n");}
+"#".*\n           	{printf("comment found\n");nl++;}
 
 "(*"             	{ ++comment_nesting; BEGIN(COMMENT); }
 

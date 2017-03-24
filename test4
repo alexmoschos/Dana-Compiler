@@ -1,0 +1,4 @@
+def main 
+begin
+	i := 1 + 2234 * 2000 - -1
+end
