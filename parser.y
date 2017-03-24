@@ -24,7 +24,7 @@
 %precedence UNARYPL 
 %precedence UNARYMINUS
 %precedence BANGBANG
-%precedence ff
+
 
 
 %%
@@ -42,8 +42,8 @@ header
 	| IDENTIFIER
 	;
 opt
-	:IS type ':' optparam 
-	|IS type
+	: IS type ':' optparam 
+	| IS type
 	;
 
 optparam

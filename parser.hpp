@@ -81,8 +81,7 @@ extern int yydebug;
     CONT = 291,
     UNARYPL = 292,
     UNARYMINUS = 293,
-    BANGBANG = 294,
-    ff = 295
+    BANGBANG = 294
   };
 #endif
 
