@@ -52,11 +52,12 @@ optparam
 	;
 
 ftype
-	: type
-	| REF INT
+	: REF INT
 	| REF BYTE
 	| INT '['']' bp
 	| BYTE '['']' bp
+	| INT
+	| BYTE
 
 bp
 	: %empty
@@ -74,10 +75,9 @@ lval
 	;
 
 type
-	:INT '[' CONST ']'	
-	| BYTE '[' CONST ']'
-	| INT
-	| BYTE		
+	: INT 
+	| BYTE
+	| type '[' CONST ']'		
 	;
 
 

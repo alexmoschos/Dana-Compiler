@@ -50,8 +50,9 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 {ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
 "("			{printf("Left Parenthesis (\n");return('(');}
 ")"			{printf("Right Parenthesis )\n");return(')');}
-"{"			{printf("Left Curly Brace {\n");return('{');}
-"}"			{printf("Right Curly Brace }\n");return('}');}
+"["			{printf("Left Brace [\n");return('[');}
+"]"			{printf("Right Brace ]\n");return(']');}
+
 "."			{printf("Dot .\n");return('.');}
 ","			{printf("Comma ,\n");return(',');}
 "+"			{printf("Plus +\n");return('+');}
@@ -61,7 +62,7 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 ":="			{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
 "=="			{printf("Equality operator ==\n");return(EQ);}
 "!"			{printf("Bang !\n");return('!');}
-'x25'			{printf("Mod Operator!\n");return('%');}
+[%]			{printf("Mod Operator!\n");return('%');}
 "&" 		{printf("Ampersand &\n");return('&');}
 "|"			{printf("Kagkelo |\n");return('|');}
 
@@ -71,8 +72,7 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 "<>"		{printf("Inequality <>\n");return(DIFF);}
 ">"			{printf("Greater than operator >\n");return(LARGER);}
 ":"			{printf("Colon :\n");return(':');}
-"["			{printf("Left [\n");return('[');}
-"]"			{printf("Right ]\n");return(']');}
+
 
 \"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
 

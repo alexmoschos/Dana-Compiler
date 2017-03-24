@@ -1,4 +1,4 @@
-def main is int[10] : a as int
+def main is int[10][20][30][40][50][60][70] : a as int[42][17]
 begin
 	skip
 	if 3 < 5:
