@@ -7,7 +7,7 @@
 	 	fprintf (stderr, "%s\n", s);
 	}
 %}
-
+%expect 1
 
 %token IDENTIFIER INT BYTE IF ELSE STRINGLITERAL
 %token LOOP AS SKIP DECL DEF BEG END VAR IS
