@@ -37,14 +37,15 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 				int indent = white_count(yytext);
                	int counter = process_indent(yytext) ;
                	yynew = strdup(yytext);
-               	while(counter > 0) {
-               		unput('}');
-               		counter--;
-               	}
                	while ((last >= 0) && (yynew[last] != ' ')) {
                		unput(yynew[last]);
                 	last-- ;
                 }
+               	while(counter > 0) {
+               		unput('}');
+               		counter--;
+               	}
+
               }
 
 [0-9][0-9]* 		{printf("Integer %s\n",yytext);return(CONST);}
@@ -123,6 +124,7 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 						unput('}');
 						level--;
 					}
+					printf("Read %d lines\n",nl);
 					exit(0);
 				}
 .			{printf("Unexpected Character %d\n",yytext[0]);exit(-1);/*"*/}
@@ -140,9 +142,9 @@ unsigned int white_count(char* line) {
 }
 
 int process_indent(char* line) {
-	//printf("////////\n");
-	//puts(line);
-	//printf("////////\n");
+	printf("////////\n");
+	puts(line);
+	printf("////////\n");
 
 	
 	indent = white_count(line) ;
@@ -166,7 +168,7 @@ int process_indent(char* line) {
 	//printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
   	while (indent <= indent_stack[level]) {
     	--level ;
-    	//printf("}\n") ;
+    	printf("}\n") ;
    		i++;
     	//unput('}');
     	if(level == -1) break;

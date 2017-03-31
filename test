@@ -1,31 +1,12 @@
-def main is int[10][20][30][40][50][60][70] : a as int[42][17]
-begin
-	skip
-	if 3 < 5:
-	begin
-		skip
-	end
-	loop a:
-	begin
-		if 1 < 2:
-		begin 
-			break : a
-			continue: a
-		end
-	end
-	def hello is byte: a as int, b as byte
-	begin
-		def world is byte: a as byte
-		begin
-			decl helloworld is byte[14]: a as byte[12]
-		end
-	end
-	helloworld: 42, 15, "hello world"
-	return : 42 + 17
-	exit
-	if 1:
-	begin
-		skip
-	end 
+def main is int[10][20][30][40][50][60][70] : a as int[1][17]
+ skip
+ if 3 < 5:
+  loop a:
+   if 1 < 2:
+     break : a
+     continue: a
+ helloworld: 42, 15, "hello world"
+ return : 42 + 17
+ exit
+ if 1: skip 
 	
-end

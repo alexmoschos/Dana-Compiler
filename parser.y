@@ -56,14 +56,16 @@ optparam
 ftype
 	: REF INT
 	| REF BYTE
-	| INT '['']' bp
-	| BYTE '['']' bp
+	| bp
 	| INT
 	| BYTE
 
 bp
-	: %empty
-	| '['CONST']'
+	: INT '['']'
+	| BYTE '['']'
+	| INT '[' CONST ']' 
+	| BYTE '[' CONST ']'
+	| bp '['CONST']'
 	;
 stmt_list
 	: stmt
@@ -175,5 +177,6 @@ expression
 int main(){
 	cout << "Parser Version 0.0.0.0001" << endl;
 	yyparse();
+	//while(yylex());
 	printf("Hello World");
 }
