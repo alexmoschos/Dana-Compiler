@@ -12,10 +12,10 @@
 %expect 1
 
 %token IDENTIFIER INT BYTE IF ELSE STRINGLITERAL
-%token LOOP AS SKIP DECL DEF BEG END VAR IS
+%token LOOP AS SKIP DECL DEF  END VAR IS
 %token EQ DIFF LARGER SMALLER RETURN EXIT REF
 %token LARGEREQ SMALLEREQ ASSIGNMENT CONST
-%token AND NOT OR ELIF TRUE FALSE BREAK CONT
+%token AND NOT OR ELIF TRUE FALSE BREAK CONT BEG
 
 %left OR
 %left AND
@@ -31,7 +31,7 @@
 
 %%
 fdef
-	:DEF header BEG stmt_list END
+	:DEF header  stmt_list END
 	;
 
 fdecl
@@ -121,14 +121,14 @@ idlist
 	| IDENTIFIER idlist
 	;
 loop
-	: LOOP IDENTIFIER ':' BEG stmt_list END {printf("Found loop\n");}
-	| LOOP ':' BEG stmt_list END	{printf("Found loop without identifier\n");}
+	: LOOP IDENTIFIER ':'  stmt_list END {printf("Found loop\n");}
+	| LOOP ':'  stmt_list END	{printf("Found loop without identifier\n");}
 	;
 
 mif
-	: IF condition ':' BEG stmt_list END ELSE ':' BEG stmt_list END	{printf("Found matched if\n");}
-	| IF condition ':' BEG stmt_list END ELIF condition ':' BEG stmt_list END eliftstmt
-	| IF condition ':' BEG stmt_list END	{printf("Found unmatched if\n");}
+	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{printf("Found matched if\n");}
+	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt
+	| IF condition ':'  stmt_list END	{printf("Found unmatched if\n");}
 	;
 
 condition
@@ -148,8 +148,8 @@ condition
 	;
 
 eliftstmt
-	: ELSE ':' BEG stmt_list END
-	| ELIF condition ':' BEG stmt_list END eliftstmt
+	: ELSE ':'  stmt_list END
+	| ELIF condition ':'  stmt_list END eliftstmt
 	;
 
 expression
@@ -171,9 +171,10 @@ expression
 
 %%
 
-
+/*
 int main(){
 	cout << "Parser Version 0.0.0.0001" << endl;
 	yyparse();
 	printf("Hello World");
 }
+*/
