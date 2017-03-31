@@ -10,7 +10,7 @@
 	unsigned int first = 1 ;
 	unsigned int indent = 0;
 
-	void process_indent(char* line) ;
+	int process_indent(char* line) ;
 	unsigned int white_count(char* line);
 	int flag = 0;
 
@@ -33,7 +33,11 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 ^[ ]*[^ \n]+  {
 				int last = yyleng - 1;
 				int indent = white_count(yytext);
-               	process_indent(yytext) ;
+               	int counter = process_indent(yytext) ;
+               	while(counter > 0) {
+               		//unput('}');
+               		counter--;
+               	}
                	while ((last >= 0) && (yytext[last] != ' ')) {
                		unput(yytext[last]);
                 	last-- ;
@@ -42,18 +46,18 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
 [0-9][0-9]* 		{printf("Integer %s\n",yytext);return(CONST);}
 
-if			{indent_stack[++level] = indent;flag = 0;printf("Keyword: if\n");return(IF);}
-else			{indent_stack[++level] = indent;flag = 0;printf("Keyword: else\n");return(ELSE);}
-elif			{indent_stack[++level] = indent;flag = 0;printf("Keyword: elif\n");return(ELIF);}
-loop			{indent_stack[++level] = indent;flag = 0;printf("Keyword: loop\n");return(LOOP);}
+if			{indent_stack[++level] = indent;printf("Keyword: if\n");return(IF);}
+else			{indent_stack[++level] = indent;printf("Keyword: else\n");return(ELSE);}
+elif			{indent_stack[++level] = indent;printf("Keyword: elif\n");return(ELIF);}
+loop			{indent_stack[++level] = indent;printf("Keyword: loop\n");return(LOOP);}
 int			{printf("Keyword: int\n");return(INT);}
 byte			{printf("Keyword: byte\n");return(BYTE);}
 as			{printf("Keyword: as\n");return(AS);}
 skip			{printf("Keyword: skip\n");return(SKIP);}
 decl			{printf("Keyword: decl\n");return(DECL);}
 begin			{printf("Keyword: begin\n");return(BEG);}
-end			{printf("Keyword: end\n");return(END);}
-def			{indent_stack[++level] = indent;flag = 0;printf("Found def with indent %d",indent);printf("Keyword: def\n");return(DEF);}
+"}"			{printf("Keyword: end\n");return(END);}
+def			{indent_stack[++level] = indent;printf("Found def with indent %d\n",indent);printf("Keyword: def\n");return(DEF);}
 is			{printf("Keyword: is\n");return(IS);}
 var			{printf("Keyword: var\n");return(VAR);}
 not			{printf("Keyword: not\n");return(NOT);}
@@ -125,14 +129,14 @@ unsigned int white_count(char* line) {
   return count ;
 }
 
-void process_indent(char* line) {
-	if(flag==0){
-		flag = 1;
-		return;
-	}
-	printf("%d flag\n",flag);
+int process_indent(char* line) {
+	//printf("////////\n");
+	//puts(line);
+	//printf("////////\n");
+
+	
 	indent = white_count(line) ;
-	printf("Indent = %d\n",indent);
+	//printf("Indent = %d\n",indent);
 
 /*
   if (indent == indent_stack[level]) {
@@ -147,14 +151,19 @@ void process_indent(char* line) {
     return ;
   }
 */
-	printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
+	if (indent == 0) return 0;
+	int i = 0;
+	//printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
   	while (indent <= indent_stack[level]) {
     	--level ;
     	printf("}\n") ;
+   		i++;
+    	//unput('}');
     	if(level == -1) break;
 	}
-
+	return i;
 }
+
 int main(int argc, char const *argv[])
 {
 	//indent_stack[0]=0;
