@@ -1,7 +1,4 @@
- def h
-  if h
-   if j
-    if k
-     if ll
-    a
-  a
+def h
+  if h:
+    a:=1
+  aa:=0

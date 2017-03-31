@@ -171,10 +171,9 @@ expression
 
 %%
 
-/*
+
 int main(){
 	cout << "Parser Version 0.0.0.0001" << endl;
 	yyparse();
 	printf("Hello World");
 }
-*/

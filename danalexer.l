@@ -21,6 +21,7 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 %{
 #include <stdio.h>
 #include "parser.hpp"	
+#include <string.h>
 %}
 
 
@@ -31,15 +32,17 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 [ \t]			;
 ^[ ]*\n       {/* Ignore blank lines. */}
 ^[ ]*[^ \n]+  {
+				char* yynew;
 				int last = yyleng - 1;
 				int indent = white_count(yytext);
                	int counter = process_indent(yytext) ;
+               	yynew = strdup(yytext);
                	while(counter > 0) {
-               		//unput('}');
+               		unput('}');
                		counter--;
                	}
-               	while ((last >= 0) && (yytext[last] != ' ')) {
-               		unput(yytext[last]);
+               	while ((last >= 0) && (yynew[last] != ' ')) {
+               		unput(yynew[last]);
                 	last-- ;
                 }
               }
@@ -114,7 +117,14 @@ ref 		{printf("Keyword: ref\n");return(REF);}
   <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 }
 
-
+<<EOF>> 		{
+					while(level>0){
+						//printf("}\n");
+						unput('}');
+						level--;
+					}
+					exit(0);
+				}
 .			{printf("Unexpected Character %d\n",yytext[0]);exit(-1);/*"*/}
 
 
@@ -156,23 +166,25 @@ int process_indent(char* line) {
 	//printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
   	while (indent <= indent_stack[level]) {
     	--level ;
-    	printf("}\n") ;
+    	//printf("}\n") ;
    		i++;
     	//unput('}');
     	if(level == -1) break;
 	}
 	return i;
 }
-
+/*
 int main(int argc, char const *argv[])
 {
 	//indent_stack[0]=0;
 	int token;
 	while(yylex());
 	printf("Level is %d\n",level);
+	/*
 	while(level>0){
 		printf("}\n");
 		level--;
 	}
+	
 	return 0;
-}
+}*/

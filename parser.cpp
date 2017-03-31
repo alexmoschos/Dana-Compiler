@@ -1746,10 +1746,9 @@ yyreturn:
 #line 172 "parser.y" /* yacc.c:1906  */
 
 
-/*
+
 int main(){
 	cout << "Parser Version 0.0.0.0001" << endl;
 	yyparse();
 	printf("Hello World");
 }
-*/
