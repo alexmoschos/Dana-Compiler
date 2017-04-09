@@ -952,25 +952,25 @@ case 5:
 YY_RULE_SETUP
 #line 35 "danalexer.l"
 {
-				char* yynew;
-				int last = yyleng - 1;
-				int indent = white_count(yytext);
-               	int counter = process_indent(yytext) ;
-               	yynew = strdup(yytext);
-               	while ((last >= 0) && (yynew[last] != ' ')) {
-               		unput(yynew[last]);
-                	last-- ;
+                    char* yynew;
+                    int last = yyleng - 1;
+                    int indent = white_count(yytext);
+                    int counter = process_indent(yytext) ;
+                    yynew = strdup(yytext);
+                    while ((last >= 0) && (yynew[last] != ' ')) {
+                	       unput(yynew[last]);
+                           last-- ;
+                    }
+                    if(counter !=0)
+                        howmany = counter;
+                    //printf("howmanyother %d \n",howmany);
+
+                    while(counter > 0) {
+                	       unput('}');
+                	       counter--;
+                    }
+
                 }
-				if(counter !=0)
-					howmany = counter;
-				//printf("howmanyother %d \n",howmany);
-
-               	while(counter > 0) {
-               		unput('}');
-               		counter--;
-               	}
-
-              }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -1287,28 +1287,32 @@ case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
 #line 144 "danalexer.l"
-{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
+{ //"{
+                            printf("String Literal %s \n",yytext);
+						    yylval.idstring = strdup(yytext);
+						    return(STRINGLITERAL);
+					    }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 145 "danalexer.l"
+#line 149 "danalexer.l"
 {
-					unput(0);
-					howmany=level;
-					//printf("the level is %d\n",level);
-					while(level>0){
-						unput('}');
-						level--;
-					}
-					//printf("howmanyeof %d \n",howmany);
+                        unput(0);
+                        howmany=level;
+                        //printf("the level is %d\n",level);
+                        while(level>0){
+                            unput('}');
+                            level--;
+                        }
+                        //printf("howmanyeof %d \n",howmany);
 
-					printf("Read %d lines\n",nl);
+                        printf("Read %d lines\n",nl);
 				}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 158 "danalexer.l"
+#line 162 "danalexer.l"
 {
-				if(yytext[0]==0){
+				if(yytext[0]==0) {
 					return 0;
 				}
 				printf("Unexpected Character %d\n",yytext[0]);
@@ -1317,10 +1321,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 170 "danalexer.l"
+#line 174 "danalexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1324 "lexer.cpp"
+#line 1328 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2322,7 +2326,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 170 "danalexer.l"
+#line 174 "danalexer.l"
 
 
 unsigned int white_count(char* line) {

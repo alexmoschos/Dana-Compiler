@@ -16,7 +16,6 @@
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
-	ASTCond* cond;
 	int const_val;
 	char* idstring;
 }
@@ -31,7 +30,7 @@
 %token<idstring> IDENTIFIER
 %type<func> fdef
 %type<statement> stmt_list stmt
-%type<cond> condition
+%type<expr> expression condition
 %left OR
 %left AND
 %nonassoc NOT
@@ -152,20 +151,21 @@ mif
 	;
 
 condition
-	: expression LARGER expression
-	| expression SMALLER expression
-	| expression LARGEREQ expression
-	| expression SMALLEREQ expression
-	| expression EQ expression
-	| expression DIFF expression
-	| TRUE
-	| FALSE
-	| condition AND condition
-	| condition OR condition
-	| NOT condition
-	| '('condition ')'
-	| expression 	{}
+	: expression LARGER expression     {$$=new ASTExpr('>',"",0,$1,$3);}
+	| expression SMALLER expression    {$$=new ASTExpr('<',"",0,$1,$3);}
+	| expression LARGEREQ expression   {$$=new ASTExpr('l',"",0,$1,$3);}
+	| expression SMALLEREQ expression  {$$=new ASTExpr('s',"",0,$1,$3);}
+	| expression EQ expression         {$$=new ASTExpr('e',"",0,$1,$3);}
+	| expression DIFF expression       {$$=new ASTExpr('d',"",0,$1,$3);}
+	| TRUE                             {$$=new ASTExpr('b',"",1,NULL,NULL);}
+	| FALSE                            {$$=new ASTExpr('b',"",0,NULL,NULL);}
+	| condition AND condition          {$$=new ASTExpr('a',"",0,$1,$3);}
+	| condition OR condition           {$$=new ASTExpr('o',"",0,$1,$3);}
+	| NOT condition                    {$$=new ASTExpr('n',"",0,NULL,$2);}
+	| '(' condition ')'                {$$ = $2;}
+	| expression 	                   {$$ = $1;}
 	;
+
 
 eliftstmt
 	: ELSE ':'  stmt_list END
@@ -173,19 +173,19 @@ eliftstmt
 	;
 
 expression
-	: expression '+' expression {printf("addition\n");}
-	| expression '-' expression	{printf("subtraction\n");}
-	| expression '*' expression	{printf("multiplication\n");}
-	| expression '/' expression	{printf("division \n");}
-	| expression '&' expression {printf("Bitwise &\n");}
-	| expression '|' expression {printf("Bitwise OR\n");}
-	| '+' expression %prec UNARYPL	{printf("unary plus\n");}
-	| '-' expression %prec UNARYMINUS	{printf("unary minus\n");}
-	| '!' expression %prec BANGBANG	{printf("Bang !\n");/*pew pew!*/}
-	| IDENTIFIER 	{printf("expression with identifier\n");}
-	| STRINGLITERAL	{}
-	| CONST 		{printf("Const %d\n",$1);}
-	| '(' expression ')'
+	: expression '+' expression {$$=new ASTExpr('+',"",0,$1,$3);}
+	| expression '-' expression	{$$=new ASTExpr('-',"",0,$1,$3);}
+	| expression '*' expression	{$$=new ASTExpr('*',"",0,$1,$3);}
+	| expression '/' expression	{$$=new ASTExpr('/',"",0,$1,$3);}
+	| expression '&' expression {$$=new ASTExpr('&',"",0,$1,$3);}
+	| expression '|' expression {$$=new ASTExpr('|',"",0,$1,$3);}
+	| '+' expression %prec UNARYPL	{$$=new ASTExpr('+',"",0,NULL,$2);}
+	| '-' expression %prec UNARYMINUS	{$$=new ASTExpr('-',"",0,NULL,$2);}
+    | '!' expression %prec BANGBANG {$$=new ASTExpr('!',"",0,NULL,$2);/*pew pew!*/}
+	| IDENTIFIER 	{$$=new ASTExpr('+',$1,0,NULL,NULL);}
+	| STRINGLITERAL
+	| CONST 		{$$ = new ASTExpr('c',"",$1,NULL,NULL);}
+	| '(' expression ')' {$$ = $2;}
 	| fcall
 	;
 
@@ -193,7 +193,7 @@ expression
 
 
 int main(){
-	cout << "Parser Version 0.0.0.0001" << endl;
+    cout << "Parser Version 0.0.0.0011" << endl;
 	yyparse();
 	//while(yylex());
 	printf("Hello World");

@@ -163,11 +163,10 @@ union YYSTYPE
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
-	ASTCond* cond;
 	int const_val;
 	char* idstring;
 
-#line 171 "parser.cpp" /* yacc.c:355  */
+#line 170 "parser.cpp" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -184,7 +183,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 188 "parser.cpp" /* yacc.c:358  */
+#line 187 "parser.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -485,14 +484,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    49,    49,    52,    56,    60,    61,    62,    65,    66,
-      70,    71,    75,    76,    77,    78,    79,    82,    83,    84,
-      85,    86,    89,    90,    94,    95,    96,   100,   101,   102,
-     107,   108,   112,   113,   117,   118,   119,   120,   121,   122,
-     123,   124,   125,   126,   127,   128,   129,   130,   131,   135,
-     136,   140,   141,   144,   145,   149,   150,   151,   155,   156,
-     157,   158,   159,   160,   161,   162,   163,   164,   165,   166,
-     167,   171,   172,   176,   177,   178,   179,   180,   181,   182,
+       0,    48,    48,    51,    55,    59,    60,    61,    64,    65,
+      69,    70,    74,    75,    76,    77,    78,    81,    82,    83,
+      84,    85,    88,    89,    93,    94,    95,    99,   100,   101,
+     106,   107,   111,   112,   116,   117,   118,   119,   120,   121,
+     122,   123,   124,   125,   126,   127,   128,   129,   130,   134,
+     135,   139,   140,   143,   144,   148,   149,   150,   154,   155,
+     156,   157,   158,   159,   160,   161,   162,   163,   164,   165,
+     166,   171,   172,   176,   177,   178,   179,   180,   181,   182,
      183,   184,   185,   186,   187,   188,   189
 };
 #endif
@@ -1418,121 +1417,193 @@ yyreduce:
   switch (yyn)
     {
         case 39:
-#line 122 "parser.y" /* yacc.c:1646  */
+#line 121 "parser.y" /* yacc.c:1646  */
     {printf("Found assignment\n");}
-#line 1424 "parser.cpp" /* yacc.c:1646  */
+#line 1423 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 123 "parser.y" /* yacc.c:1646  */
+#line 122 "parser.y" /* yacc.c:1646  */
     {printf("Found type decl\n");}
-#line 1430 "parser.cpp" /* yacc.c:1646  */
+#line 1429 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 144 "parser.y" /* yacc.c:1646  */
+#line 143 "parser.y" /* yacc.c:1646  */
     {printf("Found loop\n");}
-#line 1436 "parser.cpp" /* yacc.c:1646  */
+#line 1435 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 145 "parser.y" /* yacc.c:1646  */
+#line 144 "parser.y" /* yacc.c:1646  */
     {printf("Found loop without identifier\n");}
-#line 1442 "parser.cpp" /* yacc.c:1646  */
+#line 1441 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 149 "parser.y" /* yacc.c:1646  */
+#line 148 "parser.y" /* yacc.c:1646  */
     {}
-#line 1448 "parser.cpp" /* yacc.c:1646  */
+#line 1447 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 151 "parser.y" /* yacc.c:1646  */
+#line 150 "parser.y" /* yacc.c:1646  */
     {}
-#line 1454 "parser.cpp" /* yacc.c:1646  */
+#line 1453 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 154 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('>',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1459 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 155 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('<',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1465 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 156 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('l',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1471 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 157 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('s',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1477 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 62:
+#line 158 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('e',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1483 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 63:
+#line 159 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('d',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1489 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 64:
+#line 160 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('b',"",1,NULL,NULL);}
+#line 1495 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 65:
+#line 161 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('b',"",0,NULL,NULL);}
+#line 1501 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 66:
+#line 162 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('a',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1507 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 67:
+#line 163 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('o',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1513 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 68:
+#line 164 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('n',"",0,NULL,(yyvsp[0].expr));}
+#line 1519 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 69:
+#line 165 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr) = (yyvsp[-1].expr);}
+#line 1525 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 167 "parser.y" /* yacc.c:1646  */
-    {}
-#line 1460 "parser.cpp" /* yacc.c:1646  */
+#line 166 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr) = (yyvsp[0].expr);}
+#line 1531 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 73:
 #line 176 "parser.y" /* yacc.c:1646  */
-    {printf("addition\n");}
-#line 1466 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('+',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1537 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 74:
 #line 177 "parser.y" /* yacc.c:1646  */
-    {printf("subtraction\n");}
-#line 1472 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('-',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1543 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 75:
 #line 178 "parser.y" /* yacc.c:1646  */
-    {printf("multiplication\n");}
-#line 1478 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('*',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1549 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 76:
 #line 179 "parser.y" /* yacc.c:1646  */
-    {printf("division \n");}
-#line 1484 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('/',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1555 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 77:
 #line 180 "parser.y" /* yacc.c:1646  */
-    {printf("Bitwise &\n");}
-#line 1490 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('&',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1561 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 78:
 #line 181 "parser.y" /* yacc.c:1646  */
-    {printf("Bitwise OR\n");}
-#line 1496 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('|',"",0,(yyvsp[-2].expr),(yyvsp[0].expr));}
+#line 1567 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 79:
 #line 182 "parser.y" /* yacc.c:1646  */
-    {printf("unary plus\n");}
-#line 1502 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('+',"",0,NULL,(yyvsp[0].expr));}
+#line 1573 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 80:
 #line 183 "parser.y" /* yacc.c:1646  */
-    {printf("unary minus\n");}
-#line 1508 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('-',"",0,NULL,(yyvsp[0].expr));}
+#line 1579 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 81:
 #line 184 "parser.y" /* yacc.c:1646  */
-    {printf("Bang !\n");/*pew pew!*/}
-#line 1514 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('!',"",0,NULL,(yyvsp[0].expr));/*pew pew!*/}
+#line 1585 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 82:
 #line 185 "parser.y" /* yacc.c:1646  */
-    {printf("expression with identifier\n");}
-#line 1520 "parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 83:
-#line 186 "parser.y" /* yacc.c:1646  */
-    {}
-#line 1526 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr)=new ASTExpr('+',(yyvsp[0].idstring),0,NULL,NULL);}
+#line 1591 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 84:
 #line 187 "parser.y" /* yacc.c:1646  */
-    {printf("Const %d\n",(yyvsp[0].const_val));}
-#line 1532 "parser.cpp" /* yacc.c:1646  */
+    {(yyval.expr) = new ASTExpr('c',"",(yyvsp[0].const_val),NULL,NULL);}
+#line 1597 "parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 85:
+#line 188 "parser.y" /* yacc.c:1646  */
+    {(yyval.expr) = (yyvsp[-1].expr);}
+#line 1603 "parser.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 1536 "parser.cpp" /* yacc.c:1646  */
+#line 1607 "parser.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1765,7 +1836,7 @@ yyreturn:
 
 
 int main(){
-	cout << "Parser Version 0.0.0.0001" << endl;
+    cout << "Parser Version 0.0.0.0011" << endl;
 	yyparse();
 	//while(yylex());
 	printf("Hello World");

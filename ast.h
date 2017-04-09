@@ -2,8 +2,26 @@
 #define ast_h
 #include <string>
 using namespace std;
+enum stmt_type {
+    TSKIP,
+    TPC,
+    TIF,
+    TFDEF,
+    TFDECL,
+    TEXIT,
+    TRET,
+    TFCALL,
+    TCONTM,
+    TCONT,
+    TBREAKM,
+    TBREAK,
+    TDECL,
+    TASSIGN,
+    TLOOP
+};
 class ASTNode{
-    virtual void run();
+    int he;
+    //virtual void run();
 };
 class ASTExpr:ASTNode{
 public:
@@ -12,16 +30,10 @@ public:
         int constant_val;
         ASTExpr* left;
         ASTExpr* right;
-        ASTExpr(char,ASTExpr*,ASTExpr*);
+        ASTExpr(char,string,int,ASTExpr*,ASTExpr*);
 };
 
-class ASTCond:ASTNode{
-public:
-        char op;
-        ASTCond* left;
-        ASTCond* right;
-        ASTCond(char,ASTExpr*,ASTExpr*);
-};
+
 class ASTfdecl:ASTNode{
 
 };

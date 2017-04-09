@@ -32,26 +32,26 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 \r 				;
 [ \t]			;
 ^[ ]*\n       {/* Ignore blank lines. */}
-^[ ]*[^ \n]+  {
-				char* yynew;
-				int last = yyleng - 1;
-				int indent = white_count(yytext);
-               	int counter = process_indent(yytext) ;
-               	yynew = strdup(yytext);
-               	while ((last >= 0) && (yynew[last] != ' ')) {
-               		unput(yynew[last]);
-                	last-- ;
+^[ ]*[^ \n]+    {
+                    char* yynew;
+                    int last = yyleng - 1;
+                    int indent = white_count(yytext);
+                    int counter = process_indent(yytext) ;
+                    yynew = strdup(yytext);
+                    while ((last >= 0) && (yynew[last] != ' ')) {
+                	       unput(yynew[last]);
+                           last-- ;
+                    }
+                    if(counter !=0)
+                        howmany = counter;
+                    //printf("howmanyother %d \n",howmany);
+
+                    while(counter > 0) {
+                	       unput('}');
+                	       counter--;
+                    }
+
                 }
-				if(counter !=0)
-					howmany = counter;
-				//printf("howmanyother %d \n",howmany);
-
-               	while(counter > 0) {
-               		unput('}');
-               		counter--;
-               	}
-
-              }
 
 [0-9][0-9]* 		{
 						printf("Integer %s\n",yytext);
@@ -60,15 +60,15 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 					}
 
 if			{indent_stack[++level] = indent;printf("Keyword: if\n");return(IF);}
-else			{indent_stack[++level] = indent;printf("Keyword: else\n");return(ELSE);}
-elif			{indent_stack[++level] = indent;printf("Keyword: elif\n");return(ELIF);}
-loop			{indent_stack[++level] = indent;printf("Keyword: loop\n");return(LOOP);}
+else		{indent_stack[++level] = indent;printf("Keyword: else\n");return(ELSE);}
+elif		{indent_stack[++level] = indent;printf("Keyword: elif\n");return(ELIF);}
+loop		{indent_stack[++level] = indent;printf("Keyword: loop\n");return(LOOP);}
 int			{printf("Keyword: int\n");return(INT);}
-byte			{printf("Keyword: byte\n");return(BYTE);}
+byte		{printf("Keyword: byte\n");return(BYTE);}
 as			{printf("Keyword: as\n");return(AS);}
-skip			{printf("Keyword: skip\n");return(SKIP);}
-decl			{printf("Keyword: decl\n");return(DECL);}
-begin			{printf("Keyword: begin\n");return(BEG);}
+skip		{printf("Keyword: skip\n");return(SKIP);}
+decl		{printf("Keyword: decl\n");return(DECL);}
+begin		{printf("Keyword: begin\n");return(BEG);}
 "}"			{
 				//printf("howmany %d\n",howmany);
 				if(howmany>0){
@@ -111,8 +111,8 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 "-"			{printf("Minus -\n");return('-');}
 "*"			{printf("Times *\n");return('*');}
 "/"			{printf("Division /\n");return('/');}
-":="			{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
-"=="			{printf("Equality operator ==\n");return(EQ);}
+":="		{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
+"=="		{printf("Equality operator ==\n");return(EQ);}
 "!"			{printf("Bang !\n");return('!');}
 [%]			{printf("Mod Operator!\n");return('%');}
 "&" 		{printf("Ampersand &\n");return('&');}
@@ -141,22 +141,26 @@ ref 		{printf("Keyword: ref\n");return(REF);}
   "\n"             	; {nl++;}
   <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 }
-\"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
-<<EOF>> 		{
-					unput(0);
-					howmany=level;
-					//printf("the level is %d\n",level);
-					while(level>0){
-						unput('}');
-						level--;
-					}
-					//printf("howmanyeof %d \n",howmany);
+\"(\\.|[^\\"])*\" { //"{
+                            printf("String Literal %s \n",yytext);
+						    yylval.idstring = strdup(yytext);
+						    return(STRINGLITERAL);
+					    }
+<<EOF>>             {
+                        unput(0);
+                        howmany=level;
+                        //printf("the level is %d\n",level);
+                        while(level>0){
+                            unput('}');
+                            level--;
+                        }
+                        //printf("howmanyeof %d \n",howmany);
 
-					printf("Read %d lines\n",nl);
+                        printf("Read %d lines\n",nl);
 				}
 
-.			{
-				if(yytext[0]==0){
+.           {
+				if(yytext[0]==0) {
 					return 0;
 				}
 				printf("Unexpected Character %d\n",yytext[0]);
