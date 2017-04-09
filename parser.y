@@ -1,13 +1,14 @@
 %{
 	#include <stdio.h>
 	#include <iostream>
+	#include "ast.h"
 	using namespace std;
 	extern int nl;
 	int yylex(void);
 	void yyerror (char const *s) {
 	 	fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
-	
+
 %}
 %expect 1
 
@@ -23,7 +24,7 @@
 %nonassoc SMALLER LARGER LARGEREQ SMALLEREQ EQ DIFF
 %left '+' '-' '|'
 %left '*' '/' '&'
-%precedence UNARYPL 
+%precedence UNARYPL
 %precedence UNARYMINUS
 %precedence BANGBANG
 
@@ -44,7 +45,7 @@ header
 	| IDENTIFIER
 	;
 opt
-	: IS type ':' optparam 
+	: IS type ':' optparam
 	| IS type
 	;
 
@@ -63,7 +64,7 @@ ftype
 bp
 	: INT '['']'
 	| BYTE '['']'
-	| INT '[' CONST ']' 
+	| INT '[' CONST ']'
 	| BYTE '[' CONST ']'
 	| bp '['CONST']'
 	;
@@ -79,9 +80,9 @@ lval
 	;
 
 type
-	: INT 
+	: INT
 	| BYTE
-	| type '[' CONST ']'		
+	| type '[' CONST ']'
 	;
 
 
@@ -96,7 +97,7 @@ param
 	;
 
 stmt
-	: SKIP 
+	: SKIP
 	| pc
 	| mif
 	| fdef
@@ -128,14 +129,14 @@ loop
 	;
 
 mif
-	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{printf("Found matched if\n");}
+	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{}
 	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt
-	| IF condition ':'  stmt_list END	{printf("Found unmatched if\n");}
+	| IF condition ':'  stmt_list END	{}
 	;
 
 condition
-	: expression LARGER expression 
-	| expression SMALLER expression 
+	: expression LARGER expression
+	| expression SMALLER expression
 	| expression LARGEREQ expression
 	| expression SMALLEREQ expression
 	| expression EQ expression
@@ -146,7 +147,7 @@ condition
 	| condition OR condition
 	| NOT condition
 	| '('condition ')'
-	| expression 	{printf("This fucking rule\n");}
+	| expression 	{}
 	;
 
 eliftstmt

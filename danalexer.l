@@ -1,7 +1,7 @@
 %x COMMENT
 
 	int nl = 1;
-	int comment_nesting = 0;  
+	int comment_nesting = 0;
 	#define MAX_DEPTH 72
 
 	unsigned int indent_stack[MAX_DEPTH] ;
@@ -20,7 +20,7 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
 %{
 #include <stdio.h>
-#include "parser.hpp"	
+#include "parser.hpp"
 #include <string.h>
 %}
 
@@ -110,10 +110,10 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 
 <COMMENT>{
   "(*"           	{ ++comment_nesting; }
-  "*"+")"        	{ --comment_nesting; if(!comment_nesting) BEGIN(INITIAL);} 
-  "*"+           	; 
-  [^(*\n]+       	; 
-  [(]            	; 
+  "*"+")"        	{ --comment_nesting; if(!comment_nesting) BEGIN(INITIAL);}
+  "*"+           	;
+  [^(*\n]+       	;
+  [(]            	;
   "\n"             	; {nl++;}
   <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 }
@@ -125,9 +125,9 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 						level--;
 					}
 					printf("Read %d lines\n",nl);
-					exit(0);
+					//exit(0);
 				}
-.			{printf("Unexpected Character %d\n",yytext[0]);exit(-1);/*"*/}
+.			{printf("Unexpected Character %d\n",yytext[0]);exit(-1);}
 
 
 
@@ -142,11 +142,11 @@ unsigned int white_count(char* line) {
 }
 
 int process_indent(char* line) {
-	printf("////////\n");
-	puts(line);
-	printf("////////\n");
+	//printf("////////\n");
+	//puts(line);
+	//printf("////////\n");
 
-	
+
 	indent = white_count(line) ;
 	//printf("Indent = %d\n",indent);
 
@@ -187,6 +187,6 @@ int main(int argc, char const *argv[])
 		printf("}\n");
 		level--;
 	}
-	
+
 	return 0;
 }*/

@@ -8,7 +8,7 @@ lexer: lexer.cpp
 lexer.cpp: danalexer.l
 	flex -s -o lexer.cpp danalexer.l
 
-parser.hpp parser.cpp: parser.y
+parser.hpp parser.cpp: parser.y ast.h
 	bison -dv -o parser.cpp parser.y
 
 lexer.o: lexer.cpp parser.hpp
@@ -16,7 +16,7 @@ lexer.o: lexer.cpp parser.hpp
 %.o: %.cpp
 	g++ $(FLAGS) -c $<
 
-clean : 
+clean :
 	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o *~
 
 distclean: clean
