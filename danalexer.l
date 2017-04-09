@@ -41,7 +41,10 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
                		unput(yynew[last]);
                 	last-- ;
                 }
-				howmany = counter;
+				if(counter !=0)
+					howmany = counter;
+				//printf("howmanyother %d \n",howmany);
+
                	while(counter > 0) {
                		unput('}');
                		counter--;
@@ -62,7 +65,7 @@ skip			{printf("Keyword: skip\n");return(SKIP);}
 decl			{printf("Keyword: decl\n");return(DECL);}
 begin			{printf("Keyword: begin\n");return(BEG);}
 "}"			{
-				printf("howmany %d\n",howmany);
+				//printf("howmany %d\n",howmany);
 				if(howmany>0){
 					printf("Keyword: end\n");
 					howmany--;
@@ -114,7 +117,7 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 ":"			{printf("Colon :\n");return(':');}
 
 "\""			{printf("Unclosed String Error\n");exit(-1);}
-\"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
+
 
 "#".*            	{printf("comment found\n");}
 
@@ -129,18 +132,27 @@ ref 		{printf("Keyword: ref\n");return(REF);}
   "\n"             	; {nl++;}
   <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 }
-
+\"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
 <<EOF>> 		{
+					unput(0);
 					howmany=level;
+					//printf("the level is %d\n",level);
 					while(level>0){
-						//printf("}\n");
 						unput('}');
 						level--;
 					}
+					//printf("howmanyeof %d \n",howmany);
+
 					printf("Read %d lines\n",nl);
-					return TEOF;
 				}
-.			{printf("Unexpected Character %d\n",yytext[0]);exit(-1);}
+
+.			{
+				if(yytext[0]==0){
+					return 0;
+				}
+				printf("Unexpected Character %d\n",yytext[0]);
+				exit(-1);
+			}
 
 
 
@@ -155,35 +167,15 @@ unsigned int white_count(char* line) {
 }
 
 int process_indent(char* line) {
-	printf("////////\n");
-	puts(line);
-	printf("////////\n");
-
-
 	indent = white_count(line) ;
-	printf("Indent = %d\n",indent);
 
-/*
-  if (indent == indent_stack[level]) {
-    if (!first) printf(" ;") ;
-    first = 0 ;
-    return ;
-  }
-
-  if (indent > indent_stack[level]) {
-    printf(" {") ;
-    indent_stack[++level] = indent ;
-    return ;
-  }
-*/
 	if (indent == 0) return 0;
+
 	int i = 0;
 	//printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
   	while (indent <= indent_stack[level]) {
     	--level ;
-    	printf("}\n") ;
    		i++;
-    	//unput('}');
     	if(level == -1) break;
 	}
 	return i;

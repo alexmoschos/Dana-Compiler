@@ -31,8 +31,11 @@
 
 
 %%
+main
+	: fdef 
+	;
 fdef
-	:DEF header  stmt_list END 
+	:DEF header  stmt_list END
 	;
 
 fdecl
@@ -166,7 +169,7 @@ expression
 	| '-' expression %prec UNARYMINUS	{printf("unary minus\n");}
 	| '!' expression %prec BANGBANG	{printf("Bang !\n");/*pew pew!*/}
 	| IDENTIFIER 	{printf("expression with identifier\n");}
-	| STRINGLITERAL	{printf("String literal\n");}
+	| STRINGLITERAL	{}
 	| CONST 		{printf("Const\n");}
 	| '(' expression ')'
 	| fcall
