@@ -20,6 +20,7 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
 %{
 #include <stdio.h>
+#include "ast.h"
 #include "parser.hpp"
 #include <string.h>
 %}
@@ -52,7 +53,11 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
 
               }
 
-[0-9][0-9]* 		{printf("Integer %s\n",yytext);return(CONST);}
+[0-9][0-9]* 		{
+						printf("Integer %s\n",yytext);
+						yylval.const_val = atoi(yytext);
+						return(CONST);
+					}
 
 if			{indent_stack[++level] = indent;printf("Keyword: if\n");return(IF);}
 else			{indent_stack[++level] = indent;printf("Keyword: else\n");return(ELSE);}
@@ -90,7 +95,11 @@ exit		{printf("Keyword: exit\n");return(EXIT);}
 return		{printf("Keyword: return\n");return(RETURN);}
 ref 		{printf("Keyword: ref\n");return(REF);}
 
-{ID} 			{printf("Identifier: %s\n",yytext);return(IDENTIFIER);}
+{ID} 			{
+					printf("Identifier: %s\n",yytext);
+					yylval.idstring = strdup(yytext);
+					return(IDENTIFIER);
+				}
 "("			{printf("Left Parenthesis (\n");return('(');}
 ")"			{printf("Right Parenthesis )\n");return(')');}
 "["			{printf("Left Brace [\n");return('[');}

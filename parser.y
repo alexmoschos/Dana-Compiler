@@ -1,7 +1,9 @@
 %{
-	#include <stdio.h>
-	#include <iostream>
 	#include "ast.h"
+	#include <stdio.h>
+	#include <string>
+	#include <iostream>
+
 	using namespace std;
 	extern int nl;
 	int yylex(void);
@@ -10,14 +12,26 @@
 	}
 
 %}
+%union{
+	ASTfdef* func;
+	ASTExpr* expr;
+	ASTstmt* statement;
+	ASTCond* cond;
+	int const_val;
+	char* idstring;
+}
 %expect 1
 
-%token IDENTIFIER INT BYTE IF ELSE STRINGLITERAL
+%token INT BYTE IF ELSE STRINGLITERAL
 %token LOOP AS SKIP DECL DEF  END VAR IS TEOF
 %token EQ DIFF LARGER SMALLER RETURN EXIT REF
-%token LARGEREQ SMALLEREQ ASSIGNMENT CONST
+%token LARGEREQ SMALLEREQ ASSIGNMENT
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT BEG
-
+%token<const_val> CONST
+%token<idstring> IDENTIFIER
+%type<func> fdef
+%type<statement> stmt_list stmt
+%type<cond> condition
 %left OR
 %left AND
 %nonassoc NOT
@@ -32,7 +46,7 @@
 
 %%
 main
-	: fdef 
+	: fdef
 	;
 fdef
 	:DEF header  stmt_list END
@@ -170,7 +184,7 @@ expression
 	| '!' expression %prec BANGBANG	{printf("Bang !\n");/*pew pew!*/}
 	| IDENTIFIER 	{printf("expression with identifier\n");}
 	| STRINGLITERAL	{}
-	| CONST 		{printf("Const\n");}
+	| CONST 		{printf("Const %d\n",$1);}
 	| '(' expression ')'
 	| fcall
 	;

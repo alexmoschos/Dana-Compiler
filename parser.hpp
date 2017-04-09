@@ -45,41 +45,41 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    IDENTIFIER = 258,
-    INT = 259,
-    BYTE = 260,
-    IF = 261,
-    ELSE = 262,
-    STRINGLITERAL = 263,
-    LOOP = 264,
-    AS = 265,
-    SKIP = 266,
-    DECL = 267,
-    DEF = 268,
-    END = 269,
-    VAR = 270,
-    IS = 271,
-    TEOF = 272,
-    EQ = 273,
-    DIFF = 274,
-    LARGER = 275,
-    SMALLER = 276,
-    RETURN = 277,
-    EXIT = 278,
-    REF = 279,
-    LARGEREQ = 280,
-    SMALLEREQ = 281,
-    ASSIGNMENT = 282,
-    CONST = 283,
-    AND = 284,
-    NOT = 285,
-    OR = 286,
-    ELIF = 287,
-    TRUE = 288,
-    FALSE = 289,
-    BREAK = 290,
-    CONT = 291,
-    BEG = 292,
+    INT = 258,
+    BYTE = 259,
+    IF = 260,
+    ELSE = 261,
+    STRINGLITERAL = 262,
+    LOOP = 263,
+    AS = 264,
+    SKIP = 265,
+    DECL = 266,
+    DEF = 267,
+    END = 268,
+    VAR = 269,
+    IS = 270,
+    TEOF = 271,
+    EQ = 272,
+    DIFF = 273,
+    LARGER = 274,
+    SMALLER = 275,
+    RETURN = 276,
+    EXIT = 277,
+    REF = 278,
+    LARGEREQ = 279,
+    SMALLEREQ = 280,
+    ASSIGNMENT = 281,
+    AND = 282,
+    NOT = 283,
+    OR = 284,
+    ELIF = 285,
+    TRUE = 286,
+    FALSE = 287,
+    BREAK = 288,
+    CONT = 289,
+    BEG = 290,
+    CONST = 291,
+    IDENTIFIER = 292,
     UNARYPL = 293,
     UNARYMINUS = 294,
     BANGBANG = 295
@@ -88,7 +88,22 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 15 "parser.y" /* yacc.c:1909  */
+
+	ASTfdef* func;
+	ASTExpr* expr;
+	ASTstmt* statement;
+	ASTCond* cond;
+	int const_val;
+	char* idstring;
+
+#line 104 "parser.hpp" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
