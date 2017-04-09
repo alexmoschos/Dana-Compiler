@@ -9,7 +9,7 @@
 
 	unsigned int first = 1 ;
 	unsigned int indent = 0;
-
+	int howmany = 0;
 	int process_indent(char* line) ;
 	unsigned int white_count(char* line);
 	int flag = 0;
@@ -41,6 +41,7 @@ ID [a-zA-Z_][a-zA-Z0-9_]*
                		unput(yynew[last]);
                 	last-- ;
                 }
+				howmany = counter;
                	while(counter > 0) {
                		unput('}');
                		counter--;
@@ -60,7 +61,18 @@ as			{printf("Keyword: as\n");return(AS);}
 skip			{printf("Keyword: skip\n");return(SKIP);}
 decl			{printf("Keyword: decl\n");return(DECL);}
 begin			{printf("Keyword: begin\n");return(BEG);}
-"}"			{printf("Keyword: end\n");return(END);}
+"}"			{
+				printf("howmany %d\n",howmany);
+				if(howmany>0){
+					printf("Keyword: end\n");
+					howmany--;
+					return(END);
+				}
+				else{
+					printf("Unexpected Character }");
+					exit(-1);
+				}
+			}
 def			{indent_stack[++level] = indent;printf("Found def with indent %d\n",indent);printf("Keyword: def\n");return(DEF);}
 is			{printf("Keyword: is\n");return(IS);}
 var			{printf("Keyword: var\n");return(VAR);}
@@ -101,7 +113,7 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 ">"			{printf("Greater than operator >\n");return(LARGER);}
 ":"			{printf("Colon :\n");return(':');}
 
-
+"\""			{printf("Unclosed String Error\n");exit(-1);}
 \"(\\.|[^\\"])*\"	{printf("String Literal %s \n",yytext);return(STRINGLITERAL);}
 
 "#".*            	{printf("comment found\n");}
@@ -119,13 +131,14 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 }
 
 <<EOF>> 		{
+					howmany=level;
 					while(level>0){
 						//printf("}\n");
 						unput('}');
 						level--;
 					}
 					printf("Read %d lines\n",nl);
-					//exit(0);
+					return TEOF;
 				}
 .			{printf("Unexpected Character %d\n",yytext[0]);exit(-1);}
 
@@ -142,13 +155,13 @@ unsigned int white_count(char* line) {
 }
 
 int process_indent(char* line) {
-	//printf("////////\n");
-	//puts(line);
-	//printf("////////\n");
+	printf("////////\n");
+	puts(line);
+	printf("////////\n");
 
 
 	indent = white_count(line) ;
-	//printf("Indent = %d\n",indent);
+	printf("Indent = %d\n",indent);
 
 /*
   if (indent == indent_stack[level]) {
