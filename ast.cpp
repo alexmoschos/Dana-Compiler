@@ -2,12 +2,18 @@
 #include <iostream>
 #include <string>
 using namespace std;
-ASTExpr::ASTExpr(char op,string id,int constval,ASTExpr *left,ASTExpr *right){
+ASTExpr::ASTExpr(char op,ASTlval* operand,int constval,ASTExpr *left,ASTExpr *right){
     cout << "hello world" << endl;
     this->op = op;
-    this->identifier=id;
+    this->operand=operand;
     this->constant_val=constval;
     this->left = left;
     this->right = right;
 
+}
+
+ASTlval::ASTlval(bool constant,string identifier){
+    this->constant = constant;
+    this->identifier = identifier;
+    this->indices = new vector<ASTExpr*>();
 }

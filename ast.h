@@ -1,6 +1,8 @@
 #ifndef ast_h
 #define ast_h
 #include <string>
+#include <vector>
+#include <iostream>
 using namespace std;
 enum stmt_type {
     TSKIP,
@@ -19,6 +21,7 @@ enum stmt_type {
     TASSIGN,
     TLOOP
 };
+class ASTlval;
 class ASTNode{
     int he;
     //virtual void run();
@@ -26,11 +29,11 @@ class ASTNode{
 class ASTExpr:ASTNode{
 public:
         char op;
-        string identifier;
+        ASTlval* operand;
         int constant_val;
         ASTExpr* left;
         ASTExpr* right;
-        ASTExpr(char,string,int,ASTExpr*,ASTExpr*);
+        ASTExpr(char,ASTlval*,int,ASTExpr*,ASTExpr*);
 };
 
 
@@ -44,5 +47,18 @@ class ASTstmt:ASTNode{
 public:
     ASTstmt *tail;
 };
-
+class ASTlval:ASTNode{
+public:
+    ASTlval(bool,string);
+    string identifier;
+    bool constant;
+    std::vector<ASTExpr*> *indices;
+    void print(){
+        cout << "Printing bracket lists" << endl;
+        for(auto i : *indices){
+            cout << i->constant_val << " ";
+        }
+        cout << endl;
+    }
+};
 #endif

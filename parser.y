@@ -3,6 +3,7 @@
 	#include <stdio.h>
 	#include <string>
 	#include <iostream>
+    #include <vector>
 
 	using namespace std;
 	extern int nl;
@@ -16,21 +17,23 @@
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
+    ASTlval* lvalue;
 	int const_val;
 	char* idstring;
 }
 %expect 1
 
-%token INT BYTE IF ELSE STRINGLITERAL
+%token INT BYTE IF ELSE
 %token LOOP AS SKIP DECL DEF  END VAR IS TEOF
 %token EQ DIFF LARGER SMALLER RETURN EXIT REF
 %token LARGEREQ SMALLEREQ ASSIGNMENT
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT BEG
 %token<const_val> CONST
-%token<idstring> IDENTIFIER
+%token<idstring> IDENTIFIER STRINGLITERAL
 %type<func> fdef
 %type<statement> stmt_list stmt
 %type<expr> expression condition
+%type<lvalue> lval
 %left OR
 %left AND
 %nonassoc NOT
@@ -147,17 +150,17 @@ mif
 	;
 
 condition
-	: expression LARGER expression     {$$=new ASTExpr('>',"",0,$1,$3);}
-	| expression SMALLER expression    {$$=new ASTExpr('<',"",0,$1,$3);}
-	| expression LARGEREQ expression   {$$=new ASTExpr('l',"",0,$1,$3);}
-	| expression SMALLEREQ expression  {$$=new ASTExpr('s',"",0,$1,$3);}
-	| expression EQ expression         {$$=new ASTExpr('e',"",0,$1,$3);}
-	| expression DIFF expression       {$$=new ASTExpr('d',"",0,$1,$3);}
-	| TRUE                             {$$=new ASTExpr('b',"",1,NULL,NULL);}
-	| FALSE                            {$$=new ASTExpr('b',"",0,NULL,NULL);}
-	| condition AND condition          {$$=new ASTExpr('a',"",0,$1,$3);}
-	| condition OR condition           {$$=new ASTExpr('o',"",0,$1,$3);}
-	| NOT condition                    {$$=new ASTExpr('n',"",0,NULL,$2);}
+	: expression LARGER expression     {$$=new ASTExpr('>',NULL,0,$1,$3);}
+	| expression SMALLER expression    {$$=new ASTExpr('<',NULL,0,$1,$3);}
+	| expression LARGEREQ expression   {$$=new ASTExpr('l',NULL,0,$1,$3);}
+	| expression SMALLEREQ expression  {$$=new ASTExpr('s',NULL,0,$1,$3);}
+	| expression EQ expression         {$$=new ASTExpr('e',NULL,0,$1,$3);}
+	| expression DIFF expression       {$$=new ASTExpr('d',NULL,0,$1,$3);}
+	| TRUE                             {$$=new ASTExpr('b',NULL,1,NULL,NULL);}
+	| FALSE                            {$$=new ASTExpr('b',NULL,0,NULL,NULL);}
+	| condition AND condition          {$$=new ASTExpr('a',NULL,0,$1,$3);}
+	| condition OR condition           {$$=new ASTExpr('o',NULL,0,$1,$3);}
+	| NOT condition                    {$$=new ASTExpr('n',NULL,0,NULL,$2);}
 	| '(' condition ')'                {$$ = $2;}
 	| expression                       {$$ = $1;}
 	;
@@ -169,24 +172,29 @@ eliftstmt
 	;
 
 expression
-	: expression '+' expression    {$$=new ASTExpr('+',"",0,$1,$3);}
-	| expression '-' expression	   {$$=new ASTExpr('-',"",0,$1,$3);}
-	| expression '*' expression	   {$$=new ASTExpr('*',"",0,$1,$3);}
-	| expression '/' expression	   {$$=new ASTExpr('/',"",0,$1,$3);}
-	| expression '&' expression    {$$=new ASTExpr('&',"",0,$1,$3);}
-	| expression '|' expression    {$$=new ASTExpr('|',"",0,$1,$3);}
-	| '+' expression %prec UNARYPL {$$=new ASTExpr('+',"",0,NULL,$2);}
-	| '-' expression %prec UNARYMINUS	{$$=new ASTExpr('-',"",0,NULL,$2);}
-    | '!' expression %prec BANGBANG {$$=new ASTExpr('!',"",0,NULL,$2);/*pew pew!*/}
-	| lval
-	| CONST 		               {$$ = new ASTExpr('c',"",$1,NULL,NULL);}
-	| '(' expression ')' {$$ = $2;}
+	: expression '+' expression    {$$=new ASTExpr('+',NULL,0,$1,$3);}
+	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
+	| expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
+	| expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
+	| expression '&' expression    {$$=new ASTExpr('&',NULL,0,$1,$3);}
+	| expression '|' expression    {$$=new ASTExpr('|',NULL,0,$1,$3);}
+	| '+' expression %prec UNARYPL {$$=new ASTExpr('+',NULL,0,NULL,$2);}
+	| '-' expression %prec UNARYMINUS	{$$=new ASTExpr('-',NULL,0,NULL,$2);}
+    | '!' expression %prec BANGBANG     {$$=new ASTExpr('!',NULL,0,NULL,$2);}
+	| lval                         {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
+	| CONST 		               {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
+	| '(' expression ')'           {$$ = $2;}
 	| fcall
 	;
 lval
-	: IDENTIFIER
-	| STRINGLITERAL
-	| lval '['expression']'
+	: IDENTIFIER                   {$$ = new ASTlval(false,$1);}
+	| STRINGLITERAL                {$$ = new ASTlval(true,$1);}
+	| lval '['expression']'        {
+                                        $1->indices->push_back($3);
+                                        $$=$1;
+                                        cout << $$->identifier << endl;
+                                        $$->print();
+                                   }
 	;
 %%
 

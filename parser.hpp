@@ -49,37 +49,37 @@ extern int yydebug;
     BYTE = 259,
     IF = 260,
     ELSE = 261,
-    STRINGLITERAL = 262,
-    LOOP = 263,
-    AS = 264,
-    SKIP = 265,
-    DECL = 266,
-    DEF = 267,
-    END = 268,
-    VAR = 269,
-    IS = 270,
-    TEOF = 271,
-    EQ = 272,
-    DIFF = 273,
-    LARGER = 274,
-    SMALLER = 275,
-    RETURN = 276,
-    EXIT = 277,
-    REF = 278,
-    LARGEREQ = 279,
-    SMALLEREQ = 280,
-    ASSIGNMENT = 281,
-    AND = 282,
-    NOT = 283,
-    OR = 284,
-    ELIF = 285,
-    TRUE = 286,
-    FALSE = 287,
-    BREAK = 288,
-    CONT = 289,
-    BEG = 290,
-    CONST = 291,
-    IDENTIFIER = 292,
+    LOOP = 262,
+    AS = 263,
+    SKIP = 264,
+    DECL = 265,
+    DEF = 266,
+    END = 267,
+    VAR = 268,
+    IS = 269,
+    TEOF = 270,
+    EQ = 271,
+    DIFF = 272,
+    LARGER = 273,
+    SMALLER = 274,
+    RETURN = 275,
+    EXIT = 276,
+    REF = 277,
+    LARGEREQ = 278,
+    SMALLEREQ = 279,
+    ASSIGNMENT = 280,
+    AND = 281,
+    NOT = 282,
+    OR = 283,
+    ELIF = 284,
+    TRUE = 285,
+    FALSE = 286,
+    BREAK = 287,
+    CONT = 288,
+    BEG = 289,
+    CONST = 290,
+    IDENTIFIER = 291,
+    STRINGLITERAL = 292,
     UNARYPL = 293,
     UNARYMINUS = 294,
     BANGBANG = 295
@@ -91,15 +91,16 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 15 "parser.y" /* yacc.c:1909  */
+#line 16 "parser.y" /* yacc.c:1909  */
 
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
+    ASTlval* lvalue;
 	int const_val;
 	char* idstring;
 
-#line 103 "parser.hpp" /* yacc.c:1909  */
+#line 104 "parser.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
