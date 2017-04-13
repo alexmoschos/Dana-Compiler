@@ -89,11 +89,7 @@ stmt_list
 	| stmt_list stmt
 	;
 
-lval
-	: IDENTIFIER
-	| STRINGLITERAL
-	| lval '['expression']'
-	;
+
 
 type
 	: INT
@@ -163,7 +159,7 @@ condition
 	| condition OR condition           {$$=new ASTExpr('o',"",0,$1,$3);}
 	| NOT condition                    {$$=new ASTExpr('n',"",0,NULL,$2);}
 	| '(' condition ')'                {$$ = $2;}
-	| expression 	                   {$$ = $1;}
+	| expression                       {$$ = $1;}
 	;
 
 
@@ -173,22 +169,25 @@ eliftstmt
 	;
 
 expression
-	: expression '+' expression {$$=new ASTExpr('+',"",0,$1,$3);}
-	| expression '-' expression	{$$=new ASTExpr('-',"",0,$1,$3);}
-	| expression '*' expression	{$$=new ASTExpr('*',"",0,$1,$3);}
-	| expression '/' expression	{$$=new ASTExpr('/',"",0,$1,$3);}
-	| expression '&' expression {$$=new ASTExpr('&',"",0,$1,$3);}
-	| expression '|' expression {$$=new ASTExpr('|',"",0,$1,$3);}
-	| '+' expression %prec UNARYPL	{$$=new ASTExpr('+',"",0,NULL,$2);}
+	: expression '+' expression    {$$=new ASTExpr('+',"",0,$1,$3);}
+	| expression '-' expression	   {$$=new ASTExpr('-',"",0,$1,$3);}
+	| expression '*' expression	   {$$=new ASTExpr('*',"",0,$1,$3);}
+	| expression '/' expression	   {$$=new ASTExpr('/',"",0,$1,$3);}
+	| expression '&' expression    {$$=new ASTExpr('&',"",0,$1,$3);}
+	| expression '|' expression    {$$=new ASTExpr('|',"",0,$1,$3);}
+	| '+' expression %prec UNARYPL {$$=new ASTExpr('+',"",0,NULL,$2);}
 	| '-' expression %prec UNARYMINUS	{$$=new ASTExpr('-',"",0,NULL,$2);}
     | '!' expression %prec BANGBANG {$$=new ASTExpr('!',"",0,NULL,$2);/*pew pew!*/}
-	| IDENTIFIER 	{$$=new ASTExpr('+',$1,0,NULL,NULL);}
-	| STRINGLITERAL
-	| CONST 		{$$ = new ASTExpr('c',"",$1,NULL,NULL);}
+	| lval
+	| CONST 		               {$$ = new ASTExpr('c',"",$1,NULL,NULL);}
 	| '(' expression ')' {$$ = $2;}
 	| fcall
 	;
-
+lval
+	: IDENTIFIER
+	| STRINGLITERAL
+	| lval '['expression']'
+	;
 %%
 
 

@@ -95,11 +95,11 @@ exit		{printf("Keyword: exit\n");return(EXIT);}
 return		{printf("Keyword: return\n");return(RETURN);}
 ref 		{printf("Keyword: ref\n");return(REF);}
 
-{ID} 			{
+{ID} 		{
 					printf("Identifier: %s\n",yytext);
 					yylval.idstring = strdup(yytext);
 					return(IDENTIFIER);
-				}
+			}
 "("			{printf("Left Parenthesis (\n");return('(');}
 ")"			{printf("Right Parenthesis )\n");return(')');}
 "["			{printf("Left Brace [\n");return('[');}
@@ -141,12 +141,12 @@ ref 		{printf("Keyword: ref\n");return(REF);}
   "\n"             	; {nl++;}
   <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 }
-\"(\\.|[^\\"])*\" { //"{
+\"(\\.|[^\\"])*\"   { //"
                             printf("String Literal %s \n",yytext);
 						    yylval.idstring = strdup(yytext);
 						    return(STRINGLITERAL);
-					    }
-<<EOF>>             {
+					}
+<<EOF>>         {
                         unput(0);
                         howmany=level;
                         //printf("the level is %d\n",level);
@@ -154,18 +154,16 @@ ref 		{printf("Keyword: ref\n");return(REF);}
                             unput('}');
                             level--;
                         }
-                        //printf("howmanyeof %d \n",howmany);
-
                         printf("Read %d lines\n",nl);
 				}
 
-.           {
-				if(yytext[0]==0) {
-					return 0;
-				}
-				printf("Unexpected Character %d\n",yytext[0]);
-				exit(-1);
-			}
+.               {
+    				if(yytext[0]==0) {
+    					return 0;
+    				}
+    				printf("Unexpected Character %d\n",yytext[0]);
+    				exit(-1);
+			    }
 
 
 

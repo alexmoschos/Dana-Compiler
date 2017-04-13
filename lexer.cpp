@@ -1119,7 +1119,7 @@ YY_RULE_SETUP
 					printf("Identifier: %s\n",yytext);
 					yylval.idstring = strdup(yytext);
 					return(IDENTIFIER);
-				}
+			}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
@@ -1287,11 +1287,11 @@ case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
 #line 144 "danalexer.l"
-{ //"{
+{ //"
                             printf("String Literal %s \n",yytext);
 						    yylval.idstring = strdup(yytext);
 						    return(STRINGLITERAL);
-					    }
+					}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 #line 149 "danalexer.l"
@@ -1303,28 +1303,26 @@ case YY_STATE_EOF(INITIAL):
                             unput('}');
                             level--;
                         }
-                        //printf("howmanyeof %d \n",howmany);
-
                         printf("Read %d lines\n",nl);
 				}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 162 "danalexer.l"
+#line 160 "danalexer.l"
 {
-				if(yytext[0]==0) {
-					return 0;
-				}
-				printf("Unexpected Character %d\n",yytext[0]);
-				exit(-1);
-			}
+    				if(yytext[0]==0) {
+    					return 0;
+    				}
+    				printf("Unexpected Character %d\n",yytext[0]);
+    				exit(-1);
+			    }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 174 "danalexer.l"
+#line 172 "danalexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1328 "lexer.cpp"
+#line 1326 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2326,7 +2324,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 174 "danalexer.l"
+#line 172 "danalexer.l"
 
 
 unsigned int white_count(char* line) {
