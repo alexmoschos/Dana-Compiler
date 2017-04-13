@@ -45,6 +45,8 @@ class ASTfdef:ASTfdecl{
 };
 class ASTstmt:ASTNode{
 public:
+    ASTstmt(stmt_type,ASTstmt*);
+    stmt_type type;
     ASTstmt *tail;
 };
 class ASTlval:ASTNode{

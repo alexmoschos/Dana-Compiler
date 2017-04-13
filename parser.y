@@ -47,9 +47,6 @@
 
 
 %%
-main
-	: fdef
-	;
 fdef
 	:DEF header  stmt_list END
 	;
@@ -88,8 +85,11 @@ bp
 	| bp '['CONST']'
 	;
 stmt_list
-	: stmt
-	| stmt_list stmt
+	: stmt {$$ = $1;}
+	| stmt stmt_list   {
+                            $1->tail=$2;
+                            $$ = $1;
+                       }
 	;
 
 
@@ -112,21 +112,21 @@ param
 	;
 
 stmt
-	: SKIP
-	| pc
-	| mif
-	| fdef
-	| loop
-	| lval ASSIGNMENT expression	{printf("Found assignment\n");}
-	| VAR idlist IS type {printf("Found type decl\n");}
-	| BREAK
-	| BREAK ':' IDENTIFIER
-	| CONT
-	| CONT ':' IDENTIFIER
-	| fdecl
-	| EXIT
-	| RETURN ':' expression
-	| fcall
+	: SKIP     {$$ = new ASTstmt(TSKIP,NULL);}
+	| pc       {$$ = new ASTstmt(TPC,NULL);}
+	| mif      {$$ = new ASTstmt(TIF,NULL);}
+	| fdef     {$$ = new ASTstmt(TFDEF,NULL);}
+	| loop     {$$ = new ASTstmt(TLOOP,NULL);}
+	| lval ASSIGNMENT expression       {$$ = new ASTstmt(TASSIGN,NULL);}
+	| VAR idlist IS type       {$$ = new ASTstmt(TDECL,NULL);}
+	| BREAK    {$$ = new ASTstmt(TBREAK,NULL);}
+	| BREAK ':' IDENTIFIER     {$$ = new ASTstmt(TBREAKM,NULL);}
+	| CONT     {$$ = new ASTstmt(TCONT,NULL);}
+	| CONT ':' IDENTIFIER      {$$ = new ASTstmt(TCONTM,NULL);}
+	| fdecl    {$$ = new ASTstmt(TFDECL,NULL);}
+	| EXIT     {$$ = new ASTstmt(TEXIT,NULL);}
+	| RETURN ':' expression    {$$ = new ASTstmt(TRET,NULL);}
+	| fcall    {$$ = new ASTstmt(TFCALL,NULL);}
 	;
 
 fcall
@@ -172,18 +172,18 @@ eliftstmt
 	;
 
 expression
-	: expression '+' expression    {$$=new ASTExpr('+',NULL,0,$1,$3);}
-	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
-	| expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
-	| expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
-	| expression '&' expression    {$$=new ASTExpr('&',NULL,0,$1,$3);}
-	| expression '|' expression    {$$=new ASTExpr('|',NULL,0,$1,$3);}
-	| '+' expression %prec UNARYPL {$$=new ASTExpr('+',NULL,0,NULL,$2);}
-	| '-' expression %prec UNARYMINUS	{$$=new ASTExpr('-',NULL,0,NULL,$2);}
-    | '!' expression %prec BANGBANG     {$$=new ASTExpr('!',NULL,0,NULL,$2);}
-	| lval                         {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
-	| CONST 		               {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
-	| '(' expression ')'           {$$ = $2;}
+	: expression '+' expression        {$$=new ASTExpr('+',NULL,0,$1,$3);}
+	| expression '-' expression	       {$$=new ASTExpr('-',NULL,0,$1,$3);}
+	| expression '*' expression	       {$$=new ASTExpr('*',NULL,0,$1,$3);}
+	| expression '/' expression	       {$$=new ASTExpr('/',NULL,0,$1,$3);}
+	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
+	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}
+	| '+' expression %prec UNARYPL     {$$=new ASTExpr('+',NULL,0,NULL,$2);}
+	| '-' expression %prec UNARYMINUS  {$$=new ASTExpr('-',NULL,0,NULL,$2);}
+    | '!' expression %prec BANGBANG    {$$=new ASTExpr('!',NULL,0,NULL,$2);}
+	| lval                             {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
+	| CONST                            {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
+	| '(' expression ')'               {$$ = $2;}
 	| fcall
 	;
 lval

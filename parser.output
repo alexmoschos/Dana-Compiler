@@ -4,171 +4,169 @@ Terminals unused in grammar
    BEG
 
 
-State 71 conflicts: 1 shift/reduce
+State 70 conflicts: 1 shift/reduce
 
 
 Grammar
 
-    0 $accept: main $end
+    0 $accept: fdef $end
 
-    1 main: fdef
+    1 fdef: DEF header stmt_list END
 
-    2 fdef: DEF header stmt_list END
+    2 fdecl: DECL header
 
-    3 fdecl: DECL header
+    3 header: IDENTIFIER opt
+    4       | IDENTIFIER ':' optparam
+    5       | IDENTIFIER
 
-    4 header: IDENTIFIER opt
-    5       | IDENTIFIER ':' optparam
-    6       | IDENTIFIER
+    6 opt: IS type ':' optparam
+    7    | IS type
 
-    7 opt: IS type ':' optparam
-    8    | IS type
+    8 optparam: idlist AS ftype
+    9         | idlist AS ftype ',' optparam
 
-    9 optparam: idlist AS ftype
-   10         | idlist AS ftype ',' optparam
+   10 ftype: REF INT
+   11      | REF BYTE
+   12      | bp
+   13      | INT
+   14      | BYTE
 
-   11 ftype: REF INT
-   12      | REF BYTE
-   13      | bp
-   14      | INT
-   15      | BYTE
+   15 bp: INT '[' ']'
+   16   | BYTE '[' ']'
+   17   | INT '[' CONST ']'
+   18   | BYTE '[' CONST ']'
+   19   | bp '[' CONST ']'
 
-   16 bp: INT '[' ']'
-   17   | BYTE '[' ']'
-   18   | INT '[' CONST ']'
-   19   | BYTE '[' CONST ']'
-   20   | bp '[' CONST ']'
+   20 stmt_list: stmt
+   21          | stmt stmt_list
 
-   21 stmt_list: stmt
-   22          | stmt_list stmt
+   22 type: INT
+   23     | BYTE
+   24     | type '[' CONST ']'
 
-   23 type: INT
-   24     | BYTE
-   25     | type '[' CONST ']'
+   25 pc: IDENTIFIER ':' param
+   26   | IDENTIFIER
 
-   26 pc: IDENTIFIER ':' param
-   27   | IDENTIFIER
+   27 param: expression ',' param
+   28      | expression
 
-   28 param: expression ',' param
-   29      | expression
+   29 stmt: SKIP
+   30     | pc
+   31     | mif
+   32     | fdef
+   33     | loop
+   34     | lval ASSIGNMENT expression
+   35     | VAR idlist IS type
+   36     | BREAK
+   37     | BREAK ':' IDENTIFIER
+   38     | CONT
+   39     | CONT ':' IDENTIFIER
+   40     | fdecl
+   41     | EXIT
+   42     | RETURN ':' expression
+   43     | fcall
 
-   30 stmt: SKIP
-   31     | pc
-   32     | mif
-   33     | fdef
-   34     | loop
-   35     | lval ASSIGNMENT expression
-   36     | VAR idlist IS type
-   37     | BREAK
-   38     | BREAK ':' IDENTIFIER
-   39     | CONT
-   40     | CONT ':' IDENTIFIER
-   41     | fdecl
-   42     | EXIT
-   43     | RETURN ':' expression
-   44     | fcall
+   44 fcall: IDENTIFIER '(' param ')'
+   45      | IDENTIFIER '(' ')'
 
-   45 fcall: IDENTIFIER '(' param ')'
-   46      | IDENTIFIER '(' ')'
+   46 idlist: IDENTIFIER
+   47       | IDENTIFIER idlist
 
-   47 idlist: IDENTIFIER
-   48       | IDENTIFIER idlist
+   48 loop: LOOP IDENTIFIER ':' stmt_list END
+   49     | LOOP ':' stmt_list END
 
-   49 loop: LOOP IDENTIFIER ':' stmt_list END
-   50     | LOOP ':' stmt_list END
+   50 mif: IF condition ':' stmt_list END ELSE ':' stmt_list END
+   51    | IF condition ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt
+   52    | IF condition ':' stmt_list END
 
-   51 mif: IF condition ':' stmt_list END ELSE ':' stmt_list END
-   52    | IF condition ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt
-   53    | IF condition ':' stmt_list END
+   53 condition: expression LARGER expression
+   54          | expression SMALLER expression
+   55          | expression LARGEREQ expression
+   56          | expression SMALLEREQ expression
+   57          | expression EQ expression
+   58          | expression DIFF expression
+   59          | TRUE
+   60          | FALSE
+   61          | condition AND condition
+   62          | condition OR condition
+   63          | NOT condition
+   64          | '(' condition ')'
+   65          | expression
 
-   54 condition: expression LARGER expression
-   55          | expression SMALLER expression
-   56          | expression LARGEREQ expression
-   57          | expression SMALLEREQ expression
-   58          | expression EQ expression
-   59          | expression DIFF expression
-   60          | TRUE
-   61          | FALSE
-   62          | condition AND condition
-   63          | condition OR condition
-   64          | NOT condition
-   65          | '(' condition ')'
-   66          | expression
+   66 eliftstmt: ELSE ':' stmt_list END
+   67          | ELIF condition ':' stmt_list END eliftstmt
 
-   67 eliftstmt: ELSE ':' stmt_list END
-   68          | ELIF condition ':' stmt_list END eliftstmt
+   68 expression: expression '+' expression
+   69           | expression '-' expression
+   70           | expression '*' expression
+   71           | expression '/' expression
+   72           | expression '&' expression
+   73           | expression '|' expression
+   74           | '+' expression
+   75           | '-' expression
+   76           | '!' expression
+   77           | lval
+   78           | CONST
+   79           | '(' expression ')'
+   80           | fcall
 
-   69 expression: expression '+' expression
-   70           | expression '-' expression
-   71           | expression '*' expression
-   72           | expression '/' expression
-   73           | expression '&' expression
-   74           | expression '|' expression
-   75           | '+' expression
-   76           | '-' expression
-   77           | '!' expression
-   78           | lval
-   79           | CONST
-   80           | '(' expression ')'
-   81           | fcall
-
-   82 lval: IDENTIFIER
-   83     | STRINGLITERAL
-   84     | lval '[' expression ']'
+   81 lval: IDENTIFIER
+   82     | STRINGLITERAL
+   83     | lval '[' expression ']'
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'!' (33) 77
-'&' (38) 73
-'(' (40) 45 46 65 80
-')' (41) 45 46 65 80
-'*' (42) 71
-'+' (43) 69 75
-',' (44) 10 28
-'-' (45) 70 76
-'/' (47) 72
-':' (58) 5 7 26 38 40 43 49 50 51 52 53 67 68
-'[' (91) 16 17 18 19 20 25 84
-']' (93) 16 17 18 19 20 25 84
-'|' (124) 74
+'!' (33) 76
+'&' (38) 72
+'(' (40) 44 45 64 79
+')' (41) 44 45 64 79
+'*' (42) 70
+'+' (43) 68 74
+',' (44) 9 27
+'-' (45) 69 75
+'/' (47) 71
+':' (58) 4 6 25 37 39 42 48 49 50 51 52 66 67
+'[' (91) 15 16 17 18 19 24 83
+']' (93) 15 16 17 18 19 24 83
+'|' (124) 73
 error (256)
-INT (258) 11 14 16 18 23
-BYTE (259) 12 15 17 19 24
-IF (260) 51 52 53
-ELSE (261) 51 67
-LOOP (262) 49 50
-AS (263) 9 10
-SKIP (264) 30
-DECL (265) 3
-DEF (266) 2
-END (267) 2 49 50 51 52 53 67 68
-VAR (268) 36
-IS (269) 7 8 36
+INT (258) 10 13 15 17 22
+BYTE (259) 11 14 16 18 23
+IF (260) 50 51 52
+ELSE (261) 50 66
+LOOP (262) 48 49
+AS (263) 8 9
+SKIP (264) 29
+DECL (265) 2
+DEF (266) 1
+END (267) 1 48 49 50 51 52 66 67
+VAR (268) 35
+IS (269) 6 7 35
 TEOF (270)
-EQ (271) 58
-DIFF (272) 59
-LARGER (273) 54
-SMALLER (274) 55
-RETURN (275) 43
-EXIT (276) 42
-REF (277) 11 12
-LARGEREQ (278) 56
-SMALLEREQ (279) 57
-ASSIGNMENT (280) 35
-AND (281) 62
-NOT (282) 64
-OR (283) 63
-ELIF (284) 52 68
-TRUE (285) 60
-FALSE (286) 61
-BREAK (287) 37 38
-CONT (288) 39 40
+EQ (271) 57
+DIFF (272) 58
+LARGER (273) 53
+SMALLER (274) 54
+RETURN (275) 42
+EXIT (276) 41
+REF (277) 10 11
+LARGEREQ (278) 55
+SMALLEREQ (279) 56
+ASSIGNMENT (280) 34
+AND (281) 61
+NOT (282) 63
+OR (283) 62
+ELIF (284) 51 67
+TRUE (285) 59
+FALSE (286) 60
+BREAK (287) 36 37
+CONT (288) 38 39
 BEG (289)
-CONST (290) 18 19 20 25 79
-IDENTIFIER (291) 4 5 6 26 27 38 40 45 46 47 48 49 82
-STRINGLITERAL (292) 83
+CONST (290) 17 18 19 24 78
+IDENTIFIER (291) 3 4 5 25 26 37 39 44 45 46 47 48 81
+STRINGLITERAL (292) 82
 UNARYPL (293)
 UNARYMINUS (294)
 BANGBANG (295)
@@ -178,1397 +176,1378 @@ Nonterminals, with rules where they appear
 
 $accept (54)
     on left: 0
-main (55)
-    on left: 1, on right: 0
-fdef (56)
-    on left: 2, on right: 1 33
-fdecl (57)
-    on left: 3, on right: 41
-header (58)
-    on left: 4 5 6, on right: 2 3
-opt (59)
-    on left: 7 8, on right: 4
-optparam (60)
-    on left: 9 10, on right: 5 7 10
-ftype (61)
-    on left: 11 12 13 14 15, on right: 9 10
-bp (62)
-    on left: 16 17 18 19 20, on right: 13 20
-stmt_list (63)
-    on left: 21 22, on right: 2 22 49 50 51 52 53 67 68
-type (64)
-    on left: 23 24 25, on right: 7 8 25 36
-pc (65)
-    on left: 26 27, on right: 31
-param (66)
-    on left: 28 29, on right: 26 28 45
-stmt (67)
-    on left: 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44, on right:
-    21 22
-fcall (68)
-    on left: 45 46, on right: 44 81
-idlist (69)
-    on left: 47 48, on right: 9 10 36 48
-loop (70)
-    on left: 49 50, on right: 34
-mif (71)
-    on left: 51 52 53, on right: 32
-condition (72)
-    on left: 54 55 56 57 58 59 60 61 62 63 64 65 66, on right: 51 52
-    53 62 63 64 65 68
-eliftstmt (73)
-    on left: 67 68, on right: 52 68
-expression (74)
-    on left: 69 70 71 72 73 74 75 76 77 78 79 80 81, on right: 28 29
-    35 43 54 55 56 57 58 59 66 69 70 71 72 73 74 75 76 77 80 84
-lval (75)
-    on left: 82 83 84, on right: 35 78 84
+fdef (55)
+    on left: 1, on right: 0 32
+fdecl (56)
+    on left: 2, on right: 40
+header (57)
+    on left: 3 4 5, on right: 1 2
+opt (58)
+    on left: 6 7, on right: 3
+optparam (59)
+    on left: 8 9, on right: 4 6 9
+ftype (60)
+    on left: 10 11 12 13 14, on right: 8 9
+bp (61)
+    on left: 15 16 17 18 19, on right: 12 19
+stmt_list (62)
+    on left: 20 21, on right: 1 21 48 49 50 51 52 66 67
+type (63)
+    on left: 22 23 24, on right: 6 7 24 35
+pc (64)
+    on left: 25 26, on right: 30
+param (65)
+    on left: 27 28, on right: 25 27 44
+stmt (66)
+    on left: 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43, on right:
+    20 21
+fcall (67)
+    on left: 44 45, on right: 43 80
+idlist (68)
+    on left: 46 47, on right: 8 9 35 47
+loop (69)
+    on left: 48 49, on right: 33
+mif (70)
+    on left: 50 51 52, on right: 31
+condition (71)
+    on left: 53 54 55 56 57 58 59 60 61 62 63 64 65, on right: 50 51
+    52 61 62 63 64 67
+eliftstmt (72)
+    on left: 66 67, on right: 51 67
+expression (73)
+    on left: 68 69 70 71 72 73 74 75 76 77 78 79 80, on right: 27 28
+    34 42 53 54 55 56 57 58 65 68 69 70 71 72 73 74 75 76 79 83
+lval (74)
+    on left: 81 82 83, on right: 34 77 83
 
 
 State 0
 
-    0 $accept: . main $end
+    0 $accept: . fdef $end
 
     DEF  shift, and go to state 1
 
-    main  go to state 2
-    fdef  go to state 3
+    fdef  go to state 2
 
 
 State 1
 
-    2 fdef: DEF . header stmt_list END
+    1 fdef: DEF . header stmt_list END
 
-    IDENTIFIER  shift, and go to state 4
+    IDENTIFIER  shift, and go to state 3
 
-    header  go to state 5
+    header  go to state 4
 
 
 State 2
 
-    0 $accept: main . $end
+    0 $accept: fdef . $end
 
-    $end  shift, and go to state 6
+    $end  shift, and go to state 5
 
 
 State 3
 
-    1 main: fdef .
+    3 header: IDENTIFIER . opt
+    4       | IDENTIFIER . ':' optparam
+    5       | IDENTIFIER .
 
-    $default  reduce using rule 1 (main)
+    IS   shift, and go to state 6
+    ':'  shift, and go to state 7
+
+    $default  reduce using rule 5 (header)
+
+    opt  go to state 8
 
 
 State 4
 
-    4 header: IDENTIFIER . opt
-    5       | IDENTIFIER . ':' optparam
-    6       | IDENTIFIER .
+    1 fdef: DEF header . stmt_list END
 
-    IS   shift, and go to state 7
-    ':'  shift, and go to state 8
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
+    DEF            shift, and go to state 1
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
 
-    $default  reduce using rule 6 (header)
-
-    opt  go to state 9
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 22
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 5
 
-    2 fdef: DEF header . stmt_list END
-
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 23
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
-
-
-State 6
-
-    0 $accept: main $end .
+    0 $accept: fdef $end .
 
     $default  accept
 
 
+State 6
+
+    6 opt: IS . type ':' optparam
+    7    | IS . type
+
+    INT   shift, and go to state 29
+    BYTE  shift, and go to state 30
+
+    type  go to state 31
+
+
 State 7
 
-    7 opt: IS . type ':' optparam
-    8    | IS . type
+    4 header: IDENTIFIER ':' . optparam
 
-    INT   shift, and go to state 30
-    BYTE  shift, and go to state 31
+    IDENTIFIER  shift, and go to state 32
 
-    type  go to state 32
+    optparam  go to state 33
+    idlist    go to state 34
 
 
 State 8
 
-    5 header: IDENTIFIER ':' . optparam
+    3 header: IDENTIFIER opt .
 
-    IDENTIFIER  shift, and go to state 33
-
-    optparam  go to state 34
-    idlist    go to state 35
+    $default  reduce using rule 3 (header)
 
 
 State 9
 
-    4 header: IDENTIFIER opt .
+   50 mif: IF . condition ':' stmt_list END ELSE ':' stmt_list END
+   51    | IF . condition ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt
+   52    | IF . condition ':' stmt_list END
 
-    $default  reduce using rule 4 (header)
+    NOT            shift, and go to state 35
+    TRUE           shift, and go to state 36
+    FALSE          shift, and go to state 37
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 42
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    condition   go to state 45
+    expression  go to state 46
+    lval        go to state 47
 
 
 State 10
 
-   51 mif: IF . condition ':' stmt_list END ELSE ':' stmt_list END
-   52    | IF . condition ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt
-   53    | IF . condition ':' stmt_list END
+   48 loop: LOOP . IDENTIFIER ':' stmt_list END
+   49     | LOOP . ':' stmt_list END
 
-    NOT            shift, and go to state 36
-    TRUE           shift, and go to state 37
-    FALSE          shift, and go to state 38
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 43
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    condition   go to state 46
-    expression  go to state 47
-    lval        go to state 48
+    IDENTIFIER  shift, and go to state 48
+    ':'         shift, and go to state 49
 
 
 State 11
 
-   49 loop: LOOP . IDENTIFIER ':' stmt_list END
-   50     | LOOP . ':' stmt_list END
+   29 stmt: SKIP .
 
-    IDENTIFIER  shift, and go to state 49
-    ':'         shift, and go to state 50
+    $default  reduce using rule 29 (stmt)
 
 
 State 12
 
-   30 stmt: SKIP .
+    2 fdecl: DECL . header
 
-    $default  reduce using rule 30 (stmt)
+    IDENTIFIER  shift, and go to state 3
+
+    header  go to state 50
 
 
 State 13
 
-    3 fdecl: DECL . header
+   35 stmt: VAR . idlist IS type
 
-    IDENTIFIER  shift, and go to state 4
+    IDENTIFIER  shift, and go to state 32
 
-    header  go to state 51
+    idlist  go to state 51
 
 
 State 14
 
-   36 stmt: VAR . idlist IS type
+   42 stmt: RETURN . ':' expression
 
-    IDENTIFIER  shift, and go to state 33
-
-    idlist  go to state 52
+    ':'  shift, and go to state 52
 
 
 State 15
 
-   43 stmt: RETURN . ':' expression
-
-    ':'  shift, and go to state 53
-
-
-State 16
-
-   42 stmt: EXIT .
-
-    $default  reduce using rule 42 (stmt)
-
-
-State 17
-
-   37 stmt: BREAK .
-   38     | BREAK . ':' IDENTIFIER
-
-    ':'  shift, and go to state 54
-
-    $default  reduce using rule 37 (stmt)
-
-
-State 18
-
-   39 stmt: CONT .
-   40     | CONT . ':' IDENTIFIER
-
-    ':'  shift, and go to state 55
-
-    $default  reduce using rule 39 (stmt)
-
-
-State 19
-
-   26 pc: IDENTIFIER . ':' param
-   27   | IDENTIFIER .
-   45 fcall: IDENTIFIER . '(' param ')'
-   46      | IDENTIFIER . '(' ')'
-   82 lval: IDENTIFIER .
-
-    ':'  shift, and go to state 56
-    '('  shift, and go to state 57
-
-    ASSIGNMENT  reduce using rule 82 (lval)
-    '['         reduce using rule 82 (lval)
-    $default    reduce using rule 27 (pc)
-
-
-State 20
-
-   83 lval: STRINGLITERAL .
-
-    $default  reduce using rule 83 (lval)
-
-
-State 21
-
-   33 stmt: fdef .
-
-    $default  reduce using rule 33 (stmt)
-
-
-State 22
-
-   41 stmt: fdecl .
+   41 stmt: EXIT .
 
     $default  reduce using rule 41 (stmt)
 
 
-State 23
+State 16
 
-    2 fdef: DEF header stmt_list . END
-   22 stmt_list: stmt_list . stmt
+   36 stmt: BREAK .
+   37     | BREAK . ':' IDENTIFIER
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    END            shift, and go to state 58
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    ':'  shift, and go to state 53
 
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    $default  reduce using rule 36 (stmt)
 
 
-State 24
+State 17
 
-   31 stmt: pc .
+   38 stmt: CONT .
+   39     | CONT . ':' IDENTIFIER
 
-    $default  reduce using rule 31 (stmt)
+    ':'  shift, and go to state 54
 
-
-State 25
-
-   21 stmt_list: stmt .
-
-    $default  reduce using rule 21 (stmt_list)
+    $default  reduce using rule 38 (stmt)
 
 
-State 26
+State 18
 
-   44 stmt: fcall .
+   25 pc: IDENTIFIER . ':' param
+   26   | IDENTIFIER .
+   44 fcall: IDENTIFIER . '(' param ')'
+   45      | IDENTIFIER . '(' ')'
+   81 lval: IDENTIFIER .
 
-    $default  reduce using rule 44 (stmt)
+    ':'  shift, and go to state 55
+    '('  shift, and go to state 56
+
+    ASSIGNMENT  reduce using rule 81 (lval)
+    '['         reduce using rule 81 (lval)
+    $default    reduce using rule 26 (pc)
 
 
-State 27
+State 19
 
-   34 stmt: loop .
+   82 lval: STRINGLITERAL .
 
-    $default  reduce using rule 34 (stmt)
+    $default  reduce using rule 82 (lval)
 
 
-State 28
+State 20
 
-   32 stmt: mif .
+   32 stmt: fdef .
 
     $default  reduce using rule 32 (stmt)
 
 
+State 21
+
+   40 stmt: fdecl .
+
+    $default  reduce using rule 40 (stmt)
+
+
+State 22
+
+    1 fdef: DEF header stmt_list . END
+
+    END  shift, and go to state 57
+
+
+State 23
+
+   30 stmt: pc .
+
+    $default  reduce using rule 30 (stmt)
+
+
+State 24
+
+   20 stmt_list: stmt .
+   21          | stmt . stmt_list
+
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
+    DEF            shift, and go to state 1
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
+
+    $default  reduce using rule 20 (stmt_list)
+
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 58
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
+
+
+State 25
+
+   43 stmt: fcall .
+
+    $default  reduce using rule 43 (stmt)
+
+
+State 26
+
+   33 stmt: loop .
+
+    $default  reduce using rule 33 (stmt)
+
+
+State 27
+
+   31 stmt: mif .
+
+    $default  reduce using rule 31 (stmt)
+
+
+State 28
+
+   34 stmt: lval . ASSIGNMENT expression
+   83 lval: lval . '[' expression ']'
+
+    ASSIGNMENT  shift, and go to state 59
+    '['         shift, and go to state 60
+
+
 State 29
 
-   35 stmt: lval . ASSIGNMENT expression
-   84 lval: lval . '[' expression ']'
+   22 type: INT .
 
-    ASSIGNMENT  shift, and go to state 60
-    '['         shift, and go to state 61
+    $default  reduce using rule 22 (type)
 
 
 State 30
 
-   23 type: INT .
+   23 type: BYTE .
 
     $default  reduce using rule 23 (type)
 
 
 State 31
 
-   24 type: BYTE .
+    6 opt: IS type . ':' optparam
+    7    | IS type .
+   24 type: type . '[' CONST ']'
 
-    $default  reduce using rule 24 (type)
+    ':'  shift, and go to state 61
+    '['  shift, and go to state 62
+
+    $default  reduce using rule 7 (opt)
 
 
 State 32
 
-    7 opt: IS type . ':' optparam
-    8    | IS type .
-   25 type: type . '[' CONST ']'
+   46 idlist: IDENTIFIER .
+   47       | IDENTIFIER . idlist
 
-    ':'  shift, and go to state 62
-    '['  shift, and go to state 63
+    IDENTIFIER  shift, and go to state 32
 
-    $default  reduce using rule 8 (opt)
+    $default  reduce using rule 46 (idlist)
+
+    idlist  go to state 63
 
 
 State 33
 
-   47 idlist: IDENTIFIER .
-   48       | IDENTIFIER . idlist
+    4 header: IDENTIFIER ':' optparam .
 
-    IDENTIFIER  shift, and go to state 33
-
-    $default  reduce using rule 47 (idlist)
-
-    idlist  go to state 64
+    $default  reduce using rule 4 (header)
 
 
 State 34
 
-    5 header: IDENTIFIER ':' optparam .
+    8 optparam: idlist . AS ftype
+    9         | idlist . AS ftype ',' optparam
 
-    $default  reduce using rule 5 (header)
+    AS  shift, and go to state 64
 
 
 State 35
 
-    9 optparam: idlist . AS ftype
-   10         | idlist . AS ftype ',' optparam
+   63 condition: NOT . condition
 
-    AS  shift, and go to state 65
+    NOT            shift, and go to state 35
+    TRUE           shift, and go to state 36
+    FALSE          shift, and go to state 37
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 42
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    condition   go to state 65
+    expression  go to state 46
+    lval        go to state 47
 
 
 State 36
 
-   64 condition: NOT . condition
+   59 condition: TRUE .
 
-    NOT            shift, and go to state 36
-    TRUE           shift, and go to state 37
-    FALSE          shift, and go to state 38
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 43
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    condition   go to state 66
-    expression  go to state 47
-    lval        go to state 48
+    $default  reduce using rule 59 (condition)
 
 
 State 37
 
-   60 condition: TRUE .
+   60 condition: FALSE .
 
     $default  reduce using rule 60 (condition)
 
 
 State 38
 
-   61 condition: FALSE .
-
-    $default  reduce using rule 61 (condition)
-
-
-State 39
-
-   79 expression: CONST .
-
-    $default  reduce using rule 79 (expression)
-
-
-State 40
-
-   45 fcall: IDENTIFIER . '(' param ')'
-   46      | IDENTIFIER . '(' ')'
-   82 lval: IDENTIFIER .
-
-    '('  shift, and go to state 57
-
-    $default  reduce using rule 82 (lval)
-
-
-State 41
-
-   75 expression: '+' . expression
-
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    expression  go to state 68
-    lval        go to state 48
-
-
-State 42
-
-   76 expression: '-' . expression
-
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    expression  go to state 69
-    lval        go to state 48
-
-
-State 43
-
-   65 condition: '(' . condition ')'
-   80 expression: '(' . expression ')'
-
-    NOT            shift, and go to state 36
-    TRUE           shift, and go to state 37
-    FALSE          shift, and go to state 38
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 43
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    condition   go to state 70
-    expression  go to state 71
-    lval        go to state 48
-
-
-State 44
-
-   77 expression: '!' . expression
-
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    expression  go to state 72
-    lval        go to state 48
-
-
-State 45
-
-   81 expression: fcall .
-
-    $default  reduce using rule 81 (expression)
-
-
-State 46
-
-   51 mif: IF condition . ':' stmt_list END ELSE ':' stmt_list END
-   52    | IF condition . ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt
-   53    | IF condition . ':' stmt_list END
-   62 condition: condition . AND condition
-   63          | condition . OR condition
-
-    AND  shift, and go to state 73
-    OR   shift, and go to state 74
-    ':'  shift, and go to state 75
-
-
-State 47
-
-   54 condition: expression . LARGER expression
-   55          | expression . SMALLER expression
-   56          | expression . LARGEREQ expression
-   57          | expression . SMALLEREQ expression
-   58          | expression . EQ expression
-   59          | expression . DIFF expression
-   66          | expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-
-    EQ         shift, and go to state 76
-    DIFF       shift, and go to state 77
-    LARGER     shift, and go to state 78
-    SMALLER    shift, and go to state 79
-    LARGEREQ   shift, and go to state 80
-    SMALLEREQ  shift, and go to state 81
-    '+'        shift, and go to state 82
-    '-'        shift, and go to state 83
-    '|'        shift, and go to state 84
-    '*'        shift, and go to state 85
-    '/'        shift, and go to state 86
-    '&'        shift, and go to state 87
-
-    $default  reduce using rule 66 (condition)
-
-
-State 48
-
-   78 expression: lval .
-   84 lval: lval . '[' expression ']'
-
-    '['  shift, and go to state 61
+   78 expression: CONST .
 
     $default  reduce using rule 78 (expression)
 
 
+State 39
+
+   44 fcall: IDENTIFIER . '(' param ')'
+   45      | IDENTIFIER . '(' ')'
+   81 lval: IDENTIFIER .
+
+    '('  shift, and go to state 56
+
+    $default  reduce using rule 81 (lval)
+
+
+State 40
+
+   74 expression: '+' . expression
+
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    expression  go to state 67
+    lval        go to state 47
+
+
+State 41
+
+   75 expression: '-' . expression
+
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    expression  go to state 68
+    lval        go to state 47
+
+
+State 42
+
+   64 condition: '(' . condition ')'
+   79 expression: '(' . expression ')'
+
+    NOT            shift, and go to state 35
+    TRUE           shift, and go to state 36
+    FALSE          shift, and go to state 37
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 42
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    condition   go to state 69
+    expression  go to state 70
+    lval        go to state 47
+
+
+State 43
+
+   76 expression: '!' . expression
+
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    expression  go to state 71
+    lval        go to state 47
+
+
+State 44
+
+   80 expression: fcall .
+
+    $default  reduce using rule 80 (expression)
+
+
+State 45
+
+   50 mif: IF condition . ':' stmt_list END ELSE ':' stmt_list END
+   51    | IF condition . ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt
+   52    | IF condition . ':' stmt_list END
+   61 condition: condition . AND condition
+   62          | condition . OR condition
+
+    AND  shift, and go to state 72
+    OR   shift, and go to state 73
+    ':'  shift, and go to state 74
+
+
+State 46
+
+   53 condition: expression . LARGER expression
+   54          | expression . SMALLER expression
+   55          | expression . LARGEREQ expression
+   56          | expression . SMALLEREQ expression
+   57          | expression . EQ expression
+   58          | expression . DIFF expression
+   65          | expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+
+    EQ         shift, and go to state 75
+    DIFF       shift, and go to state 76
+    LARGER     shift, and go to state 77
+    SMALLER    shift, and go to state 78
+    LARGEREQ   shift, and go to state 79
+    SMALLEREQ  shift, and go to state 80
+    '+'        shift, and go to state 81
+    '-'        shift, and go to state 82
+    '|'        shift, and go to state 83
+    '*'        shift, and go to state 84
+    '/'        shift, and go to state 85
+    '&'        shift, and go to state 86
+
+    $default  reduce using rule 65 (condition)
+
+
+State 47
+
+   77 expression: lval .
+   83 lval: lval . '[' expression ']'
+
+    '['  shift, and go to state 60
+
+    $default  reduce using rule 77 (expression)
+
+
+State 48
+
+   48 loop: LOOP IDENTIFIER . ':' stmt_list END
+
+    ':'  shift, and go to state 87
+
+
 State 49
 
-   49 loop: LOOP IDENTIFIER . ':' stmt_list END
+   49 loop: LOOP ':' . stmt_list END
 
-    ':'  shift, and go to state 88
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
+    DEF            shift, and go to state 1
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
+
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 88
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 50
 
-   50 loop: LOOP ':' . stmt_list END
+    2 fdecl: DECL header .
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 89
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
+    $default  reduce using rule 2 (fdecl)
 
 
 State 51
 
-    3 fdecl: DECL header .
+   35 stmt: VAR idlist . IS type
 
-    $default  reduce using rule 3 (fdecl)
+    IS  shift, and go to state 89
 
 
 State 52
 
-   36 stmt: VAR idlist . IS type
+   42 stmt: RETURN ':' . expression
 
-    IS  shift, and go to state 90
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    expression  go to state 90
+    lval        go to state 47
 
 
 State 53
 
-   43 stmt: RETURN ':' . expression
+   37 stmt: BREAK ':' . IDENTIFIER
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    expression  go to state 91
-    lval        go to state 48
+    IDENTIFIER  shift, and go to state 91
 
 
 State 54
 
-   38 stmt: BREAK ':' . IDENTIFIER
+   39 stmt: CONT ':' . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 92
 
 
 State 55
 
-   40 stmt: CONT ':' . IDENTIFIER
+   25 pc: IDENTIFIER ':' . param
 
-    IDENTIFIER  shift, and go to state 93
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
+
+    param       go to state 93
+    fcall       go to state 44
+    expression  go to state 94
+    lval        go to state 47
 
 
 State 56
 
-   26 pc: IDENTIFIER ':' . param
+   44 fcall: IDENTIFIER '(' . param ')'
+   45      | IDENTIFIER '(' . ')'
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    ')'            shift, and go to state 95
+    '!'            shift, and go to state 43
 
-    param       go to state 94
-    fcall       go to state 45
-    expression  go to state 95
-    lval        go to state 48
+    param       go to state 96
+    fcall       go to state 44
+    expression  go to state 94
+    lval        go to state 47
 
 
 State 57
 
-   45 fcall: IDENTIFIER '(' . param ')'
-   46      | IDENTIFIER '(' . ')'
+    1 fdef: DEF header stmt_list END .
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    ')'            shift, and go to state 96
-    '!'            shift, and go to state 44
-
-    param       go to state 97
-    fcall       go to state 45
-    expression  go to state 95
-    lval        go to state 48
+    $default  reduce using rule 1 (fdef)
 
 
 State 58
 
-    2 fdef: DEF header stmt_list END .
+   21 stmt_list: stmt stmt_list .
 
-    $default  reduce using rule 2 (fdef)
+    $default  reduce using rule 21 (stmt_list)
 
 
 State 59
 
-   22 stmt_list: stmt_list stmt .
+   34 stmt: lval ASSIGNMENT . expression
 
-    $default  reduce using rule 22 (stmt_list)
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    expression  go to state 97
+    lval        go to state 47
 
 
 State 60
 
-   35 stmt: lval ASSIGNMENT . expression
+   83 lval: lval '[' . expression ']'
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 98
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 61
 
-   84 lval: lval '[' . expression ']'
+    6 opt: IS type ':' . optparam
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    IDENTIFIER  shift, and go to state 32
 
-    fcall       go to state 45
-    expression  go to state 99
-    lval        go to state 48
+    optparam  go to state 99
+    idlist    go to state 34
 
 
 State 62
 
-    7 opt: IS type ':' . optparam
+   24 type: type '[' . CONST ']'
 
-    IDENTIFIER  shift, and go to state 33
-
-    optparam  go to state 100
-    idlist    go to state 35
+    CONST  shift, and go to state 100
 
 
 State 63
 
-   25 type: type '[' . CONST ']'
+   47 idlist: IDENTIFIER idlist .
 
-    CONST  shift, and go to state 101
+    $default  reduce using rule 47 (idlist)
 
 
 State 64
 
-   48 idlist: IDENTIFIER idlist .
+    8 optparam: idlist AS . ftype
+    9         | idlist AS . ftype ',' optparam
 
-    $default  reduce using rule 48 (idlist)
+    INT   shift, and go to state 101
+    BYTE  shift, and go to state 102
+    REF   shift, and go to state 103
+
+    ftype  go to state 104
+    bp     go to state 105
 
 
 State 65
 
-    9 optparam: idlist AS . ftype
-   10         | idlist AS . ftype ',' optparam
+   61 condition: condition . AND condition
+   62          | condition . OR condition
+   63          | NOT condition .
 
-    INT   shift, and go to state 102
-    BYTE  shift, and go to state 103
-    REF   shift, and go to state 104
-
-    ftype  go to state 105
-    bp     go to state 106
+    $default  reduce using rule 63 (condition)
 
 
 State 66
 
-   62 condition: condition . AND condition
-   63          | condition . OR condition
-   64          | NOT condition .
+   79 expression: '(' . expression ')'
 
-    $default  reduce using rule 64 (condition)
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    expression  go to state 106
+    lval        go to state 47
 
 
 State 67
 
-   80 expression: '(' . expression ')'
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+   74           | '+' expression .
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    expression  go to state 107
-    lval        go to state 48
+    $default  reduce using rule 74 (expression)
 
 
 State 68
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-   75           | '+' expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+   75           | '-' expression .
 
     $default  reduce using rule 75 (expression)
 
 
 State 69
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-   76           | '-' expression .
+   61 condition: condition . AND condition
+   62          | condition . OR condition
+   64          | '(' condition . ')'
 
-    $default  reduce using rule 76 (expression)
+    AND  shift, and go to state 72
+    OR   shift, and go to state 73
+    ')'  shift, and go to state 107
 
 
 State 70
 
-   62 condition: condition . AND condition
-   63          | condition . OR condition
-   65          | '(' condition . ')'
+   53 condition: expression . LARGER expression
+   54          | expression . SMALLER expression
+   55          | expression . LARGEREQ expression
+   56          | expression . SMALLEREQ expression
+   57          | expression . EQ expression
+   58          | expression . DIFF expression
+   65          | expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+   79           | '(' expression . ')'
 
-    AND  shift, and go to state 73
-    OR   shift, and go to state 74
-    ')'  shift, and go to state 108
+    EQ         shift, and go to state 75
+    DIFF       shift, and go to state 76
+    LARGER     shift, and go to state 77
+    SMALLER    shift, and go to state 78
+    LARGEREQ   shift, and go to state 79
+    SMALLEREQ  shift, and go to state 80
+    '+'        shift, and go to state 81
+    '-'        shift, and go to state 82
+    '|'        shift, and go to state 83
+    '*'        shift, and go to state 84
+    '/'        shift, and go to state 85
+    '&'        shift, and go to state 86
+    ')'        shift, and go to state 108
+
+    ')'       [reduce using rule 65 (condition)]
+    $default  reduce using rule 65 (condition)
 
 
 State 71
 
-   54 condition: expression . LARGER expression
-   55          | expression . SMALLER expression
-   56          | expression . LARGEREQ expression
-   57          | expression . SMALLEREQ expression
-   58          | expression . EQ expression
-   59          | expression . DIFF expression
-   66          | expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-   80           | '(' expression . ')'
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+   76           | '!' expression .
 
-    EQ         shift, and go to state 76
-    DIFF       shift, and go to state 77
-    LARGER     shift, and go to state 78
-    SMALLER    shift, and go to state 79
-    LARGEREQ   shift, and go to state 80
-    SMALLEREQ  shift, and go to state 81
-    '+'        shift, and go to state 82
-    '-'        shift, and go to state 83
-    '|'        shift, and go to state 84
-    '*'        shift, and go to state 85
-    '/'        shift, and go to state 86
-    '&'        shift, and go to state 87
-    ')'        shift, and go to state 109
-
-    ')'       [reduce using rule 66 (condition)]
-    $default  reduce using rule 66 (condition)
+    $default  reduce using rule 76 (expression)
 
 
 State 72
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-   77           | '!' expression .
+   61 condition: condition AND . condition
 
-    $default  reduce using rule 77 (expression)
+    NOT            shift, and go to state 35
+    TRUE           shift, and go to state 36
+    FALSE          shift, and go to state 37
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 42
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    condition   go to state 109
+    expression  go to state 46
+    lval        go to state 47
 
 
 State 73
 
-   62 condition: condition AND . condition
+   62 condition: condition OR . condition
 
-    NOT            shift, and go to state 36
-    TRUE           shift, and go to state 37
-    FALSE          shift, and go to state 38
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 43
-    '!'            shift, and go to state 44
+    NOT            shift, and go to state 35
+    TRUE           shift, and go to state 36
+    FALSE          shift, and go to state 37
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 42
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     condition   go to state 110
-    expression  go to state 47
-    lval        go to state 48
+    expression  go to state 46
+    lval        go to state 47
 
 
 State 74
 
-   63 condition: condition OR . condition
+   50 mif: IF condition ':' . stmt_list END ELSE ':' stmt_list END
+   51    | IF condition ':' . stmt_list END ELIF condition ':' stmt_list END eliftstmt
+   52    | IF condition ':' . stmt_list END
 
-    NOT            shift, and go to state 36
-    TRUE           shift, and go to state 37
-    FALSE          shift, and go to state 38
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 43
-    '!'            shift, and go to state 44
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
+    DEF            shift, and go to state 1
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
 
-    fcall       go to state 45
-    condition   go to state 111
-    expression  go to state 47
-    lval        go to state 48
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 111
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 75
 
-   51 mif: IF condition ':' . stmt_list END ELSE ':' stmt_list END
-   52    | IF condition ':' . stmt_list END ELIF condition ':' stmt_list END eliftstmt
-   53    | IF condition ':' . stmt_list END
+   57 condition: expression EQ . expression
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 112
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
+    fcall       go to state 44
+    expression  go to state 112
+    lval        go to state 47
 
 
 State 76
 
-   58 condition: expression EQ . expression
+   58 condition: expression DIFF . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 113
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 77
 
-   59 condition: expression DIFF . expression
+   53 condition: expression LARGER . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 114
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 78
 
-   54 condition: expression LARGER . expression
+   54 condition: expression SMALLER . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 115
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 79
 
-   55 condition: expression SMALLER . expression
+   55 condition: expression LARGEREQ . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 116
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 80
 
-   56 condition: expression LARGEREQ . expression
+   56 condition: expression SMALLEREQ . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 117
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 81
 
-   57 condition: expression SMALLEREQ . expression
+   68 expression: expression '+' . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 118
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 82
 
-   69 expression: expression '+' . expression
+   69 expression: expression '-' . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 119
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 83
 
-   70 expression: expression '-' . expression
+   73 expression: expression '|' . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 120
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 84
 
-   74 expression: expression '|' . expression
+   70 expression: expression '*' . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 121
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 85
 
-   71 expression: expression '*' . expression
+   71 expression: expression '/' . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 122
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 86
 
-   72 expression: expression '/' . expression
+   72 expression: expression '&' . expression
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    fcall       go to state 45
+    fcall       go to state 44
     expression  go to state 123
-    lval        go to state 48
+    lval        go to state 47
 
 
 State 87
 
-   73 expression: expression '&' . expression
+   48 loop: LOOP IDENTIFIER ':' . stmt_list END
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
+    DEF            shift, and go to state 1
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
 
-    fcall       go to state 45
-    expression  go to state 124
-    lval        go to state 48
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 124
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 88
 
-   49 loop: LOOP IDENTIFIER ':' . stmt_list END
+   49 loop: LOOP ':' stmt_list . END
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 125
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
+    END  shift, and go to state 125
 
 
 State 89
 
-   22 stmt_list: stmt_list . stmt
-   50 loop: LOOP ':' stmt_list . END
+   35 stmt: VAR idlist IS . type
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    END            shift, and go to state 126
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    INT   shift, and go to state 29
+    BYTE  shift, and go to state 30
 
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    type  go to state 126
 
 
 State 90
 
-   36 stmt: VAR idlist IS . type
+   42 stmt: RETURN ':' expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    INT   shift, and go to state 30
-    BYTE  shift, and go to state 31
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
-    type  go to state 127
+    $default  reduce using rule 42 (stmt)
 
 
 State 91
 
-   43 stmt: RETURN ':' expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   37 stmt: BREAK ':' IDENTIFIER .
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
-
-    $default  reduce using rule 43 (stmt)
+    $default  reduce using rule 37 (stmt)
 
 
 State 92
 
-   38 stmt: BREAK ':' IDENTIFIER .
+   39 stmt: CONT ':' IDENTIFIER .
 
-    $default  reduce using rule 38 (stmt)
+    $default  reduce using rule 39 (stmt)
 
 
 State 93
 
-   40 stmt: CONT ':' IDENTIFIER .
+   25 pc: IDENTIFIER ':' param .
 
-    $default  reduce using rule 40 (stmt)
+    $default  reduce using rule 25 (pc)
 
 
 State 94
 
-   26 pc: IDENTIFIER ':' param .
+   27 param: expression . ',' param
+   28      | expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    $default  reduce using rule 26 (pc)
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
+    ','  shift, and go to state 127
+
+    $default  reduce using rule 28 (param)
 
 
 State 95
 
-   28 param: expression . ',' param
-   29      | expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   45 fcall: IDENTIFIER '(' ')' .
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
-    ','  shift, and go to state 128
-
-    $default  reduce using rule 29 (param)
+    $default  reduce using rule 45 (fcall)
 
 
 State 96
 
-   46 fcall: IDENTIFIER '(' ')' .
+   44 fcall: IDENTIFIER '(' param . ')'
 
-    $default  reduce using rule 46 (fcall)
+    ')'  shift, and go to state 128
 
 
 State 97
 
-   45 fcall: IDENTIFIER '(' param . ')'
+   34 stmt: lval ASSIGNMENT expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    ')'  shift, and go to state 129
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
+
+    $default  reduce using rule 34 (stmt)
 
 
 State 98
 
-   35 stmt: lval ASSIGNMENT expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+   83 lval: lval '[' expression . ']'
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
-
-    $default  reduce using rule 35 (stmt)
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
+    ']'  shift, and go to state 129
 
 
 State 99
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-   84 lval: lval '[' expression . ']'
+    6 opt: IS type ':' optparam .
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
-    ']'  shift, and go to state 130
+    $default  reduce using rule 6 (opt)
 
 
 State 100
 
-    7 opt: IS type ':' optparam .
+   24 type: type '[' CONST . ']'
 
-    $default  reduce using rule 7 (opt)
+    ']'  shift, and go to state 130
 
 
 State 101
 
-   25 type: type '[' CONST . ']'
+   13 ftype: INT .
+   15 bp: INT . '[' ']'
+   17   | INT . '[' CONST ']'
 
-    ']'  shift, and go to state 131
+    '['  shift, and go to state 131
+
+    $default  reduce using rule 13 (ftype)
 
 
 State 102
 
-   14 ftype: INT .
-   16 bp: INT . '[' ']'
-   18   | INT . '[' CONST ']'
+   14 ftype: BYTE .
+   16 bp: BYTE . '[' ']'
+   18   | BYTE . '[' CONST ']'
 
     '['  shift, and go to state 132
 
@@ -1577,910 +1556,767 @@ State 102
 
 State 103
 
-   15 ftype: BYTE .
-   17 bp: BYTE . '[' ']'
-   19   | BYTE . '[' CONST ']'
+   10 ftype: REF . INT
+   11      | REF . BYTE
 
-    '['  shift, and go to state 133
-
-    $default  reduce using rule 15 (ftype)
+    INT   shift, and go to state 133
+    BYTE  shift, and go to state 134
 
 
 State 104
 
-   11 ftype: REF . INT
-   12      | REF . BYTE
+    8 optparam: idlist AS ftype .
+    9         | idlist AS ftype . ',' optparam
 
-    INT   shift, and go to state 134
-    BYTE  shift, and go to state 135
+    ','  shift, and go to state 135
+
+    $default  reduce using rule 8 (optparam)
 
 
 State 105
 
-    9 optparam: idlist AS ftype .
-   10         | idlist AS ftype . ',' optparam
+   12 ftype: bp .
+   19 bp: bp . '[' CONST ']'
 
-    ','  shift, and go to state 136
+    '['  shift, and go to state 136
 
-    $default  reduce using rule 9 (optparam)
+    $default  reduce using rule 12 (ftype)
 
 
 State 106
 
-   13 ftype: bp .
-   20 bp: bp . '[' CONST ']'
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+   79           | '(' expression . ')'
 
-    '['  shift, and go to state 137
-
-    $default  reduce using rule 13 (ftype)
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
+    ')'  shift, and go to state 108
 
 
 State 107
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-   80           | '(' expression . ')'
+   64 condition: '(' condition ')' .
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
-    ')'  shift, and go to state 109
+    $default  reduce using rule 64 (condition)
 
 
 State 108
 
-   65 condition: '(' condition ')' .
+   79 expression: '(' expression ')' .
 
-    $default  reduce using rule 65 (condition)
+    $default  reduce using rule 79 (expression)
 
 
 State 109
 
-   80 expression: '(' expression ')' .
+   61 condition: condition . AND condition
+   61          | condition AND condition .
+   62          | condition . OR condition
 
-    $default  reduce using rule 80 (expression)
+    $default  reduce using rule 61 (condition)
 
 
 State 110
 
-   62 condition: condition . AND condition
-   62          | condition AND condition .
-   63          | condition . OR condition
+   61 condition: condition . AND condition
+   62          | condition . OR condition
+   62          | condition OR condition .
+
+    AND  shift, and go to state 72
 
     $default  reduce using rule 62 (condition)
 
 
 State 111
 
-   62 condition: condition . AND condition
-   63          | condition . OR condition
-   63          | condition OR condition .
+   50 mif: IF condition ':' stmt_list . END ELSE ':' stmt_list END
+   51    | IF condition ':' stmt_list . END ELIF condition ':' stmt_list END eliftstmt
+   52    | IF condition ':' stmt_list . END
 
-    AND  shift, and go to state 73
-
-    $default  reduce using rule 63 (condition)
+    END  shift, and go to state 137
 
 
 State 112
 
-   22 stmt_list: stmt_list . stmt
-   51 mif: IF condition ':' stmt_list . END ELSE ':' stmt_list END
-   52    | IF condition ':' stmt_list . END ELIF condition ':' stmt_list END eliftstmt
-   53    | IF condition ':' stmt_list . END
+   57 condition: expression EQ expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    END            shift, and go to state 138
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    $default  reduce using rule 57 (condition)
 
 
 State 113
 
-   58 condition: expression EQ expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   58 condition: expression DIFF expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
     $default  reduce using rule 58 (condition)
 
 
 State 114
 
-   59 condition: expression DIFF expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   53 condition: expression LARGER expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
-    $default  reduce using rule 59 (condition)
+    $default  reduce using rule 53 (condition)
 
 
 State 115
 
-   54 condition: expression LARGER expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   54 condition: expression SMALLER expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
     $default  reduce using rule 54 (condition)
 
 
 State 116
 
-   55 condition: expression SMALLER expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   55 condition: expression LARGEREQ expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
     $default  reduce using rule 55 (condition)
 
 
 State 117
 
-   56 condition: expression LARGEREQ expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   56 condition: expression SMALLEREQ expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '|'  shift, and go to state 83
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
     $default  reduce using rule 56 (condition)
 
 
 State 118
 
-   57 condition: expression SMALLEREQ expression .
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   68 expression: expression . '+' expression
+   68           | expression '+' expression .
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '+'  shift, and go to state 82
-    '-'  shift, and go to state 83
-    '|'  shift, and go to state 84
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
-    $default  reduce using rule 57 (condition)
+    $default  reduce using rule 68 (expression)
 
 
 State 119
 
-   69 expression: expression . '+' expression
-   69           | expression '+' expression .
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   69           | expression '-' expression .
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
     $default  reduce using rule 69 (expression)
 
 
 State 120
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   70           | expression '-' expression .
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
+   73           | expression '|' expression .
 
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
+    '*'  shift, and go to state 84
+    '/'  shift, and go to state 85
+    '&'  shift, and go to state 86
 
-    $default  reduce using rule 70 (expression)
+    $default  reduce using rule 73 (expression)
 
 
 State 121
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
-   74           | expression '|' expression .
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   70           | expression '*' expression .
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
-    '*'  shift, and go to state 85
-    '/'  shift, and go to state 86
-    '&'  shift, and go to state 87
-
-    $default  reduce using rule 74 (expression)
+    $default  reduce using rule 70 (expression)
 
 
 State 122
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   71           | expression '*' expression .
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   71           | expression '/' expression .
+   72           | expression . '&' expression
+   73           | expression . '|' expression
 
     $default  reduce using rule 71 (expression)
 
 
 State 123
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   72           | expression '/' expression .
-   73           | expression . '&' expression
-   74           | expression . '|' expression
+   68 expression: expression . '+' expression
+   69           | expression . '-' expression
+   70           | expression . '*' expression
+   71           | expression . '/' expression
+   72           | expression . '&' expression
+   72           | expression '&' expression .
+   73           | expression . '|' expression
 
     $default  reduce using rule 72 (expression)
 
 
 State 124
 
-   69 expression: expression . '+' expression
-   70           | expression . '-' expression
-   71           | expression . '*' expression
-   72           | expression . '/' expression
-   73           | expression . '&' expression
-   73           | expression '&' expression .
-   74           | expression . '|' expression
+   48 loop: LOOP IDENTIFIER ':' stmt_list . END
 
-    $default  reduce using rule 73 (expression)
+    END  shift, and go to state 138
 
 
 State 125
 
-   22 stmt_list: stmt_list . stmt
-   49 loop: LOOP IDENTIFIER ':' stmt_list . END
+   49 loop: LOOP ':' stmt_list END .
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    END            shift, and go to state 139
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    $default  reduce using rule 49 (loop)
 
 
 State 126
 
-   50 loop: LOOP ':' stmt_list END .
+   24 type: type . '[' CONST ']'
+   35 stmt: VAR idlist IS type .
 
-    $default  reduce using rule 50 (loop)
+    '['  shift, and go to state 62
+
+    $default  reduce using rule 35 (stmt)
 
 
 State 127
 
-   25 type: type . '[' CONST ']'
-   36 stmt: VAR idlist IS type .
+   27 param: expression ',' . param
 
-    '['  shift, and go to state 63
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 66
+    '!'            shift, and go to state 43
 
-    $default  reduce using rule 36 (stmt)
+    param       go to state 139
+    fcall       go to state 44
+    expression  go to state 94
+    lval        go to state 47
 
 
 State 128
 
-   28 param: expression ',' . param
+   44 fcall: IDENTIFIER '(' param ')' .
 
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 67
-    '!'            shift, and go to state 44
-
-    param       go to state 140
-    fcall       go to state 45
-    expression  go to state 95
-    lval        go to state 48
+    $default  reduce using rule 44 (fcall)
 
 
 State 129
 
-   45 fcall: IDENTIFIER '(' param ')' .
+   83 lval: lval '[' expression ']' .
 
-    $default  reduce using rule 45 (fcall)
+    $default  reduce using rule 83 (lval)
 
 
 State 130
 
-   84 lval: lval '[' expression ']' .
+   24 type: type '[' CONST ']' .
 
-    $default  reduce using rule 84 (lval)
+    $default  reduce using rule 24 (type)
 
 
 State 131
 
-   25 type: type '[' CONST ']' .
+   15 bp: INT '[' . ']'
+   17   | INT '[' . CONST ']'
 
-    $default  reduce using rule 25 (type)
+    CONST  shift, and go to state 140
+    ']'    shift, and go to state 141
 
 
 State 132
 
-   16 bp: INT '[' . ']'
-   18   | INT '[' . CONST ']'
+   16 bp: BYTE '[' . ']'
+   18   | BYTE '[' . CONST ']'
 
-    CONST  shift, and go to state 141
-    ']'    shift, and go to state 142
+    CONST  shift, and go to state 142
+    ']'    shift, and go to state 143
 
 
 State 133
 
-   17 bp: BYTE '[' . ']'
-   19   | BYTE '[' . CONST ']'
+   10 ftype: REF INT .
 
-    CONST  shift, and go to state 143
-    ']'    shift, and go to state 144
+    $default  reduce using rule 10 (ftype)
 
 
 State 134
 
-   11 ftype: REF INT .
+   11 ftype: REF BYTE .
 
     $default  reduce using rule 11 (ftype)
 
 
 State 135
 
-   12 ftype: REF BYTE .
+    9 optparam: idlist AS ftype ',' . optparam
 
-    $default  reduce using rule 12 (ftype)
+    IDENTIFIER  shift, and go to state 32
+
+    optparam  go to state 144
+    idlist    go to state 34
 
 
 State 136
 
-   10 optparam: idlist AS ftype ',' . optparam
+   19 bp: bp '[' . CONST ']'
 
-    IDENTIFIER  shift, and go to state 33
-
-    optparam  go to state 145
-    idlist    go to state 35
+    CONST  shift, and go to state 145
 
 
 State 137
 
-   20 bp: bp '[' . CONST ']'
+   50 mif: IF condition ':' stmt_list END . ELSE ':' stmt_list END
+   51    | IF condition ':' stmt_list END . ELIF condition ':' stmt_list END eliftstmt
+   52    | IF condition ':' stmt_list END .
 
-    CONST  shift, and go to state 146
+    ELSE  shift, and go to state 146
+    ELIF  shift, and go to state 147
+
+    $default  reduce using rule 52 (mif)
 
 
 State 138
 
-   51 mif: IF condition ':' stmt_list END . ELSE ':' stmt_list END
-   52    | IF condition ':' stmt_list END . ELIF condition ':' stmt_list END eliftstmt
-   53    | IF condition ':' stmt_list END .
+   48 loop: LOOP IDENTIFIER ':' stmt_list END .
 
-    ELSE  shift, and go to state 147
-    ELIF  shift, and go to state 148
-
-    $default  reduce using rule 53 (mif)
+    $default  reduce using rule 48 (loop)
 
 
 State 139
 
-   49 loop: LOOP IDENTIFIER ':' stmt_list END .
+   27 param: expression ',' param .
 
-    $default  reduce using rule 49 (loop)
+    $default  reduce using rule 27 (param)
 
 
 State 140
 
-   28 param: expression ',' param .
+   17 bp: INT '[' CONST . ']'
 
-    $default  reduce using rule 28 (param)
+    ']'  shift, and go to state 148
 
 
 State 141
 
-   18 bp: INT '[' CONST . ']'
+   15 bp: INT '[' ']' .
 
-    ']'  shift, and go to state 149
+    $default  reduce using rule 15 (bp)
 
 
 State 142
 
-   16 bp: INT '[' ']' .
+   18 bp: BYTE '[' CONST . ']'
 
-    $default  reduce using rule 16 (bp)
+    ']'  shift, and go to state 149
 
 
 State 143
 
-   19 bp: BYTE '[' CONST . ']'
+   16 bp: BYTE '[' ']' .
 
-    ']'  shift, and go to state 150
+    $default  reduce using rule 16 (bp)
 
 
 State 144
 
-   17 bp: BYTE '[' ']' .
+    9 optparam: idlist AS ftype ',' optparam .
 
-    $default  reduce using rule 17 (bp)
+    $default  reduce using rule 9 (optparam)
 
 
 State 145
 
-   10 optparam: idlist AS ftype ',' optparam .
+   19 bp: bp '[' CONST . ']'
 
-    $default  reduce using rule 10 (optparam)
+    ']'  shift, and go to state 150
 
 
 State 146
 
-   20 bp: bp '[' CONST . ']'
+   50 mif: IF condition ':' stmt_list END ELSE . ':' stmt_list END
 
-    ']'  shift, and go to state 151
+    ':'  shift, and go to state 151
 
 
 State 147
 
-   51 mif: IF condition ':' stmt_list END ELSE . ':' stmt_list END
+   51 mif: IF condition ':' stmt_list END ELIF . condition ':' stmt_list END eliftstmt
 
-    ':'  shift, and go to state 152
+    NOT            shift, and go to state 35
+    TRUE           shift, and go to state 36
+    FALSE          shift, and go to state 37
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 42
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    condition   go to state 152
+    expression  go to state 46
+    lval        go to state 47
 
 
 State 148
 
-   52 mif: IF condition ':' stmt_list END ELIF . condition ':' stmt_list END eliftstmt
+   17 bp: INT '[' CONST ']' .
 
-    NOT            shift, and go to state 36
-    TRUE           shift, and go to state 37
-    FALSE          shift, and go to state 38
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 43
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    condition   go to state 153
-    expression  go to state 47
-    lval        go to state 48
+    $default  reduce using rule 17 (bp)
 
 
 State 149
 
-   18 bp: INT '[' CONST ']' .
+   18 bp: BYTE '[' CONST ']' .
 
     $default  reduce using rule 18 (bp)
 
 
 State 150
 
-   19 bp: BYTE '[' CONST ']' .
+   19 bp: bp '[' CONST ']' .
 
     $default  reduce using rule 19 (bp)
 
 
 State 151
 
-   20 bp: bp '[' CONST ']' .
+   50 mif: IF condition ':' stmt_list END ELSE ':' . stmt_list END
 
-    $default  reduce using rule 20 (bp)
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
+    DEF            shift, and go to state 1
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
+
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 153
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 152
 
-   51 mif: IF condition ':' stmt_list END ELSE ':' . stmt_list END
+   51 mif: IF condition ':' stmt_list END ELIF condition . ':' stmt_list END eliftstmt
+   61 condition: condition . AND condition
+   62          | condition . OR condition
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 154
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
+    AND  shift, and go to state 72
+    OR   shift, and go to state 73
+    ':'  shift, and go to state 154
 
 
 State 153
 
-   52 mif: IF condition ':' stmt_list END ELIF condition . ':' stmt_list END eliftstmt
-   62 condition: condition . AND condition
-   63          | condition . OR condition
+   50 mif: IF condition ':' stmt_list END ELSE ':' stmt_list . END
 
-    AND  shift, and go to state 73
-    OR   shift, and go to state 74
-    ':'  shift, and go to state 155
+    END  shift, and go to state 155
 
 
 State 154
 
-   22 stmt_list: stmt_list . stmt
-   51 mif: IF condition ':' stmt_list END ELSE ':' stmt_list . END
+   51 mif: IF condition ':' stmt_list END ELIF condition ':' . stmt_list END eliftstmt
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
     DEF            shift, and go to state 1
-    END            shift, and go to state 156
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
 
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 156
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 155
 
-   52 mif: IF condition ':' stmt_list END ELIF condition ':' . stmt_list END eliftstmt
+   50 mif: IF condition ':' stmt_list END ELSE ':' stmt_list END .
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 157
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
+    $default  reduce using rule 50 (mif)
 
 
 State 156
 
-   51 mif: IF condition ':' stmt_list END ELSE ':' stmt_list END .
+   51 mif: IF condition ':' stmt_list END ELIF condition ':' stmt_list . END eliftstmt
 
-    $default  reduce using rule 51 (mif)
+    END  shift, and go to state 157
 
 
 State 157
 
-   22 stmt_list: stmt_list . stmt
-   52 mif: IF condition ':' stmt_list END ELIF condition ':' stmt_list . END eliftstmt
+   51 mif: IF condition ':' stmt_list END ELIF condition ':' stmt_list END . eliftstmt
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    END            shift, and go to state 158
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    ELSE  shift, and go to state 158
+    ELIF  shift, and go to state 159
 
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    eliftstmt  go to state 160
 
 
 State 158
 
-   52 mif: IF condition ':' stmt_list END ELIF condition ':' stmt_list END . eliftstmt
+   66 eliftstmt: ELSE . ':' stmt_list END
 
-    ELSE  shift, and go to state 159
-    ELIF  shift, and go to state 160
-
-    eliftstmt  go to state 161
+    ':'  shift, and go to state 161
 
 
 State 159
 
-   67 eliftstmt: ELSE . ':' stmt_list END
+   67 eliftstmt: ELIF . condition ':' stmt_list END eliftstmt
 
-    ':'  shift, and go to state 162
+    NOT            shift, and go to state 35
+    TRUE           shift, and go to state 36
+    FALSE          shift, and go to state 37
+    CONST          shift, and go to state 38
+    IDENTIFIER     shift, and go to state 39
+    STRINGLITERAL  shift, and go to state 19
+    '+'            shift, and go to state 40
+    '-'            shift, and go to state 41
+    '('            shift, and go to state 42
+    '!'            shift, and go to state 43
+
+    fcall       go to state 44
+    condition   go to state 162
+    expression  go to state 46
+    lval        go to state 47
 
 
 State 160
 
-   68 eliftstmt: ELIF . condition ':' stmt_list END eliftstmt
+   51 mif: IF condition ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt .
 
-    NOT            shift, and go to state 36
-    TRUE           shift, and go to state 37
-    FALSE          shift, and go to state 38
-    CONST          shift, and go to state 39
-    IDENTIFIER     shift, and go to state 40
-    STRINGLITERAL  shift, and go to state 20
-    '+'            shift, and go to state 41
-    '-'            shift, and go to state 42
-    '('            shift, and go to state 43
-    '!'            shift, and go to state 44
-
-    fcall       go to state 45
-    condition   go to state 163
-    expression  go to state 47
-    lval        go to state 48
+    $default  reduce using rule 51 (mif)
 
 
 State 161
 
-   52 mif: IF condition ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt .
+   66 eliftstmt: ELSE ':' . stmt_list END
 
-    $default  reduce using rule 52 (mif)
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
+    DEF            shift, and go to state 1
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
+
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 163
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 162
 
-   67 eliftstmt: ELSE ':' . stmt_list END
+   61 condition: condition . AND condition
+   62          | condition . OR condition
+   67 eliftstmt: ELIF condition . ':' stmt_list END eliftstmt
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 164
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
+    AND  shift, and go to state 72
+    OR   shift, and go to state 73
+    ':'  shift, and go to state 164
 
 
 State 163
 
-   62 condition: condition . AND condition
-   63          | condition . OR condition
-   68 eliftstmt: ELIF condition . ':' stmt_list END eliftstmt
+   66 eliftstmt: ELSE ':' stmt_list . END
 
-    AND  shift, and go to state 73
-    OR   shift, and go to state 74
-    ':'  shift, and go to state 165
+    END  shift, and go to state 165
 
 
 State 164
 
-   22 stmt_list: stmt_list . stmt
-   67 eliftstmt: ELSE ':' stmt_list . END
+   67 eliftstmt: ELIF condition ':' . stmt_list END eliftstmt
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
+    IF             shift, and go to state 9
+    LOOP           shift, and go to state 10
+    SKIP           shift, and go to state 11
+    DECL           shift, and go to state 12
     DEF            shift, and go to state 1
-    END            shift, and go to state 166
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    VAR            shift, and go to state 13
+    RETURN         shift, and go to state 14
+    EXIT           shift, and go to state 15
+    BREAK          shift, and go to state 16
+    CONT           shift, and go to state 17
+    IDENTIFIER     shift, and go to state 18
+    STRINGLITERAL  shift, and go to state 19
 
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    fdef       go to state 20
+    fdecl      go to state 21
+    stmt_list  go to state 166
+    pc         go to state 23
+    stmt       go to state 24
+    fcall      go to state 25
+    loop       go to state 26
+    mif        go to state 27
+    lval       go to state 28
 
 
 State 165
 
-   68 eliftstmt: ELIF condition ':' . stmt_list END eliftstmt
+   66 eliftstmt: ELSE ':' stmt_list END .
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
-
-    fdef       go to state 21
-    fdecl      go to state 22
-    stmt_list  go to state 167
-    pc         go to state 24
-    stmt       go to state 25
-    fcall      go to state 26
-    loop       go to state 27
-    mif        go to state 28
-    lval       go to state 29
+    $default  reduce using rule 66 (eliftstmt)
 
 
 State 166
 
-   67 eliftstmt: ELSE ':' stmt_list END .
+   67 eliftstmt: ELIF condition ':' stmt_list . END eliftstmt
 
-    $default  reduce using rule 67 (eliftstmt)
+    END  shift, and go to state 167
 
 
 State 167
 
-   22 stmt_list: stmt_list . stmt
-   68 eliftstmt: ELIF condition ':' stmt_list . END eliftstmt
+   67 eliftstmt: ELIF condition ':' stmt_list END . eliftstmt
 
-    IF             shift, and go to state 10
-    LOOP           shift, and go to state 11
-    SKIP           shift, and go to state 12
-    DECL           shift, and go to state 13
-    DEF            shift, and go to state 1
-    END            shift, and go to state 168
-    VAR            shift, and go to state 14
-    RETURN         shift, and go to state 15
-    EXIT           shift, and go to state 16
-    BREAK          shift, and go to state 17
-    CONT           shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-    STRINGLITERAL  shift, and go to state 20
+    ELSE  shift, and go to state 158
+    ELIF  shift, and go to state 159
 
-    fdef   go to state 21
-    fdecl  go to state 22
-    pc     go to state 24
-    stmt   go to state 59
-    fcall  go to state 26
-    loop   go to state 27
-    mif    go to state 28
-    lval   go to state 29
+    eliftstmt  go to state 168
 
 
 State 168
 
-   68 eliftstmt: ELIF condition ':' stmt_list END . eliftstmt
+   67 eliftstmt: ELIF condition ':' stmt_list END eliftstmt .
 
-    ELSE  shift, and go to state 159
-    ELIF  shift, and go to state 160
-
-    eliftstmt  go to state 169
-
-
-State 169
-
-   68 eliftstmt: ELIF condition ':' stmt_list END eliftstmt .
-
-    $default  reduce using rule 68 (eliftstmt)
+    $default  reduce using rule 67 (eliftstmt)
