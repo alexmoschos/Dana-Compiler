@@ -21,7 +21,18 @@ enum stmt_type {
     TASSIGN,
     TLOOP
 };
+enum ptype{
+    RINT,
+    RBYTE,
+    INTEG,
+    BYT,
+    INTA,
+    BYTA
+};
 class ASTlval;
+class ASTstmt;
+class ASTExpr;
+class ASTparam;
 class ASTNode{
     int he;
     //virtual void run();
@@ -36,12 +47,18 @@ public:
         ASTExpr(char,ASTlval*,int,ASTExpr*,ASTExpr*);
 };
 
-
-class ASTfdecl:ASTNode{
-
+class ASTheader:ASTNode{
+public:
+    ASTheader(int,ASTparam*);
+    ASTparam *paramlist;
+    int type;
 };
-class ASTfdef:ASTfdecl{
 
+class ASTfdef:ASTNode{
+public:
+    ASTfdef(ASTheader*,ASTstmt*);
+    ASTheader *header;
+    ASTstmt *body;
 };
 class ASTstmt:ASTNode{
 public:
@@ -62,5 +79,13 @@ public:
         }
         cout << endl;
     }
+};
+class ASTparam:ASTNode{
+public:
+    ASTparam(string,ptype,ASTparam*);
+    string identifier;
+    ptype p;
+    std::vector<int> *indices;
+    ASTparam *next;
 };
 #endif

@@ -17,6 +17,8 @@
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
+    ASTparam* parameter;
+    ASTheader* head;
     ASTlval* lvalue;
 	int const_val;
 	char* idstring;
@@ -30,10 +32,13 @@
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT BEG
 %token<const_val> CONST
 %token<idstring> IDENTIFIER STRINGLITERAL
-%type<func> fdef
+%type<func> fdef fdecl
 %type<statement> stmt_list stmt
 %type<expr> expression condition
+%type<head> header
 %type<lvalue> lval
+%type<parameter> optparam
+
 %left OR
 %left AND
 %nonassoc NOT
@@ -48,21 +53,18 @@
 
 %%
 fdef
-	:DEF header  stmt_list END
+	:DEF header  stmt_list END {$$ = new ASTfdef($2,$3);}
 	;
 
 fdecl
-	:DECL header
+	:DECL header       {$$ = new ASTfdef($2,NULL);}
 	;
 
 header
-	: IDENTIFIER opt
-	| IDENTIFIER ':' optparam
-	| IDENTIFIER
-	;
-opt
-	: IS type ':' optparam
-	| IS type
+	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader(0,NULL);}
+    | IDENTIFIER IS type
+	| IDENTIFIER ':' optparam  {$$ = new ASTheader(0,$3);}
+	| IDENTIFIER            {$$ = new ASTheader(0,NULL);}
 	;
 
 optparam

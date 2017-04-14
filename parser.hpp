@@ -96,11 +96,13 @@ union YYSTYPE
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
+    ASTparam* parameter;
+    ASTheader* head;
     ASTlval* lvalue;
 	int const_val;
 	char* idstring;
 
-#line 104 "parser.hpp" /* yacc.c:1909  */
+#line 106 "parser.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
