@@ -5,8 +5,10 @@ def main is int[10][20][30][40][50][60][70] : a as int[1][17]
    if 1 < 2:
      break : a
      continue: a
- helloworld: 42, 15, "hello world"
- return : 42 + 17
- exit
- if 1: skip 
+ Hello
+ loop a:
+   hello()
+   hello(1,2,34,3+4)
+   a(1,234, 3 * 5 + 2)
+
 	

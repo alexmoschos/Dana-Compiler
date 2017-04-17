@@ -33,6 +33,7 @@ class ASTlval;
 class ASTstmt;
 class ASTExpr;
 class ASTparam;
+class ASTfcall;
 class ASTNode{
     int he;
     //virtual void run();
@@ -44,6 +45,7 @@ public:
         int constant_val;
         ASTExpr* left;
         ASTExpr* right;
+        ASTfcall* f = NULL;
         ASTExpr(char,ASTlval*,int,ASTExpr*,ASTExpr*);
 };
 
@@ -62,9 +64,15 @@ public:
 };
 class ASTstmt:ASTNode{
 public:
-    ASTstmt(stmt_type,ASTstmt*);
+    ASTstmt(stmt_type,ASTstmt*,ASTstmt*,string);
+
     stmt_type type;
+    string label;
+    ASTlval *lvalue;
+    ASTExpr *expr;
+    ASTstmt *body;
     ASTstmt *tail;
+    ASTfdef *def;
 };
 class ASTlval:ASTNode{
 public:
@@ -85,7 +93,14 @@ public:
     ASTparam(string,ptype,ASTparam*);
     string identifier;
     ptype p;
+    //ASTtype with
     std::vector<int> *indices;
     ASTparam *next;
+};
+class ASTfcall:ASTNode{
+public:
+    ASTfcall(string);
+    string identifier;
+    vector<ASTExpr*>* parameters;
 };
 #endif

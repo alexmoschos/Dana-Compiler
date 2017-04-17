@@ -7,6 +7,7 @@
 
 	using namespace std;
 	extern int nl;
+    vector<ASTExpr*> *lastparam;
 	int yylex(void);
 	void yyerror (char const *s) {
 	 	fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
@@ -22,6 +23,8 @@
     ASTlval* lvalue;
 	int const_val;
 	char* idstring;
+    ASTfcall* funccall;
+    ptype p;
 }
 %expect 1
 
@@ -33,11 +36,14 @@
 %token<const_val> CONST
 %token<idstring> IDENTIFIER STRINGLITERAL
 %type<func> fdef fdecl
-%type<statement> stmt_list stmt
-%type<expr> expression condition
+%type<statement> stmt_list stmt loop mif
+%type<expr> expression condition param
 %type<head> header
 %type<lvalue> lval
 %type<parameter> optparam
+%type<p> ftype
+%type<funccall> fcall pc
+
 
 %left OR
 %left AND
@@ -61,23 +67,23 @@ fdecl
 	;
 
 header
-	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader(0,NULL);}
-    | IDENTIFIER IS type
-	| IDENTIFIER ':' optparam  {$$ = new ASTheader(0,$3);}
-	| IDENTIFIER            {$$ = new ASTheader(0,NULL);}
+	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader(0,$5);}
+    | IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
+	| IDENTIFIER ':' optparam      {$$ = new ASTheader(0,$3);}
+	| IDENTIFIER                   {$$ = new ASTheader(0,NULL);}
 	;
 
 optparam
-	: idlist AS ftype
-	| idlist AS ftype ',' optparam
+	: idlist AS ftype              {$$ = new ASTparam("test",$3,NULL);}
+	| idlist AS ftype ',' optparam {$$ = new ASTparam("test1",$3,$5);}
 	;
 
 ftype
-	: REF INT
-	| REF BYTE
-	| bp
-	| INT
-	| BYTE
+	: REF INT          {$$ = RINT;}
+	| REF BYTE         {$$ = RBYTE;}
+    | bp               {$$ = INTA;/*lathos*/}
+	| INT              {$$ = INTEG;}
+	| BYTE             {$$ = BYT;}
 
 bp
 	: INT '['']'
@@ -104,36 +110,57 @@ type
 
 
 pc
-	: IDENTIFIER ':' param
-	| IDENTIFIER
+	: IDENTIFIER ':' param     {$$ = new ASTfcall($1); $$->parameters = lastparam;lastparam = new vector<ASTExpr*>();}
+	| IDENTIFIER               {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
 
 param
-	: expression ',' param
-	| expression
+	: expression ',' param {lastparam->push_back($1);}
+	| expression           {lastparam->push_back($1);}
 	;
 
 stmt
-	: SKIP     {$$ = new ASTstmt(TSKIP,NULL);}
-	| pc       {$$ = new ASTstmt(TPC,NULL);}
-	| mif      {$$ = new ASTstmt(TIF,NULL);}
-	| fdef     {$$ = new ASTstmt(TFDEF,NULL);}
-	| loop     {$$ = new ASTstmt(TLOOP,NULL);}
-	| lval ASSIGNMENT expression       {$$ = new ASTstmt(TASSIGN,NULL);}
-	| VAR idlist IS type       {$$ = new ASTstmt(TDECL,NULL);}
-	| BREAK    {$$ = new ASTstmt(TBREAK,NULL);}
-	| BREAK ':' IDENTIFIER     {$$ = new ASTstmt(TBREAKM,NULL);}
-	| CONT     {$$ = new ASTstmt(TCONT,NULL);}
-	| CONT ':' IDENTIFIER      {$$ = new ASTstmt(TCONTM,NULL);}
-	| fdecl    {$$ = new ASTstmt(TFDECL,NULL);}
-	| EXIT     {$$ = new ASTstmt(TEXIT,NULL);}
-	| RETURN ':' expression    {$$ = new ASTstmt(TRET,NULL);}
-	| fcall    {$$ = new ASTstmt(TFCALL,NULL);}
+	: SKIP                     {$$ = new ASTstmt(TSKIP,NULL,NULL,"");}
+	| pc                       {
+                                    $$ = new ASTstmt(TPC,NULL,NULL,"");
+                                    $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
+                                    $$->expr->f = $1;
+                               }
+	| mif                      {$$ = $1;}
+	| fdef                     {
+                                    $$ = new ASTstmt(TFDEF,NULL,NULL,"");
+                                    $$->def = $1;
+                               }
+	| loop                     {$$ = $1;}
+	| lval ASSIGNMENT expression       {
+                                            $$ = new ASTstmt(TASSIGN,NULL,NULL,"");
+                                            $$->expr = $3;
+                                            $$->lvalue = $1;
+                                       }
+	| VAR idlist IS type       {$$ = new ASTstmt(TDECL,NULL,NULL,"");}
+	| BREAK                    {$$ = new ASTstmt(TBREAK,NULL,NULL,"");}
+	| BREAK ':' IDENTIFIER     {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
+	| CONT                     {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
+	| CONT ':' IDENTIFIER      {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}
+	| fdecl                    {
+                                    $$ = new ASTstmt(TFDECL,NULL,NULL,"");
+                                    $$->def = $1;
+                               }
+	| EXIT                     {$$ = new ASTstmt(TEXIT,NULL,NULL,"");}
+	| RETURN ':' expression    {
+                                    $$ = new ASTstmt(TRET,NULL,NULL,"");
+                                    $$->expr = $3;
+                               }
+	| fcall                 {
+                                $$ = new ASTstmt(TFCALL,NULL,NULL,"");
+                                $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
+                                $$->expr->f = $1;
+                            }
 	;
 
 fcall
-	: IDENTIFIER '(' param ')'
-	| IDENTIFIER '(' ')'
+	: IDENTIFIER '(' param ')' {$$ = new ASTfcall($1); $$->parameters = lastparam;lastparam = new vector<ASTExpr*>();}
+	| IDENTIFIER '(' ')'       {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
 
 idlist
@@ -141,14 +168,14 @@ idlist
 	| IDENTIFIER idlist
 	;
 loop
-	: LOOP IDENTIFIER ':'  stmt_list END {printf("Found loop\n");}
-	| LOOP ':'  stmt_list END	{printf("Found loop without identifier\n");}
+	: LOOP IDENTIFIER ':'  stmt_list END {$$ = new ASTstmt(TLOOP,NULL,NULL,$2);}
+	| LOOP ':'  stmt_list END	         {$$ = new ASTstmt(TLOOP,$3,NULL,"");}
 	;
 
 mif
-	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{}
-	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt
-	| IF condition ':'  stmt_list END	{}
+	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{$$ = new ASTstmt(TIF,$4,NULL,"");}
+	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt {$$ = new ASTstmt(TIF,$4,NULL,"");}
+	| IF condition ':'  stmt_list END  {$$ = new ASTstmt(TIF,$4,NULL,"");}
 	;
 
 condition
@@ -186,7 +213,7 @@ expression
 	| lval                             {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
 	| CONST                            {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
 	| '(' expression ')'               {$$ = $2;}
-	| fcall
+	| fcall                            {$$ = new ASTExpr('f',NULL,0,NULL,NULL); $$->f = $1;}
 	;
 lval
 	: IDENTIFIER                   {$$ = new ASTlval(false,$1);}
@@ -203,6 +230,7 @@ lval
 
 int main(){
     cout << "Parser Version 0.0.0.0011" << endl;
+    lastparam = new vector<ASTExpr*>();
 	yyparse();
 	//while(yylex());
 	printf("Hello World");

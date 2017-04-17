@@ -2,10 +2,13 @@
 #include <iostream>
 #include <string>
 using namespace std;
-ASTstmt::ASTstmt(stmt_type type, ASTstmt *tail){
+ASTstmt::ASTstmt(stmt_type type, ASTstmt *body,ASTstmt *tail,string label){
     this->type = type;
+    this->body = body;
     this->tail = tail;
+    this->label = label;
 }
+
 ASTExpr::ASTExpr(char op,ASTlval* operand,int constval,ASTExpr *left,ASTExpr *right){
     //cout << "hello world" << endl;
     this->op = op;
@@ -16,6 +19,10 @@ ASTExpr::ASTExpr(char op,ASTlval* operand,int constval,ASTExpr *left,ASTExpr *ri
 
 }
 
+ASTfcall::ASTfcall(string identifier){
+    this->identifier = identifier;
+    parameters = new vector<ASTExpr*>;
+}
 ASTlval::ASTlval(bool constant,string identifier){
     this->constant = constant;
     this->identifier = identifier;

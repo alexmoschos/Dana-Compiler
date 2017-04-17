@@ -1,0 +1,12 @@
+def main 
+ skip
+ if f(5) < f(6,555):
+  if g(42) - 15 == 5:
+   loop:
+    hello()
+    print:12 + 42,32
+ else:
+  hello()
+  loop:
+   hello
+	
