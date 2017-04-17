@@ -3,11 +3,11 @@
 	#include <stdio.h>
 	#include <string>
 	#include <iostream>
-    #include <vector>
+    	#include <vector>
 
 	using namespace std;
 	extern int nl;
-    vector<ASTExpr*> *lastparam;
+    	vector<ASTExpr*> *lastparam;
 	int yylex(void);
 	void yyerror (char const *s) {
 	 	fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
@@ -18,13 +18,13 @@
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
-    ASTparam* parameter;
-    ASTheader* head;
-    ASTlval* lvalue;
+    	ASTparam* parameter;
+    	ASTheader* head;
+    	ASTlval* lvalue;
 	int const_val;
 	char* idstring;
-    ASTfcall* funccall;
-    ptype p;
+    	ASTfcall* funccall;
+    	ptype p;
 }
 %expect 1
 
@@ -68,7 +68,7 @@ fdecl
 
 header
 	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader(0,$5);}
-    | IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
+    	| IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
 	| IDENTIFIER ':' optparam      {$$ = new ASTheader(0,$3);}
 	| IDENTIFIER                   {$$ = new ASTheader(0,NULL);}
 	;
@@ -81,7 +81,7 @@ optparam
 ftype
 	: REF INT          {$$ = RINT;}
 	| REF BYTE         {$$ = RBYTE;}
-    | bp               {$$ = INTA;/*lathos*/}
+    	| bp               {$$ = INTA;/*lathos*/}
 	| INT              {$$ = INTEG;}
 	| BYTE             {$$ = BYT;}
 
@@ -94,10 +94,10 @@ bp
 	;
 stmt_list
 	: stmt {$$ = $1;}
-	| stmt stmt_list   {
+	| stmt stmt_list{
                             $1->tail=$2;
                             $$ = $1;
-                       }
+                       	}
 	;
 
 
@@ -110,7 +110,11 @@ type
 
 
 pc
-	: IDENTIFIER ':' param     {$$ = new ASTfcall($1); $$->parameters = lastparam;lastparam = new vector<ASTExpr*>();}
+	: IDENTIFIER ':' param     {
+					$$ = new ASTfcall($1); 
+					$$->parameters = lastparam;
+					lastparam = new vector<ASTExpr*>();
+				   }
 	| IDENTIFIER               {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
 
@@ -121,18 +125,18 @@ param
 
 stmt
 	: SKIP                     {$$ = new ASTstmt(TSKIP,NULL,NULL,"");}
-	| pc                       {
+	| pc                   	{
                                     $$ = new ASTstmt(TPC,NULL,NULL,"");
                                     $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
                                     $$->expr->f = $1;
-                               }
+                               	}
 	| mif                      {$$ = $1;}
-	| fdef                     {
+	| fdef                 	{
                                     $$ = new ASTstmt(TFDEF,NULL,NULL,"");
                                     $$->def = $1;
-                               }
+                               	}
 	| loop                     {$$ = $1;}
-	| lval ASSIGNMENT expression       {
+	| lval ASSIGNMENT expression   {
                                             $$ = new ASTstmt(TASSIGN,NULL,NULL,"");
                                             $$->expr = $3;
                                             $$->lvalue = $1;
@@ -142,7 +146,7 @@ stmt
 	| BREAK ':' IDENTIFIER     {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
 	| CONT                     {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
 	| CONT ':' IDENTIFIER      {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}
-	| fdecl                    {
+	| fdecl                {
                                     $$ = new ASTstmt(TFDECL,NULL,NULL,"");
                                     $$->def = $1;
                                }
@@ -151,7 +155,7 @@ stmt
                                     $$ = new ASTstmt(TRET,NULL,NULL,"");
                                     $$->expr = $3;
                                }
-	| fcall                 {
+	| fcall             {
                                 $$ = new ASTstmt(TFCALL,NULL,NULL,"");
                                 $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
                                 $$->expr->f = $1;
@@ -202,14 +206,14 @@ eliftstmt
 
 expression
 	: expression '+' expression        {$$=new ASTExpr('+',NULL,0,$1,$3);}
-	| expression '-' expression	       {$$=new ASTExpr('-',NULL,0,$1,$3);}
-	| expression '*' expression	       {$$=new ASTExpr('*',NULL,0,$1,$3);}
-	| expression '/' expression	       {$$=new ASTExpr('/',NULL,0,$1,$3);}
+	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
+	| expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
+	| expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
 	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
 	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}
 	| '+' expression %prec UNARYPL     {$$=new ASTExpr('+',NULL,0,NULL,$2);}
 	| '-' expression %prec UNARYMINUS  {$$=new ASTExpr('-',NULL,0,NULL,$2);}
-    | '!' expression %prec BANGBANG    {$$=new ASTExpr('!',NULL,0,NULL,$2);}
+    	| '!' expression %prec BANGBANG    {$$=new ASTExpr('!',NULL,0,NULL,$2);}
 	| lval                             {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
 	| CONST                            {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
 	| '(' expression ')'               {$$ = $2;}
@@ -218,7 +222,7 @@ expression
 lval
 	: IDENTIFIER                   {$$ = new ASTlval(false,$1);}
 	| STRINGLITERAL                {$$ = new ASTlval(true,$1);}
-	| lval '['expression']'        {
+	| lval '['expression']'    {
                                         $1->indices->push_back($3);
                                         $$=$1;
                                         cout << $$->identifier << endl;
@@ -229,8 +233,8 @@ lval
 
 
 int main(){
-    cout << "Parser Version 0.0.0.0011" << endl;
-    lastparam = new vector<ASTExpr*>();
+	cout << "Parser Version 0.0.0.0011" << endl;
+	lastparam = new vector<ASTExpr*>();
 	yyparse();
 	//while(yylex());
 	printf("Hello World");
