@@ -21,8 +21,8 @@
     	ASTparam* parameter;
     	ASTheader* head;
     	ASTlval* lvalue;
-	int const_val;
-	char* idstring;
+		int const_val;
+		char* idstring;
     	ASTfcall* funccall;
     	ptype p;
 }
@@ -33,7 +33,7 @@
 %token EQ DIFF LARGER SMALLER RETURN EXIT REF
 %token LARGEREQ SMALLEREQ ASSIGNMENT
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT BEG
-%token<const_val> CONST
+%token<const_val> CONST CHAR_CONST
 %token<idstring> IDENTIFIER STRINGLITERAL
 %type<func> fdef fdecl
 %type<statement> stmt_list stmt loop mif
@@ -53,7 +53,7 @@
 %left '*' '/' '&'
 %precedence UNARYPL
 %precedence UNARYMINUS
-%precedence BANGBANG
+%precedence BANG
 
 
 
@@ -111,7 +111,7 @@ type
 
 pc
 	: IDENTIFIER ':' param     {
-					$$ = new ASTfcall($1); 
+					$$ = new ASTfcall($1);
 					$$->parameters = lastparam;
 					lastparam = new vector<ASTExpr*>();
 				   }
@@ -206,18 +206,19 @@ eliftstmt
 
 expression
 	: expression '+' expression        {$$=new ASTExpr('+',NULL,0,$1,$3);}
-	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
-	| expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
-	| expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
+	| expression '-' expression	       {$$=new ASTExpr('-',NULL,0,$1,$3);}
+	| expression '*' expression	       {$$=new ASTExpr('*',NULL,0,$1,$3);}
+	| expression '/' expression	       {$$=new ASTExpr('/',NULL,0,$1,$3);}
 	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
 	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}
 	| '+' expression %prec UNARYPL     {$$=new ASTExpr('+',NULL,0,NULL,$2);}
 	| '-' expression %prec UNARYMINUS  {$$=new ASTExpr('-',NULL,0,NULL,$2);}
-    	| '!' expression %prec BANGBANG    {$$=new ASTExpr('!',NULL,0,NULL,$2);}
+    	| '!' expression %prec BANG    {$$=new ASTExpr('!',NULL,0,NULL,$2);}
 	| lval                             {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
 	| CONST                            {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
 	| '(' expression ')'               {$$ = $2;}
 	| fcall                            {$$ = new ASTExpr('f',NULL,0,NULL,NULL); $$->f = $1;}
+	| CHAR_CONST                       {$$ = new ASTExpr('x',NULL,$1,NULL,NULL);}
 	;
 lval
 	: IDENTIFIER                   {$$ = new ASTlval(false,$1);}

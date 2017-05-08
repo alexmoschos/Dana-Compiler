@@ -78,11 +78,12 @@ extern int yydebug;
     CONT = 288,
     BEG = 289,
     CONST = 290,
-    IDENTIFIER = 291,
-    STRINGLITERAL = 292,
-    UNARYPL = 293,
-    UNARYMINUS = 294,
-    BANGBANG = 295
+    CHAR_CONST = 291,
+    IDENTIFIER = 292,
+    STRINGLITERAL = 293,
+    UNARYPL = 294,
+    UNARYMINUS = 295,
+    BANG = 296
   };
 #endif
 
@@ -99,12 +100,12 @@ union YYSTYPE
     	ASTparam* parameter;
     	ASTheader* head;
     	ASTlval* lvalue;
-	int const_val;
-	char* idstring;
+		int const_val;
+		char* idstring;
     	ASTfcall* funccall;
     	ptype p;
 
-#line 108 "parser.hpp" /* yacc.c:1909  */
+#line 109 "parser.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

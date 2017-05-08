@@ -16,13 +16,20 @@
 
 
 ID [a-zA-Z_][a-zA-Z0-9_]*
+HEX [0-9|A-F|a-f]
+ESCAPE \\(n|t|r|0|\\|\'|\"|x{HEX}{HEX})
 
 
 %{
+	//'
 #include <stdio.h>
 #include "ast.h"
 #include "parser.hpp"
 #include <string.h>
+int	fixChar (char *str, int *shift);
+int	fixHex (char *str);
+int charToInt (char);
+
 %}
 
 
@@ -126,7 +133,18 @@ ref 		{printf("Keyword: ref\n");return(REF);}
 ":"			{printf("Colon :\n");return(':');}
 
 "\""			{printf("Unclosed String Error\n");exit(-1);}
+\"([^\n\"\'\\]|{ESCAPE})*\" {
 
+								printf("String Literal %s \n",yytext);
+								yylval.idstring = strdup(yytext);
+								return(STRINGLITERAL);
+							}
+\'([^\"\'\\]|{ESCAPE})\'    {
+								//"
+								yylval.const_val = fixChar(yytext+1,NULL);
+								cout << "CHAAAAAAAAR" << (char)yylval.const_val << endl;;
+								return CHAR_CONST;
+							}
 
 "#".*            	{printf("comment found\n");}
 
@@ -141,11 +159,11 @@ ref 		{printf("Keyword: ref\n");return(REF);}
   "\n"             	; {nl++;}
   <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 }
-\"(\\.|[^\\"])*\"   { //"
-                            printf("String Literal %s \n",yytext);
-						    yylval.idstring = strdup(yytext);
-						    return(STRINGLITERAL);
-					}
+
+
+
+
+
 <<EOF>>         {
                         unput(0);
                         howmany=level;
@@ -191,6 +209,51 @@ int process_indent(char* line) {
 	}
 	return i;
 }
+
+int fixChar(char * str, int *shift)
+{
+	int dummy;
+	if(shift==NULL) shift=&dummy;
+
+	*shift=1;
+	if(str[0]!='\\') return str[0];
+
+	*shift=2;
+	switch(str[1]){
+		case 'n': return '\n';
+		case 't': return '\t';
+		case 'r': return '\r';
+		case '0': return '\0';
+		case '\\': return '\\';
+		case '\'': return '\'';
+		case '\"': return '\'';
+		case 'x': {*shift=4;  return fixHex(str+2); }
+		default : {printf("lexer: escape char, unmatched case"); exit(1);}
+	}
+}
+
+int fixHex(char * str)
+{
+	int d1,d2,hex;
+	d1=charToInt(str[0]);
+	d2=charToInt(str[1]);
+	hex = d1*16 + d2;
+	return hex;
+}
+
+int charToInt(char c)
+{
+	if(c>='0' && c<='9')
+		return c-'0';
+	else if(c>='a' && c<='f')
+		return c-'a'+10;
+	else if(c>='A' && c<='F')
+		return c-'A'+10;
+	else
+		printf("lexer: %s not a proper char expression",yytext);
+	return -1;
+}
+
 /*
 int main(int argc, char const *argv[])
 {
