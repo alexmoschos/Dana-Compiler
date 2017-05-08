@@ -15,7 +15,7 @@
         vector<ASTExpr*> *lastparam;
         vector<string> *identifiers;
  	int yylex(void);
-
+        int i = 0;
 
 	void yyerror (char const *s) {
             fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
@@ -77,10 +77,10 @@ fdecl
 	;
 
 header
-	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader(0,$5);}
-        | IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
-	| IDENTIFIER ':' optparam      {$$ = new ASTheader(0,$3);}
-	| IDENTIFIER                   {$$ = new ASTheader(0,NULL);}
+	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader($3,$5);}
+        | IDENTIFIER IS type           {$$ = new ASTheader($3,NULL);}
+	| IDENTIFIER ':' optparam      {$$ = new ASTheader(typeVoid,$3);}
+	| IDENTIFIER                   {$$ = new ASTheader(typeVoid,NULL);}
 	;
 
 optparam
@@ -209,13 +209,13 @@ fcall
 
 idlist
 	: IDENTIFIER        {
-                                cout << "first" << endl;
+                                //cout << "first" << endl;
                                 identifiers = new vector<string>();
                                 identifiers->push_back($1);
                                 $$ = identifiers;
                             }
 	| idlist IDENTIFIER {
-                                cout << "second" << endl;
+                                //cout << "second" << endl;
                                 identifiers->push_back($2);
                             }
 	;
@@ -288,7 +288,8 @@ int main(){
 
 	last_array_size = 1;
 	lastparam = new vector<ASTExpr*>();
-	yyparse();
-	//while(yylex());
-	printf("Hello World");
+	if(yyparse()) return -1;
+        	//while(yylex());
+	printf("Hello World\n");
+        printf("Wavepacket\n");
 }

@@ -80,7 +80,7 @@
         vector<ASTExpr*> *lastparam;
         vector<string> *identifiers;
  	int yylex(void);
-
+        int i = 0;
 
 	void yyerror (char const *s) {
             fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
@@ -1415,25 +1415,25 @@ yyreduce:
 
   case 4:
 #line 80 "parser.y" /* yacc.c:1646  */
-    {(yyval.head) = new ASTheader(0,(yyvsp[0].parameter));}
+    {(yyval.head) = new ASTheader((yyvsp[-2].var_type),(yyvsp[0].parameter));}
 #line 1420 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
 #line 81 "parser.y" /* yacc.c:1646  */
-    {(yyval.head) = new ASTheader(0,NULL);}
+    {(yyval.head) = new ASTheader((yyvsp[0].var_type),NULL);}
 #line 1426 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
 #line 82 "parser.y" /* yacc.c:1646  */
-    {(yyval.head) = new ASTheader(0,(yyvsp[0].parameter));}
+    {(yyval.head) = new ASTheader(typeVoid,(yyvsp[0].parameter));}
 #line 1432 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
 #line 83 "parser.y" /* yacc.c:1646  */
-    {(yyval.head) = new ASTheader(0,NULL);}
+    {(yyval.head) = new ASTheader(typeVoid,NULL);}
 #line 1438 "parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -1694,7 +1694,7 @@ yyreduce:
   case 46:
 #line 211 "parser.y" /* yacc.c:1646  */
     {
-                                cout << "first" << endl;
+                                //cout << "first" << endl;
                                 identifiers = new vector<string>();
                                 identifiers->push_back((yyvsp[0].idstring));
                                 (yyval.list) = identifiers;
@@ -1705,7 +1705,7 @@ yyreduce:
   case 47:
 #line 217 "parser.y" /* yacc.c:1646  */
     {
-                                cout << "second" << endl;
+                                //cout << "second" << endl;
                                 identifiers->push_back((yyvsp[0].idstring));
                             }
 #line 1712 "parser.cpp" /* yacc.c:1646  */
@@ -2165,7 +2165,8 @@ int main(){
 
 	last_array_size = 1;
 	lastparam = new vector<ASTExpr*>();
-	yyparse();
-	//while(yylex());
-	printf("Hello World");
+	if(yyparse()) return -1;
+        	//while(yylex());
+	printf("Hello World\n");
+        printf("Wavepacket\n");
 }
