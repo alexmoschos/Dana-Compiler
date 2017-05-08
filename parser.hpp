@@ -97,12 +97,12 @@ union YYSTYPE
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
-    ASTparam* parameter;
-    ASTheader* head;
-    ASTlval* lvalue;
+        ASTparam* parameter;
+        ASTheader* head;
+        ASTlval* lvalue;
 	int const_val;
 	char* idstring;
-    ASTfcall* funccall;
+        ASTfcall* funccall;
 	Type var_type;
 
 #line 109 "parser.hpp" /* yacc.c:1909  */

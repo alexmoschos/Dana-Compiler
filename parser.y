@@ -1,8 +1,8 @@
 %{
 	extern "C"
 	{
-    #include "symbol.h"
-    }
+        #include "symbol.h"
+        }
 
 	#include "ast.h"
 	#include <stdio.h>
@@ -12,8 +12,8 @@
 
 	using namespace std;
 	extern int nl;
-    vector<ASTExpr*> *lastparam;
-	int yylex(void);
+        vector<ASTExpr*> *lastparam;
+ 	int yylex(void);
 
 
 	void yyerror (char const *s) {
@@ -25,12 +25,12 @@
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
-    ASTparam* parameter;
-    ASTheader* head;
-    ASTlval* lvalue;
+        ASTparam* parameter;
+        ASTheader* head;
+        ASTlval* lvalue;
 	int const_val;
 	char* idstring;
-    ASTfcall* funccall;
+        ASTfcall* funccall;
 	Type var_type;
 }
 %expect 1
@@ -75,7 +75,7 @@ fdecl
 
 header
 	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader(0,$5);}
-    | IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
+        | IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
 	| IDENTIFIER ':' optparam      {$$ = new ASTheader(0,$3);}
 	| IDENTIFIER                   {$$ = new ASTheader(0,NULL);}
 	;
@@ -88,7 +88,7 @@ optparam
 ftype
 	: REF INT          {$$ = typeInteger;}
 	| REF BYTE         {$$ = typeChar;}
-    | bp               {}
+        | bp               {}
 	| INT              {$$ = typeInteger;}
 	| BYTE             {$$ = typeChar;}
 
@@ -104,37 +104,35 @@ stmt_list
 	| stmt stmt_list{
                             $1->tail=$2;
                             $$ = $1;
-                    }
+                        }
 	;
 
 
 
 type
 	 : type '[' CONST ']'{
-			                    last_array_size *= $3;
-								cout << "HEREEEE" << last_array_size << endl;
-		                 }
+			          last_array_size *= $3;
+                                  cout << "HEREEEE" << last_array_size << endl;
+		             }
 	| INT                {
-					         cout << "RIGHT NOW" << endl;
-		                     if(last_array_size > 1){
-			                     $$ = typeArray(last_array_size,typeInteger);
-								 cout << "WATCH OUT" << endl;
-								 cout << last_array_size << endl;
-								 last_array_size = 1;
-							 }
-							 else {
-								$$ = typeInteger;
-							 }
-						 }
-	| BYTE				 {
-		                     if(last_array_size > 1){
-			                     $$ = typeArray(last_array_size,typeChar);
-								 last_array_size = 1;
-							 }
-							 else {
-								$$ = typeChar;
-							 }
-						 }
+                                 cout << "RIGHT NOW" << endl;
+		                 if(last_array_size > 1){
+			             $$ = typeArray(last_array_size,typeInteger);
+                                     cout << "WATCH OUT" << endl;
+                                     cout << last_array_size << endl;
+                                     last_array_size = 1;
+                                 } else {
+                                     $$ = typeInteger; 
+                                 }
+                             }
+	| BYTE               {
+                                 if(last_array_size > 1){
+			             $$ = typeArray(last_array_size,typeChar);
+				     last_array_size = 1;
+				 } else {
+                                     $$ = typeChar;
+                                 }
+                             }
 
 	;
 
@@ -144,7 +142,7 @@ pc
 					               $$ = new ASTfcall($1);
 					               $$->parameters = lastparam;
 					               lastparam = new vector<ASTExpr*>();
-				               }
+			           }
 	| IDENTIFIER               {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
 
@@ -156,19 +154,19 @@ param
 stmt
 	: SKIP                  {$$ = new ASTstmt(TSKIP,NULL,NULL,"");}
 	| pc                   	{
-                                $$ = new ASTstmt(TPC,NULL,NULL,"");
-                                $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
-                                $$->expr->f = $1;
-                            }
+                                    $$ = new ASTstmt(TPC,NULL,NULL,"");
+                                    $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
+                                    $$->expr->f = $1;
+                                }
 	| mif                   {
 		                        $$ = $1;
 	                        }
 	| fdef                 	{
-                                $$ = new ASTstmt(TFDEF,NULL,NULL,"");
-                                $$->def = $1;
-                            }
+                                    $$ = new ASTstmt(TFDEF,NULL,NULL,"");
+                                    $$->def = $1;
+                                }
 	| loop                  {$$ = $1;}
-	| lval ASSIGNMENT expression   {
+	| lval ASSIGNMENT expression{
                                        $$ = new ASTstmt(TASSIGN,NULL,NULL,"");
                                        $$->expr = $3;
                                        $$->lvalue = $1;
@@ -179,19 +177,19 @@ stmt
 	| CONT                     {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
 	| CONT ':' IDENTIFIER      {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}
 	| fdecl                    {
-                                    $$ = new ASTstmt(TFDECL,NULL,NULL,"");
-                                    $$->def = $1;
-                               }
+                                       $$ = new ASTstmt(TFDECL,NULL,NULL,"");
+                                       $$->def = $1;
+                                   }
 	| EXIT                     {$$ = new ASTstmt(TEXIT,NULL,NULL,"");}
 	| RETURN ':' expression    {
-                                    $$ = new ASTstmt(TRET,NULL,NULL,"");
-                                    $$->expr = $3;
-                               }
-	| fcall             {
-                                $$ = new ASTstmt(TFCALL,NULL,NULL,"");
-                                $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
-                                $$->expr->f = $1;
-                        }
+                                       $$ = new ASTstmt(TRET,NULL,NULL,"");
+                                       $$->expr = $3;
+                                   }
+	| fcall            {
+                               $$ = new ASTstmt(TFCALL,NULL,NULL,"");
+                               $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
+                               $$->expr->f = $1;
+                           }
 	;
 
 fcall
@@ -238,14 +236,14 @@ eliftstmt
 
 expression
 	: expression '+' expression        {$$=new ASTExpr('+',NULL,0,$1,$3);}
-	| expression '-' expression	       {$$=new ASTExpr('-',NULL,0,$1,$3);}
-	| expression '*' expression	       {$$=new ASTExpr('*',NULL,0,$1,$3);}
-	| expression '/' expression	       {$$=new ASTExpr('/',NULL,0,$1,$3);}
+	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
+	| expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
+	| expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
 	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
 	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}
 	| '+' expression %prec UNARYPL     {$$=new ASTExpr('+',NULL,0,NULL,$2);}
 	| '-' expression %prec UNARYMINUS  {$$=new ASTExpr('-',NULL,0,NULL,$2);}
-    	| '!' expression %prec BANG    {$$=new ASTExpr('!',NULL,0,NULL,$2);}
+    	| '!' expression %prec BANG        {$$=new ASTExpr('!',NULL,0,NULL,$2);}
 	| lval                             {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
 	| CONST                            {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
 	| '(' expression ')'               {$$ = $2;}
@@ -256,7 +254,7 @@ expression
 lval
 	: IDENTIFIER                   {$$ = new ASTlval(false,$1);}
 	| STRINGLITERAL                {$$ = new ASTlval(true,$1);}
-	| lval '['expression']'        {
+	| lval '['expression']'    {
                                         $1->indices->push_back($3);
                                         $$=$1;
                                         cout << $$->identifier << endl;
