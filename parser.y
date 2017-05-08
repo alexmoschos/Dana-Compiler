@@ -13,11 +13,12 @@
 	using namespace std;
 	extern int nl;
         vector<ASTExpr*> *lastparam;
+        vector<string> *identifiers;
  	int yylex(void);
 
 
 	void yyerror (char const *s) {
-	 	fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
+            fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
 	int last_array_size;
 %}
@@ -32,6 +33,7 @@
 	char* idstring;
         ASTfcall* funccall;
 	Type var_type;
+        vector<string>* list;
 }
 %expect 1
 
@@ -50,6 +52,7 @@
 %type<parameter> optparam
 %type<var_type> ftype type
 %type<funccall> fcall pc
+%type<list> idlist
 
 
 %left OR
@@ -81,8 +84,14 @@ header
 	;
 
 optparam
-	: idlist AS ftype              {$$ = new ASTparam("test",$3,NULL);}
-	| idlist AS ftype ',' optparam {$$ = new ASTparam("test1",$3,$5);}
+	: idlist AS ftype              {
+                                           $$ = new ASTparam($1,$3,NULL);
+                                           for(auto i : *identifiers){
+                                                   cout << i << " ";
+                                           }
+                                           cout << endl;
+                                       }
+	| idlist AS ftype ',' optparam {$$ = new ASTparam($1,$3,$5);}
 	;
 
 ftype
@@ -91,6 +100,7 @@ ftype
         | bp               {}
 	| INT              {$$ = typeInteger;}
 	| BYTE             {$$ = typeChar;}
+        ;
 
 bp
 	: INT '['']'
@@ -112,17 +122,17 @@ stmt_list
 type
 	 : type '[' CONST ']'{
 			          last_array_size *= $3;
-                                  cout << "HEREEEE" << last_array_size << endl;
+                                  //cout << "HEREEEE" << last_array_size << endl;
 		             }
 	| INT                {
-                                 cout << "RIGHT NOW" << endl;
+                                 //cout << "RIGHT NOW" << endl;
 		                 if(last_array_size > 1){
 			             $$ = typeArray(last_array_size,typeInteger);
-                                     cout << "WATCH OUT" << endl;
-                                     cout << last_array_size << endl;
+                                     //cout << "WATCH OUT" << endl;
+                                     //cout << last_array_size << endl;
                                      last_array_size = 1;
                                  } else {
-                                     $$ = typeInteger; 
+                                     $$ = typeInteger;
                                  }
                              }
 	| BYTE               {
@@ -139,9 +149,9 @@ type
 
 pc
 	: IDENTIFIER ':' param     {
-					               $$ = new ASTfcall($1);
-					               $$->parameters = lastparam;
-					               lastparam = new vector<ASTExpr*>();
+                                       $$ = new ASTfcall($1);
+                                       $$->parameters = lastparam;
+                                       lastparam = new vector<ASTExpr*>();
 			           }
 	| IDENTIFIER               {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
@@ -198,12 +208,20 @@ fcall
 	;
 
 idlist
-	: IDENTIFIER
-	| IDENTIFIER idlist
+	: IDENTIFIER        {
+                                cout << "first" << endl;
+                                identifiers = new vector<string>();
+                                identifiers->push_back($1);
+                                $$ = identifiers;
+                            }
+	| idlist IDENTIFIER {
+                                cout << "second" << endl;
+                                identifiers->push_back($2);
+                            }
 	;
 loop
 	: LOOP IDENTIFIER ':'  stmt_list END {$$ = new ASTstmt(TLOOP,NULL,NULL,$2);}
-	| LOOP ':'  stmt_list END	         {$$ = new ASTstmt(TLOOP,$3,NULL,"");}
+	| LOOP ':'  stmt_list END	     {$$ = new ASTstmt(TLOOP,$3,NULL,"");}
 	;
 
 mif

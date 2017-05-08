@@ -37,8 +37,8 @@ ASTheader::ASTheader(Type type,ASTparam *list){
     this->paramlist = list;
 }
 
-ASTparam::ASTparam(string id, Type p, ASTparam *next){
-    this->identifier = id;
+ASTparam::ASTparam(vector<string>* id, Type p, ASTparam *next){
+    this->identifiers = id;
     this->p = p;
     this->indices = new vector<int>();
     this->next = next;

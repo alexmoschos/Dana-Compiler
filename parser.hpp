@@ -92,7 +92,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 24 "parser.y" /* yacc.c:1909  */
+#line 25 "parser.y" /* yacc.c:1909  */
 
 	ASTfdef* func;
 	ASTExpr* expr;
@@ -104,8 +104,9 @@ union YYSTYPE
 	char* idstring;
         ASTfcall* funccall;
 	Type var_type;
+        vector<string>* list;
 
-#line 109 "parser.hpp" /* yacc.c:1909  */
+#line 110 "parser.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -68,7 +68,7 @@ Grammar
    44      | IDENTIFIER '(' ')'
 
    45 idlist: IDENTIFIER
-   46       | IDENTIFIER idlist
+   46       | idlist IDENTIFIER
 
    47 loop: LOOP IDENTIFIER ':' stmt_list END
    48     | LOOP ':' stmt_list END
@@ -546,13 +546,8 @@ State 30
 State 31
 
    45 idlist: IDENTIFIER .
-   46       | IDENTIFIER . idlist
-
-    IDENTIFIER  shift, and go to state 31
 
     $default  reduce using rule 45 (idlist)
-
-    idlist  go to state 63
 
 
 State 32
@@ -566,8 +561,10 @@ State 33
 
     7 optparam: idlist . AS ftype
     8         | idlist . AS ftype ',' optparam
+   46 idlist: idlist . IDENTIFIER
 
-    AS  shift, and go to state 64
+    AS          shift, and go to state 63
+    IDENTIFIER  shift, and go to state 64
 
 
 State 34
@@ -815,8 +812,10 @@ State 50
 State 51
 
    34 stmt: VAR idlist . IS type
+   46 idlist: idlist . IDENTIFIER
 
-    IS  shift, and go to state 89
+    IS          shift, and go to state 89
+    IDENTIFIER  shift, and go to state 64
 
 
 State 52
@@ -960,13 +959,6 @@ State 62
 
 State 63
 
-   46 idlist: IDENTIFIER idlist .
-
-    $default  reduce using rule 46 (idlist)
-
-
-State 64
-
     7 optparam: idlist AS . ftype
     8         | idlist AS . ftype ',' optparam
 
@@ -976,6 +968,13 @@ State 64
 
     ftype  go to state 104
     bp     go to state 105
+
+
+State 64
+
+   46 idlist: idlist IDENTIFIER .
+
+    $default  reduce using rule 46 (idlist)
 
 
 State 65

@@ -85,8 +85,8 @@ public:
 };
 class ASTparam:ASTNode{
 public:
-    ASTparam(string,Type,ASTparam*);
-    string identifier;
+    ASTparam(vector<string>*,Type,ASTparam*);
+    vector<string>* identifiers;
     Type p;
     //ASTtype with
     std::vector<int> *indices;
