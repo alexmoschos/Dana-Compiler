@@ -1,5 +1,5 @@
 FLAGS = -std=c++11 -O2
-simple: lexer.o parser.o ast.o
+simple: lexer.o parser.o ast.o symbol.o general.o error.o
 	g++ -o $@ $^ -lfl
 
 lexer: lexer.cpp
@@ -13,6 +13,8 @@ parser.hpp parser.cpp: parser.y ast.h ast.cpp
 
 lexer.o: lexer.cpp parser.hpp
 
+
+parser.o: parser.cpp parser.hpp symbol.c symbol.h
 %.o: %.cpp
 	g++ $(FLAGS) -c $<
 

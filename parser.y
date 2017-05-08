@@ -1,30 +1,37 @@
 %{
+	extern "C"
+	{
+    #include "symbol.h"
+    }
+
 	#include "ast.h"
 	#include <stdio.h>
 	#include <string>
 	#include <iostream>
-    	#include <vector>
+	#include <vector>
 
 	using namespace std;
 	extern int nl;
-    	vector<ASTExpr*> *lastparam;
+    vector<ASTExpr*> *lastparam;
 	int yylex(void);
+
+
 	void yyerror (char const *s) {
 	 	fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
-
+	int last_array_size;
 %}
 %union{
 	ASTfdef* func;
 	ASTExpr* expr;
 	ASTstmt* statement;
-    	ASTparam* parameter;
-    	ASTheader* head;
-    	ASTlval* lvalue;
-		int const_val;
-		char* idstring;
-    	ASTfcall* funccall;
-    	ptype p;
+    ASTparam* parameter;
+    ASTheader* head;
+    ASTlval* lvalue;
+	int const_val;
+	char* idstring;
+    ASTfcall* funccall;
+	Type var_type;
 }
 %expect 1
 
@@ -41,7 +48,7 @@
 %type<head> header
 %type<lvalue> lval
 %type<parameter> optparam
-%type<p> ftype
+%type<var_type> ftype type
 %type<funccall> fcall pc
 
 
@@ -68,7 +75,7 @@ fdecl
 
 header
 	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader(0,$5);}
-    	| IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
+    | IDENTIFIER IS type           {$$ = new ASTheader(0,NULL);}
 	| IDENTIFIER ':' optparam      {$$ = new ASTheader(0,$3);}
 	| IDENTIFIER                   {$$ = new ASTheader(0,NULL);}
 	;
@@ -79,11 +86,11 @@ optparam
 	;
 
 ftype
-	: REF INT          {$$ = RINT;}
-	| REF BYTE         {$$ = RBYTE;}
-    	| bp               {$$ = INTA;/*lathos*/}
-	| INT              {$$ = INTEG;}
-	| BYTE             {$$ = BYT;}
+	: REF INT          {$$ = typeInteger;}
+	| REF BYTE         {$$ = typeChar;}
+    | bp               {}
+	| INT              {$$ = typeInteger;}
+	| BYTE             {$$ = typeChar;}
 
 bp
 	: INT '['']'
@@ -97,24 +104,47 @@ stmt_list
 	| stmt stmt_list{
                             $1->tail=$2;
                             $$ = $1;
-                       	}
+                    }
 	;
 
 
 
 type
-	: INT
-	| BYTE
-	| type '[' CONST ']'
+	 : type '[' CONST ']'{
+			                    last_array_size *= $3;
+								cout << "HEREEEE" << last_array_size << endl;
+		                 }
+	| INT                {
+					         cout << "RIGHT NOW" << endl;
+		                     if(last_array_size > 1){
+			                     $$ = typeArray(last_array_size,typeInteger);
+								 cout << "WATCH OUT" << endl;
+								 cout << last_array_size << endl;
+								 last_array_size = 1;
+							 }
+							 else {
+								$$ = typeInteger;
+							 }
+						 }
+	| BYTE				 {
+		                     if(last_array_size > 1){
+			                     $$ = typeArray(last_array_size,typeChar);
+								 last_array_size = 1;
+							 }
+							 else {
+								$$ = typeChar;
+							 }
+						 }
+
 	;
 
 
 pc
 	: IDENTIFIER ':' param     {
-					$$ = new ASTfcall($1);
-					$$->parameters = lastparam;
-					lastparam = new vector<ASTExpr*>();
-				   }
+					               $$ = new ASTfcall($1);
+					               $$->parameters = lastparam;
+					               lastparam = new vector<ASTExpr*>();
+				               }
 	| IDENTIFIER               {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
 
@@ -124,29 +154,31 @@ param
 	;
 
 stmt
-	: SKIP                     {$$ = new ASTstmt(TSKIP,NULL,NULL,"");}
+	: SKIP                  {$$ = new ASTstmt(TSKIP,NULL,NULL,"");}
 	| pc                   	{
-                                    $$ = new ASTstmt(TPC,NULL,NULL,"");
-                                    $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
-                                    $$->expr->f = $1;
-                               	}
-	| mif                      {$$ = $1;}
+                                $$ = new ASTstmt(TPC,NULL,NULL,"");
+                                $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
+                                $$->expr->f = $1;
+                            }
+	| mif                   {
+		                        $$ = $1;
+	                        }
 	| fdef                 	{
-                                    $$ = new ASTstmt(TFDEF,NULL,NULL,"");
-                                    $$->def = $1;
-                               	}
-	| loop                     {$$ = $1;}
+                                $$ = new ASTstmt(TFDEF,NULL,NULL,"");
+                                $$->def = $1;
+                            }
+	| loop                  {$$ = $1;}
 	| lval ASSIGNMENT expression   {
-                                            $$ = new ASTstmt(TASSIGN,NULL,NULL,"");
-                                            $$->expr = $3;
-                                            $$->lvalue = $1;
-                                       }
+                                       $$ = new ASTstmt(TASSIGN,NULL,NULL,"");
+                                       $$->expr = $3;
+                                       $$->lvalue = $1;
+                                   }
 	| VAR idlist IS type       {$$ = new ASTstmt(TDECL,NULL,NULL,"");}
 	| BREAK                    {$$ = new ASTstmt(TBREAK,NULL,NULL,"");}
 	| BREAK ':' IDENTIFIER     {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
 	| CONT                     {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
 	| CONT ':' IDENTIFIER      {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}
-	| fdecl                {
+	| fdecl                    {
                                     $$ = new ASTstmt(TFDECL,NULL,NULL,"");
                                     $$->def = $1;
                                }
@@ -159,7 +191,7 @@ stmt
                                 $$ = new ASTstmt(TFCALL,NULL,NULL,"");
                                 $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
                                 $$->expr->f = $1;
-                            }
+                        }
 	;
 
 fcall
@@ -220,10 +252,11 @@ expression
 	| fcall                            {$$ = new ASTExpr('f',NULL,0,NULL,NULL); $$->f = $1;}
 	| CHAR_CONST                       {$$ = new ASTExpr('x',NULL,$1,NULL,NULL);}
 	;
+
 lval
 	: IDENTIFIER                   {$$ = new ASTlval(false,$1);}
 	| STRINGLITERAL                {$$ = new ASTlval(true,$1);}
-	| lval '['expression']'    {
+	| lval '['expression']'        {
                                         $1->indices->push_back($3);
                                         $$=$1;
                                         cout << $$->identifier << endl;
@@ -235,6 +268,9 @@ lval
 
 int main(){
 	cout << "Parser Version 0.0.0.0011" << endl;
+	initSymbolTable(997);
+
+	last_array_size = 1;
 	lastparam = new vector<ASTExpr*>();
 	yyparse();
 	//while(yylex());

@@ -1,6 +1,4 @@
 #include "ast.h"
-#include <iostream>
-#include <string>
 using namespace std;
 ASTstmt::ASTstmt(stmt_type type, ASTstmt *body,ASTstmt *tail,string label){
     this->type = type;
@@ -34,12 +32,12 @@ ASTfdef::ASTfdef(ASTheader *header,ASTstmt *body){
     this->body = body;
 }
 
-ASTheader::ASTheader(int type,ASTparam *list){
+ASTheader::ASTheader(Type type,ASTparam *list){
     this->type = type;
     this->paramlist = list;
 }
 
-ASTparam::ASTparam(string id, ptype p, ASTparam *next){
+ASTparam::ASTparam(string id, Type p, ASTparam *next){
     this->identifier = id;
     this->p = p;
     this->indices = new vector<int>();

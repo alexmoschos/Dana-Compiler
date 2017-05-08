@@ -1,8 +1,10 @@
 #ifndef ast_h
 #define ast_h
+
+#include "symbol.h"
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 using namespace std;
 enum stmt_type {
     TSKIP,
@@ -21,14 +23,7 @@ enum stmt_type {
     TASSIGN,
     TLOOP
 };
-enum ptype{
-    RINT,
-    RBYTE,
-    INTEG,
-    BYT,
-    INTA,
-    BYTA
-};
+
 class ASTlval;
 class ASTstmt;
 class ASTExpr;
@@ -51,9 +46,9 @@ public:
 
 class ASTheader:ASTNode{
 public:
-    ASTheader(int,ASTparam*);
+    ASTheader(Type,ASTparam*);
     ASTparam *paramlist;
-    int type;
+    Type type;
 };
 
 class ASTfdef:ASTNode{
@@ -90,9 +85,9 @@ public:
 };
 class ASTparam:ASTNode{
 public:
-    ASTparam(string,ptype,ASTparam*);
+    ASTparam(string,Type,ASTparam*);
     string identifier;
-    ptype p;
+    Type p;
     //ASTtype with
     std::vector<int> *indices;
     ASTparam *next;
