@@ -105,8 +105,9 @@ union YYSTYPE
         ASTfcall* funccall;
 	Type var_type;
         vector<string>* list;
+        ASTif* ifp;
 
-#line 110 "parser.hpp" /* yacc.c:1909  */
+#line 111 "parser.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

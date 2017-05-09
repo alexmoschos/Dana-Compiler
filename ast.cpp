@@ -46,3 +46,9 @@ ASTparam::ASTparam(vector<string>* id, Type p, ASTparam *next){
     this->indices = new vector<int>();
     this->next = next;
 }
+ASTif::ASTif(ASTExpr* condition,ASTstmt* body){
+    this->tail = NULL;
+    this->condition = condition;
+    this->body = body;
+}
+

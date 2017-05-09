@@ -34,6 +34,7 @@
         ASTfcall* funccall;
 	Type var_type;
         vector<string>* list;
+        ASTif* ifp;
 }
 %expect 1
 
@@ -45,7 +46,8 @@
 %token<const_val> CONST CHAR_CONST
 %token<idstring> IDENTIFIER STRINGLITERAL
 %type<func> fdef fdecl
-%type<statement> stmt_list stmt loop mif
+%type<statement> stmt_list stmt loop 
+%type<ifp> mif eliftstmt
 %type<expr> expression condition param
 %type<head> header
 %type<lvalue> lval
@@ -169,7 +171,8 @@ stmt
                                     $$->expr->f = $1;
                                 }
 	| mif                   {
-		                        $$ = $1;
+		                        $$ = new ASTstmt(TIF,NULL,NULL,"");
+		                        $$->ifnode = $1;
 	                        }
 	| fdef                 	{
                                     $$ = new ASTstmt(TFDEF,NULL,NULL,"");
@@ -220,14 +223,24 @@ idlist
                             }
 	;
 loop
-	: LOOP IDENTIFIER ':'  stmt_list END {$$ = new ASTstmt(TLOOP,NULL,NULL,$2);}
+	: LOOP IDENTIFIER ':'  stmt_list END {$$ = new ASTstmt(TLOOP,$4,NULL,$2);}
 	| LOOP ':'  stmt_list END	     {$$ = new ASTstmt(TLOOP,$3,NULL,"");}
 	;
 
 mif
-	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{$$ = new ASTstmt(TIF,$4,NULL,"");}
-	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt {$$ = new ASTstmt(TIF,$4,NULL,"");}
-	| IF condition ':'  stmt_list END  {$$ = new ASTstmt(TIF,$4,NULL,"");}
+	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{
+		                                                            $$ = new ASTif($2,$4);
+		                                                            auto else_node = new ASTif(NULL,$8);
+		                                                            $$->tail = else_node;
+		                                                            else_node->tail = NULL;
+	                                                                }
+	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt {
+		       		                                                          $$ = new ASTif($2,$4);
+		                                                                          auto else_node = new ASTif($7,$9);
+		                                                                          $$->tail = else_node;
+		                                                                          else_node->tail = $11;
+	                                                                              }
+	| IF condition ':'  stmt_list END  {$$ = new ASTif($2,$4);}
 	;
 
 condition
@@ -248,8 +261,8 @@ condition
 
 
 eliftstmt
-	: ELSE ':'  stmt_list END
-	| ELIF condition ':'  stmt_list END eliftstmt
+	: ELSE ':'  stmt_list END {$$ = new ASTif(NULL,$3);}
+	| ELIF condition ':'  stmt_list END eliftstmt {$$ = new ASTif($2,$4);$$->tail=$6;}
 	;
 
 expression
@@ -289,6 +302,7 @@ int main(){
 	last_array_size = 1;
 	lastparam = new vector<ASTExpr*>();
 	if(yyparse()) return -1;
+
         	//while(yylex());
 	printf("Hello World\n");
         printf("Wavepacket\n");

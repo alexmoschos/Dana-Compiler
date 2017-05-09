@@ -1,5 +1,5 @@
 #/usr/bin/bash/
-for i in $(seq 1 9);
+for i in $(seq 1 10);
 do
 	./simple < test$i > /dev/null 
 	if [ $? -ne 0 ];	

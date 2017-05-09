@@ -26,12 +26,13 @@ enum stmt_type {
 
 class ASTlval;
 class ASTstmt;
+class ASTif;
 class ASTExpr;
 class ASTparam;
 class ASTfcall;
 class ASTNode{
     int he;
-    //virtual void run();
+    //virtual void run() = 0;
 };
 class ASTExpr:ASTNode{
 public:
@@ -65,6 +66,7 @@ public:
     string label;
     ASTlval *lvalue;
     ASTExpr *expr;
+    ASTif* ifnode;
     ASTstmt *body;
     ASTstmt *tail;
     ASTfdef *def;
@@ -97,5 +99,16 @@ public:
     ASTfcall(string);
     string identifier;
     vector<ASTExpr*>* parameters;
+};
+
+class ASTif
+{
+public:
+    ASTif(ASTExpr*,ASTstmt*);
+    ASTExpr* condition;
+    ASTstmt* body;
+    ASTif* tail;
+    //~ASTif();
+    
 };
 #endif
