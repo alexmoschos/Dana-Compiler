@@ -20,7 +20,7 @@
 	void yyerror (char const *s) {
             fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
-	int last_array_size;
+	bool isarray;
 %}
 %union{
 	ASTfdef* func;
@@ -52,7 +52,7 @@
 %type<head> header
 %type<lvalue> lval
 %type<parameter> optparam
-%type<var_type> ftype type
+%type<var_type> ftype type bp type_term
 %type<funccall> fcall pc
 %type<list> idlist
 
@@ -88,9 +88,8 @@ header
 optparam
 	: idlist AS ftype              {
                                            $$ = new ASTparam($1,$3,NULL);
-                                           for(auto i : *identifiers){
-                                                   cout << i << " ";
-                                           }
+                                           cout << endl;
+                                           if(equalType($3,typeIArray(typeInteger))) cout << "equal type bitch";
                                            cout << endl;
                                        }
 	| idlist AS ftype ',' optparam {$$ = new ASTparam($1,$3,$5);}
@@ -99,17 +98,17 @@ optparam
 ftype
 	: REF INT          {$$ = typeInteger;}
 	| REF BYTE         {$$ = typeChar;}
-        | bp               {}
+        | bp               {$$ = $1;}
 	| INT              {$$ = typeInteger;}
 	| BYTE             {$$ = typeChar;}
         ;
 
 bp
-	: INT '['']'
-	| BYTE '['']'
-	| INT '[' CONST ']'
-	| BYTE '[' CONST ']'
-	| bp '['CONST']'
+	: INT '['']'       {$$ = typeIArray(typeInteger);}
+	| BYTE '['']'      {$$ = typeIArray(typeChar);}
+	| INT '['CONST']'  {cout << "hair";$$ = typeIArray(typeInteger);}
+	| BYTE '['CONST']' {$$ = typeIArray(typeChar);}
+	| bp '['CONST']'   {cout << "giorgos";$$ = $1;}
 	;
 stmt_list
 	: stmt {$$ = $1;}
@@ -122,32 +121,14 @@ stmt_list
 
 
 type
-	 : type '[' CONST ']'{
-			          last_array_size *= $3;
-                                  //cout << "HEREEEE" << last_array_size << endl;
+	: type '[' CONST ']' {
+			        $$ = typeArray($3,$1->refType);
 		             }
-	| INT                {
-                                 //cout << "RIGHT NOW" << endl;
-		                 if(last_array_size > 1){
-			             $$ = typeArray(last_array_size,typeInteger);
-                                     //cout << "WATCH OUT" << endl;
-                                     //cout << last_array_size << endl;
-                                     last_array_size = 1;
-                                 } else {
-                                     $$ = typeInteger;
-                                 }
-                             }
-	| BYTE               {
-                                 if(last_array_size > 1){
-			             $$ = typeArray(last_array_size,typeChar);
-				     last_array_size = 1;
-				 } else {
-                                     $$ = typeChar;
-                                 }
-                             }
-
+        | type_term          {$$ = $1;}
 	;
-
+type_term
+	:INT      {$$ = typeInteger;}
+	|BYTE     {$$ = typeChar;}
 
 pc
 	: IDENTIFIER ':' param     {
@@ -299,11 +280,13 @@ int main(){
 	cout << "Parser Version 0.0.0.0011" << endl;
 	initSymbolTable(997);
 
-	last_array_size = 1;
+	isarray = 0;
 	lastparam = new vector<ASTExpr*>();
 	if(yyparse()) return -1;
-
+	Type a = typeArray(10,typeArray(10,typeInteger));
+        printType(a);
         	//while(yylex());
+        cout << endl;
 	printf("Hello World\n");
         printf("Wavepacket\n");
 }
