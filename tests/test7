@@ -1,2 +1,2 @@
-def h is int[17][100]: a b c d e kremmudi as int[17][42], kremmudaki skulos asthenoforo as byte
+def h is int[100]: a as int, hello as ref byte
    skip

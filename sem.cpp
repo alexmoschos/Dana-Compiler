@@ -62,23 +62,65 @@ void printSymbolTable ()
 }
 
 int sem_check_fdef(ASTfdef* func){
-        cout << "STOOOOOOOOOOOP" << endl;
+        if(func==NULL){
+                cout << "WAIT WHAT";
+                exit(-1);
+        }
         openScope();
-        cout << "HELOOOOOOOOOOOO" << endl;
-        if(func == NULL) cout << "WTF";
+
         ASTheader* header = func->header;
-        printf("TI GINETAI");
         SymbolEntry* f = newFunction(header->identifier.c_str());
-        printf("PIO PRIN");
         ASTparam *iter = header->paramlist;
-        printf("PRIN");
-        printType(iter->p);
-        cout << "META";
-        while(iter!=NULL){
+        while(iter != NULL){
+                for(auto st : *iter->identifiers){
+                        if(iter->byref)
+                                newParameter(st.c_str(),iter->p,PASS_BY_REFERENCE,f);
+                        else
+                                newParameter(st.c_str(),iter->p,PASS_BY_VALUE,f);
+                }
                 iter = iter->next;
         }
-        printf("BOB\n");
+
         endFunctionHeader(f,header->type);
         printSymbolTable();
+        sem_check_stmt(func->body);
         closeScope();
+        return 1;
+}
+int sem_check_stmt(ASTstmt* stmt){
+        if(stmt==NULL){
+                //cout << "DONE" << endl;
+                exit(0);
+        }
+        //TODO: maybe eliminate recursion , for auto i : stmts in func do sem_check_stmt(i);
+        //cout << "NEXT ONE" << endl;
+        switch(stmt->type){
+                case TSKIP: break;
+                case TPC: break;
+                case TIF: break;
+                case TFDEF:
+                        sem_check_fdef(stmt->def);
+                        break;
+                case TFDECL:
+                        //TODO: think about function declarations.
+                        break;
+                case TEXIT: break;
+                case TRET: break;
+                case TFCALL: break;
+                case TCONTM: break;
+                case TCONT: break;
+                case TBREAKM: break;
+                case TBREAK: break;
+                case TDECL:
+                        //cout << "Hello" << endl;
+                        for(auto st : *stmt->identifiers){
+                                newVariable(st.c_str(),stmt->t);
+                        }
+                        break;
+                case TASSIGN: break;
+                case TLOOP: break;
+        }
+        //printSymbolTable();
+        sem_check_stmt(stmt->tail);
+        return 0;
 }

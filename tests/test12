@@ -1,0 +1,19 @@
+def h : a b c d e kremmudi as int[17][42], kremmudaki skulos asthenoforo as byte
+   skip
+   var z x y l is int
+   skip
+   kremmudu := "helloworld"[0][1]
+   jedi := 'a'
+   decl g is int : skulaki puppy doggo as byte
+   skip
+   if condition :
+     skip
+   elif condition2 :
+     skip
+   elif condition3 :
+     skip
+     skip
+     f(42)
+   else:
+     skip
+   a := "fdasfdasf\""

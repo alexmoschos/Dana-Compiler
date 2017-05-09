@@ -41,7 +41,8 @@ ASTheader::ASTheader(Type type,ASTparam *list,string identifier){
 ASTparam::ASTparam(vector<string>* id, Type p, ASTparam *next){
     this->identifiers = id;
     this->p = p;
-    this->indices = new vector<int>();
+    this->byref = 0;
+    //this->indices = new vector<int>();
     this->next = next;
 }
 ASTif::ASTif(ASTExpr* condition,ASTstmt* body){

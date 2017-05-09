@@ -183,8 +183,8 @@ ref 		{return(REF);}
 
 %%
 unsigned int white_count(char* line) {
-  unsigned int count = 0 ;
-  while (*line == ' ')
+        unsigned int count = 0 ;
+        while (*line == ' ')
     count++, line++ ;
   return count ;
 }
@@ -197,9 +197,9 @@ int process_indent(char* line) {
 	int i = 0;
 	//printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
   	while (indent <= indent_stack[level]) {
-    	--level ;
+    	        --level ;
    		i++;
-    	if(level == -1) break;
+    	        if(level == -1) break;
 	}
 	return i;
 }

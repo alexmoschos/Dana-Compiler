@@ -15,7 +15,6 @@
         vector<ASTExpr*> *lastparam;
         vector<string> *identifiers;
  	int yylex(void);
-        int i = 0;
         ASTfdef* main_f;
 	void yyerror (char const *s) {
             fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
@@ -51,7 +50,7 @@
 %type<head> header
 %type<lvalue> lval
 %type<parameter> optparam
-%type<var_type> ftype type bp type_term
+%type<var_type> ftype type bp type_term reftype
 %type<funccall> fcall pc
 %type<list> idlist
 
@@ -91,23 +90,37 @@ optparam
 	: idlist AS ftype              {
                                            $$ = new ASTparam($1,$3,NULL);
                                            //cout << endl;
+
                                            //printType($3);
                                            //cout << endl;
                                        }
+        | idlist AS reftype            {
+                                           $$ = new ASTparam($1,$3,NULL);
+                                           $$->byref = 1;
+                                       }
 	| idlist AS ftype ',' optparam {
+                                           //cout << "HERE" << endl;
 		                           $$ = new ASTparam($1,$3,$5);
+
 		                           //cout << endl;
                                            //printType($3);
                                            //cout << endl;
 	                               }
+        | idlist AS reftype','optparam {
+                                           $$ = new ASTparam($1,$3,$5);
+                                           $$->byref = 1;
+                                       }
 	;
 
 ftype
-	: REF INT          {$$ = typeInteger;}
-	| REF BYTE         {$$ = typeChar;}
-        | bp               {$$ = $1;}
+        : bp               {$$ = $1;}
 	| INT              {$$ = typeInteger;}
 	| BYTE             {$$ = typeChar;}
+        ;
+
+reftype
+        : REF INT          {$$ = typeInteger;}
+        | REF BYTE         {$$ = typeChar;}
         ;
 
 bp
@@ -172,7 +185,7 @@ stmt
                                        $$->expr = $3;
                                        $$->lvalue = $1;
                                    }
-	| VAR idlist IS type       {$$ = new ASTstmt(TDECL,NULL,NULL,"");}
+	| VAR idlist IS type       {$$ = new ASTstmt(TDECL,NULL,NULL,""); $$->identifiers=$2;$$->t=$4;}
 	| BREAK                    {$$ = new ASTstmt(TBREAK,NULL,NULL,"");}
 	| BREAK ':' IDENTIFIER     {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
 	| CONT                     {$$ = new ASTstmt(TCONT,NULL,NULL,"");}

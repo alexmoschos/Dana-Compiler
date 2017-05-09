@@ -68,9 +68,11 @@ public:
     ASTlval *lvalue;
     ASTExpr *expr;
     ASTif* ifnode;
+    vector<string>* identifiers;
     ASTstmt *body;
     ASTstmt *tail;
     ASTfdef *def;
+    Type t;
 };
 class ASTlval:ASTNode{
 public:
@@ -92,6 +94,7 @@ public:
     vector<string>* identifiers;
     Type p;
     //ASTtype with
+    bool byref;
     //std::vector<int> *indices;
     ASTparam *next;
 };

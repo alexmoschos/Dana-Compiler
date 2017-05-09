@@ -1,5 +1,5 @@
 #/usr/bin/bash/
-for i in $(seq 1 11);
+for i in $(seq 1 12);
 do
 	./simple < "tests/"test$i > /dev/null 
 	if [ $? -ne 0 ];	
