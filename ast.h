@@ -95,7 +95,6 @@ public:
     Type p;
     //ASTtype with
     bool byref;
-    //std::vector<int> *indices;
     ASTparam *next;
 };
 class ASTfcall:ASTNode{

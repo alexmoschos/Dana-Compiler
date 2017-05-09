@@ -97,7 +97,9 @@ int sem_check_stmt(ASTstmt* stmt){
         switch(stmt->type){
                 case TSKIP: break;
                 case TPC: break;
-                case TIF: break;
+                case TIF:
+                        sem_check_expr(stmt->ifnode->condition);
+                        break;
                 case TFDEF:
                         sem_check_fdef(stmt->def);
                         break;
@@ -117,10 +119,91 @@ int sem_check_stmt(ASTstmt* stmt){
                                 newVariable(st.c_str(),stmt->t);
                         }
                         break;
-                case TASSIGN: break;
+                case TASSIGN:
+                        sem_check_expr(stmt->expr);
+                        break;
                 case TLOOP: break;
         }
         //printSymbolTable();
         sem_check_stmt(stmt->tail);
         return 0;
+}
+//TODO:fix error messages using error.h
+//TODO: Rwta gia default type cast apo int se char
+Type sem_check_expr(ASTExpr* expr){
+        if(expr==NULL){
+                return typeVoid;
+        }
+        Type left = sem_check_expr(expr->left);
+        Type right = sem_check_expr(expr->right);
+        switch(expr->op){
+                case '+':
+                        //FIXME: UNARYPLUS
+                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeInteger;
+                case '-':
+                        //FIXME: UNARYMINUS
+                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeInteger;
+                case '*':
+                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeInteger;
+                case '/':
+                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeInteger;
+                case '&':
+                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeInteger;
+                case '|':
+                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeInteger;
+                case '!': break;
+                case 'i': break;
+                case 'c': return typeInteger;
+                case 'f': break;
+                case 'x': return typeChar;
+                case '>': break;
+                case '<': break;
+                case 'l': break;
+                case 's': break;
+                case 'e': break;
+                case 'd': break;
+                case 'b': return typeChar;
+                case 'a':
+                        if(!equalType(left,typeChar) || !equalType(right,typeChar)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeChar;
+                case 'o':
+                        if(!equalType(left,typeChar) || !equalType(right,typeChar)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeChar;
+                case 'n':
+                        if(!equalType(right,typeChar)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeChar;
+        }
 }
