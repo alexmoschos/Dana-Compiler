@@ -79,7 +79,7 @@ fdecl
 	;
 
 header
-	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader($3,$5);}
+	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader($3,$5); cout << endl << endl;printType($3); cout << endl << endl;}
         | IDENTIFIER IS type           {$$ = new ASTheader($3,NULL);}
 	| IDENTIFIER ':' optparam      {$$ = new ASTheader(typeVoid,$3);}
 	| IDENTIFIER                   {$$ = new ASTheader(typeVoid,NULL);}
@@ -89,10 +89,15 @@ optparam
 	: idlist AS ftype              {
                                            $$ = new ASTparam($1,$3,NULL);
                                            cout << endl;
-                                           if(equalType($3,typeIArray(typeInteger))) cout << "equal type bitch";
+                                           printType($3);
                                            cout << endl;
                                        }
-	| idlist AS ftype ',' optparam {$$ = new ASTparam($1,$3,$5);}
+	| idlist AS ftype ',' optparam {
+		                           $$ = new ASTparam($1,$3,$5);
+		                           cout << endl;
+                                           printType($3);
+                                           cout << endl;
+	                               }
 	;
 
 ftype
@@ -106,9 +111,9 @@ ftype
 bp
 	: INT '['']'       {$$ = typeIArray(typeInteger);}
 	| BYTE '['']'      {$$ = typeIArray(typeChar);}
-	| INT '['CONST']'  {cout << "hair";$$ = typeIArray(typeInteger);}
-	| BYTE '['CONST']' {$$ = typeIArray(typeChar);}
-	| bp '['CONST']'   {cout << "giorgos";$$ = $1;}
+	| INT '['CONST']'  {$$ = typeArray($3,typeInteger);}
+	| BYTE '['CONST']' {$$ = typeArray($3,typeChar);}
+	| bp '['CONST']'   {$$ = typeArray($3,$1);}
 	;
 stmt_list
 	: stmt {$$ = $1;}
@@ -122,7 +127,7 @@ stmt_list
 
 type
 	: type '[' CONST ']' {
-			        $$ = typeArray($3,$1->refType);
+			        $$ = typeArray($3,$1);
 		             }
         | type_term          {$$ = $1;}
 	;
@@ -283,9 +288,10 @@ int main(){
 	isarray = 0;
 	lastparam = new vector<ASTExpr*>();
 	if(yyparse()) return -1;
-	Type a = typeArray(10,typeArray(10,typeInteger));
-        printType(a);
+	//Type a = typeArray(10,typeArray(10,typeInteger));
+        //printType(a);
         	//while(yylex());
+        //TODO: STRING IN FUCNTION HEADER
         cout << endl;
 	printf("Hello World\n");
         printf("Wavepacket\n");
