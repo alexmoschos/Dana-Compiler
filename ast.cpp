@@ -32,10 +32,8 @@ ASTfdef::ASTfdef(ASTheader *header,ASTstmt *body){
     this->body = body;
 }
 
-ASTheader::ASTheader(Type type,ASTparam *list){
-    if(type == typeVoid){
-            cout << "PROCEDURE HEADER FOUND" << endl;
-    }
+ASTheader::ASTheader(Type type,ASTparam *list,string identifier){
+    this->identifier = identifier;
     this->type = type;
     this->paramlist = list;
 }
@@ -51,4 +49,3 @@ ASTif::ASTif(ASTExpr* condition,ASTstmt* body){
     this->condition = condition;
     this->body = body;
 }
-

@@ -60,25 +60,25 @@ int charToInt (char);
                 }
 
 [0-9][0-9]* 		{
-                            printf("Integer %s\n",yytext);
+                            //printf("Integer %s\n",yytext);
                             yylval.const_val = atoi(yytext);
 		            return(CONST);
 			}
 
-if		{indent_stack[++level] = indent;printf("Keyword: if\n");return(IF);}
-else		{indent_stack[++level] = indent;printf("Keyword: else\n");return(ELSE);}
-elif		{indent_stack[++level] = indent;printf("Keyword: elif\n");return(ELIF);}
-loop		{indent_stack[++level] = indent;printf("Keyword: loop\n");return(LOOP);}
-int		{printf("Keyword: int\n");return(INT);}
-byte		{printf("Keyword: byte\n");return(BYTE);}
-as		{printf("Keyword: as\n");return(AS);}
-skip		{printf("Keyword: skip\n");return(SKIP);}
-decl		{printf("Keyword: decl\n");return(DECL);}
-begin		{printf("Keyword: begin\n");return(BEG);}
+if		{indent_stack[++level] = indent;return(IF);}
+else		{indent_stack[++level] = indent;return(ELSE);}
+elif		{indent_stack[++level] = indent;return(ELIF);}
+loop		{indent_stack[++level] = indent;return(LOOP);}
+int		{return(INT);}
+byte		{return(BYTE);}
+as		{return(AS);}
+skip		{return(SKIP);}
+decl		{return(DECL);}
+begin		{return(BEG);}
 "}"		{
 				//printf("howmany %d\n",howmany);
                     if(howmany>0){
-                        printf("Keyword: end\n");
+                        //printf("Keyword: end\n");
 			howmany--;
 			return(END);
 		    } else {
@@ -86,62 +86,61 @@ begin		{printf("Keyword: begin\n");return(BEG);}
 			exit(-1);
                     }
 		}
-def		{indent_stack[++level] = indent;printf("Found def with indent %d\n",indent);printf("Keyword: def\n");return(DEF);}
-is		{printf("Keyword: is\n");return(IS);}
-var		{printf("Keyword: var\n");return(VAR);}
-not		{printf("Keyword: not\n");return(NOT);}
-and		{printf("Keyword: and\n");return(AND);}
-or 		{printf("Keyword: or\n");return(OR);}
-true		{printf("Keyword: true\n");return(TRUE);}
-false		{printf("Keyword: false\n");return(FALSE);}
-break		{printf("Keyword: break\n");return(BREAK);}
-continue	{printf("Keyword: continue\n");return(CONT);}
-exit		{printf("Keyword: exit\n");return(EXIT);}
-return		{printf("Keyword: return\n");return(RETURN);}
-ref 		{printf("Keyword: ref\n");return(REF);}
+def		{indent_stack[++level] = indent;return(DEF);}
+is		{return(IS);}
+var		{return(VAR);}
+not		{return(NOT);}
+and		{return(AND);}
+or 		{return(OR);}
+true		{return(TRUE);}
+false		{return(FALSE);}
+break		{return(BREAK);}
+continue	{return(CONT);}
+exit		{return(EXIT);}
+return		{return(RETURN);}
+ref 		{return(REF);}
 
 {ID} 		{
-			printf("Identifier: %s\n",yytext);
+			//printf("Identifier: %s\n",yytext);
 			yylval.idstring = strdup(yytext);
 			return(IDENTIFIER);
 		}
-"("		{printf("Left Parenthesis (\n");return('(');}
-")"		{printf("Right Parenthesis )\n");return(')');}
-"["		{printf("Left Brace [\n");return('[');}
-"]"		{printf("Right Brace ]\n");return(']');}
+"("		{return('(');}
+")"		{return(')');}
+"["		{return('[');}
+"]"		{return(']');}
 
-"."		{printf("Dot .\n");return('.');}
-","		{printf("Comma ,\n");return(',');}
-"+"		{printf("Plus +\n");return('+');}
-"-"		{printf("Minus -\n");return('-');}
-"*"		{printf("Times *\n");return('*');}
-"/"		{printf("Division /\n");return('/');}
-":="		{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
-"=="		{printf("Equality operator ==\n");return(EQ);}
-"!"		{printf("Bang !\n");return('!');}
-[%]		{printf("Mod Operator!\n");return('%');}
-"&" 		{printf("Ampersand &\n");return('&');}
-"|"		{printf("Kagkelo |\n");return('|');}
-"<"		{printf("Less than operator <\n");return(SMALLER);}
-"<="		{printf("Less than or equal <=\n");return(SMALLEREQ);}
-">="		{printf("Greateer than or equal >=\n");return(LARGEREQ);}
-"<>"		{printf("Inequality <>\n");return(DIFF);}
-">"		{printf("Greater than operator >\n");return(LARGER);}
-":"		{printf("Colon :\n");return(':');}
+"."		{return('.');}
+","		{return(',');}
+"+"		{return('+');}
+"-"		{return('-');}
+"*"		{return('*');}
+"/"		{return('/');}
+":="		{return(ASSIGNMENT);}
+"=="		{return(EQ);}
+"!"		{return('!');}
+[%]		{return('%');}
+"&" 		{return('&');}
+"|"		{return('|');}
+"<"		{return(SMALLER);}
+"<="		{return(SMALLEREQ);}
+">="		{return(LARGEREQ);}
+"<>"		{return(DIFF);}
+">"		{return(LARGER);}
+":"		{return(':');}
 "\""		{printf("Unclosed String Error\n");exit(-1);}
 \"([^\n\"\'\\]|{ESCAPE})*\" {
-        		        printf("String Literal %s \n",yytext);
+        		        //printf("String Literal %s \n",yytext);
 				yylval.idstring = strdup(yytext);
 				return(STRINGLITERAL);
                             }
 \'([^\"\'\\]|{ESCAPE})\'    {
  				//"
 				yylval.const_val = fixChar(yytext+1,NULL);
-				cout << "CHAAAAAAAAR" << (char)yylval.const_val << endl;;
 				return CHAR_CONST;
 			    }
 
-"#".*            {printf("comment found\n");}
+"#".*            {;}
 
 "(*"             { ++comment_nesting; BEGIN(COMMENT); }
 

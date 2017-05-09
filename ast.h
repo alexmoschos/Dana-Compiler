@@ -47,8 +47,9 @@ public:
 
 class ASTheader:ASTNode{
 public:
-    ASTheader(Type,ASTparam*);
+    ASTheader(Type,ASTparam*,string);
     ASTparam *paramlist;
+    string identifier;
     Type type;
 };
 
@@ -91,7 +92,7 @@ public:
     vector<string>* identifiers;
     Type p;
     //ASTtype with
-    std::vector<int> *indices;
+    //std::vector<int> *indices;
     ASTparam *next;
 };
 class ASTfcall:ASTNode{
@@ -109,6 +110,6 @@ public:
     ASTstmt* body;
     ASTif* tail;
     //~ASTif();
-    
+
 };
 #endif

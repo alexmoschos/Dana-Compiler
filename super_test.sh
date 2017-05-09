@@ -1,7 +1,7 @@
 #/usr/bin/bash/
-for i in $(seq 1 10);
+for i in $(seq 1 11);
 do
-	./simple < test$i > /dev/null 
+	./simple < "tests/"test$i > /dev/null 
 	if [ $? -ne 0 ];	
 	then 
 		echo "Error at testcase $i"

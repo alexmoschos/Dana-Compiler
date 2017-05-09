@@ -1,5 +1,5 @@
 FLAGS = -std=c++11 -O2
-simple: lexer.o parser.o ast.o symbol.o general.o error.o
+simple: lexer.o parser.o ast.o symbol.o general.o error.o sem.o
 	g++ -o $@ $^ -lfl
 
 lexer: lexer.cpp

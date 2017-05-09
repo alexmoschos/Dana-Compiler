@@ -1047,7 +1047,7 @@ case 6:
 YY_RULE_SETUP
 #line 62 "danalexer.l"
 {
-                            printf("Integer %s\n",yytext);
+                            //printf("Integer %s\n",yytext);
                             yylval.const_val = atoi(yytext);
 		            return(CONST);
 			}
@@ -1055,52 +1055,52 @@ YY_RULE_SETUP
 case 7:
 YY_RULE_SETUP
 #line 68 "danalexer.l"
-{indent_stack[++level] = indent;printf("Keyword: if\n");return(IF);}
+{indent_stack[++level] = indent;return(IF);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 69 "danalexer.l"
-{indent_stack[++level] = indent;printf("Keyword: else\n");return(ELSE);}
+{indent_stack[++level] = indent;return(ELSE);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 70 "danalexer.l"
-{indent_stack[++level] = indent;printf("Keyword: elif\n");return(ELIF);}
+{indent_stack[++level] = indent;return(ELIF);}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 71 "danalexer.l"
-{indent_stack[++level] = indent;printf("Keyword: loop\n");return(LOOP);}
+{indent_stack[++level] = indent;return(LOOP);}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 72 "danalexer.l"
-{printf("Keyword: int\n");return(INT);}
+{return(INT);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 73 "danalexer.l"
-{printf("Keyword: byte\n");return(BYTE);}
+{return(BYTE);}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 74 "danalexer.l"
-{printf("Keyword: as\n");return(AS);}
+{return(AS);}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 75 "danalexer.l"
-{printf("Keyword: skip\n");return(SKIP);}
+{return(SKIP);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 76 "danalexer.l"
-{printf("Keyword: decl\n");return(DECL);}
+{return(DECL);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 77 "danalexer.l"
-{printf("Keyword: begin\n");return(BEG);}
+{return(BEG);}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
@@ -1108,7 +1108,7 @@ YY_RULE_SETUP
 {
 				//printf("howmany %d\n",howmany);
                     if(howmany>0){
-                        printf("Keyword: end\n");
+                        //printf("Keyword: end\n");
 			howmany--;
 			return(END);
 		    } else {
@@ -1120,73 +1120,73 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 89 "danalexer.l"
-{indent_stack[++level] = indent;printf("Found def with indent %d\n",indent);printf("Keyword: def\n");return(DEF);}
+{indent_stack[++level] = indent;return(DEF);}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 90 "danalexer.l"
-{printf("Keyword: is\n");return(IS);}
+{return(IS);}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 91 "danalexer.l"
-{printf("Keyword: var\n");return(VAR);}
+{return(VAR);}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 92 "danalexer.l"
-{printf("Keyword: not\n");return(NOT);}
+{return(NOT);}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 93 "danalexer.l"
-{printf("Keyword: and\n");return(AND);}
+{return(AND);}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 94 "danalexer.l"
-{printf("Keyword: or\n");return(OR);}
+{return(OR);}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 95 "danalexer.l"
-{printf("Keyword: true\n");return(TRUE);}
+{return(TRUE);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 96 "danalexer.l"
-{printf("Keyword: false\n");return(FALSE);}
+{return(FALSE);}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 97 "danalexer.l"
-{printf("Keyword: break\n");return(BREAK);}
+{return(BREAK);}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 98 "danalexer.l"
-{printf("Keyword: continue\n");return(CONT);}
+{return(CONT);}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 99 "danalexer.l"
-{printf("Keyword: exit\n");return(EXIT);}
+{return(EXIT);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 100 "danalexer.l"
-{printf("Keyword: return\n");return(RETURN);}
+{return(RETURN);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 101 "danalexer.l"
-{printf("Keyword: ref\n");return(REF);}
+{return(REF);}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 103 "danalexer.l"
 {
-			printf("Identifier: %s\n",yytext);
+			//printf("Identifier: %s\n",yytext);
 			yylval.idstring = strdup(yytext);
 			return(IDENTIFIER);
 		}
@@ -1194,112 +1194,112 @@ YY_RULE_SETUP
 case 32:
 YY_RULE_SETUP
 #line 108 "danalexer.l"
-{printf("Left Parenthesis (\n");return('(');}
+{return('(');}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 109 "danalexer.l"
-{printf("Right Parenthesis )\n");return(')');}
+{return(')');}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 110 "danalexer.l"
-{printf("Left Brace [\n");return('[');}
+{return('[');}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 111 "danalexer.l"
-{printf("Right Brace ]\n");return(']');}
+{return(']');}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 113 "danalexer.l"
-{printf("Dot .\n");return('.');}
+{return('.');}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 114 "danalexer.l"
-{printf("Comma ,\n");return(',');}
+{return(',');}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 115 "danalexer.l"
-{printf("Plus +\n");return('+');}
+{return('+');}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 116 "danalexer.l"
-{printf("Minus -\n");return('-');}
+{return('-');}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 117 "danalexer.l"
-{printf("Times *\n");return('*');}
+{return('*');}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 118 "danalexer.l"
-{printf("Division /\n");return('/');}
+{return('/');}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 119 "danalexer.l"
-{printf("Assignment Operator :=\n");return(ASSIGNMENT);}
+{return(ASSIGNMENT);}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 120 "danalexer.l"
-{printf("Equality operator ==\n");return(EQ);}
+{return(EQ);}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 121 "danalexer.l"
-{printf("Bang !\n");return('!');}
+{return('!');}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 122 "danalexer.l"
-{printf("Mod Operator!\n");return('%');}
+{return('%');}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 123 "danalexer.l"
-{printf("Ampersand &\n");return('&');}
+{return('&');}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 124 "danalexer.l"
-{printf("Kagkelo |\n");return('|');}
+{return('|');}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 125 "danalexer.l"
-{printf("Less than operator <\n");return(SMALLER);}
+{return(SMALLER);}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
 #line 126 "danalexer.l"
-{printf("Less than or equal <=\n");return(SMALLEREQ);}
+{return(SMALLEREQ);}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
 #line 127 "danalexer.l"
-{printf("Greateer than or equal >=\n");return(LARGEREQ);}
+{return(LARGEREQ);}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
 #line 128 "danalexer.l"
-{printf("Inequality <>\n");return(DIFF);}
+{return(DIFF);}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
 #line 129 "danalexer.l"
-{printf("Greater than operator >\n");return(LARGER);}
+{return(LARGER);}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
 #line 130 "danalexer.l"
-{printf("Colon :\n");return(':');}
+{return(':');}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
@@ -1310,7 +1310,7 @@ case 55:
 YY_RULE_SETUP
 #line 132 "danalexer.l"
 {
-        		        printf("String Literal %s \n",yytext);
+        		        //printf("String Literal %s \n",yytext);
 				yylval.idstring = strdup(yytext);
 				return(STRINGLITERAL);
                             }
@@ -1322,59 +1322,58 @@ YY_RULE_SETUP
 {
  				//"
 				yylval.const_val = fixChar(yytext+1,NULL);
-				cout << "CHAAAAAAAAR" << (char)yylval.const_val << endl;;
 				return CHAR_CONST;
 			    }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 144 "danalexer.l"
-{printf("comment found\n");}
+#line 143 "danalexer.l"
+{;}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 146 "danalexer.l"
+#line 145 "danalexer.l"
 { ++comment_nesting; BEGIN(COMMENT); }
 	YY_BREAK
 
 case 59:
 YY_RULE_SETUP
-#line 149 "danalexer.l"
+#line 148 "danalexer.l"
 { ++comment_nesting; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 150 "danalexer.l"
+#line 149 "danalexer.l"
 { --comment_nesting; if(!comment_nesting) BEGIN(INITIAL);}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 151 "danalexer.l"
+#line 150 "danalexer.l"
 ;
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 152 "danalexer.l"
+#line 151 "danalexer.l"
 ;
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 153 "danalexer.l"
+#line 152 "danalexer.l"
 ;
 	YY_BREAK
 case 64:
 /* rule 64 can match eol */
 YY_RULE_SETUP
-#line 154 "danalexer.l"
+#line 153 "danalexer.l"
 ; {nl++;}
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 155 "danalexer.l"
+#line 154 "danalexer.l"
 ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
 	YY_BREAK
 
 case YY_STATE_EOF(INITIAL):
-#line 162 "danalexer.l"
+#line 161 "danalexer.l"
 {
                         unput(0);
                         howmany=level;
@@ -1388,7 +1387,7 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 173 "danalexer.l"
+#line 172 "danalexer.l"
 {
     		    if(yytext[0]==0) {
     		        return 0;
@@ -1399,10 +1398,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 185 "danalexer.l"
+#line 184 "danalexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1406 "lexer.cpp"
+#line 1405 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2404,7 +2403,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 185 "danalexer.l"
+#line 184 "danalexer.l"
 
 
 unsigned int white_count(char* line) {

@@ -92,7 +92,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 25 "parser.y" /* yacc.c:1909  */
+#line 24 "parser.y" /* yacc.c:1909  */
 
 	ASTfdef* func;
 	ASTExpr* expr;

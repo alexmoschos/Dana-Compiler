@@ -3,7 +3,7 @@
 	{
         #include "symbol.h"
         }
-
+        #include "sem.h"
 	#include "ast.h"
 	#include <stdio.h>
 	#include <string>
@@ -16,11 +16,10 @@
         vector<string> *identifiers;
  	int yylex(void);
         int i = 0;
-
+        ASTfdef* main_f;
 	void yyerror (char const *s) {
             fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
-	bool isarray;
 %}
 %union{
 	ASTfdef* func;
@@ -45,8 +44,8 @@
 %token AND NOT OR ELIF TRUE FALSE BREAK CONT BEG
 %token<const_val> CONST CHAR_CONST
 %token<idstring> IDENTIFIER STRINGLITERAL
-%type<func> fdef fdecl
-%type<statement> stmt_list stmt loop 
+%type<func> fdef fdecl mainfunc
+%type<statement> stmt_list stmt loop
 %type<ifp> mif eliftstmt
 %type<expr> expression condition param
 %type<head> header
@@ -70,6 +69,9 @@
 
 
 %%
+mainfunc
+        : fdef {$$ = $1;main_f = $1;}
+        ;
 fdef
 	:DEF header  stmt_list END {$$ = new ASTfdef($2,$3);}
 	;
@@ -79,24 +81,24 @@ fdecl
 	;
 
 header
-	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader($3,$5); cout << endl << endl;printType($3); cout << endl << endl;}
-        | IDENTIFIER IS type           {$$ = new ASTheader($3,NULL);}
-	| IDENTIFIER ':' optparam      {$$ = new ASTheader(typeVoid,$3);}
-	| IDENTIFIER                   {$$ = new ASTheader(typeVoid,NULL);}
+	: IDENTIFIER IS type ':' optparam       {$$ = new ASTheader($3,$5,$1);}
+        | IDENTIFIER IS type           {$$ = new ASTheader($3,NULL,$1);}
+	| IDENTIFIER ':' optparam      {$$ = new ASTheader(typeVoid,$3,$1);}
+	| IDENTIFIER                   {$$ = new ASTheader(typeVoid,NULL,$1);}
 	;
 
 optparam
 	: idlist AS ftype              {
                                            $$ = new ASTparam($1,$3,NULL);
-                                           cout << endl;
-                                           printType($3);
-                                           cout << endl;
+                                           //cout << endl;
+                                           //printType($3);
+                                           //cout << endl;
                                        }
 	| idlist AS ftype ',' optparam {
 		                           $$ = new ASTparam($1,$3,$5);
-		                           cout << endl;
-                                           printType($3);
-                                           cout << endl;
+		                           //cout << endl;
+                                           //printType($3);
+                                           //cout << endl;
 	                               }
 	;
 
@@ -274,25 +276,19 @@ lval
 	| lval '['expression']'    {
                                         $1->indices->push_back($3);
                                         $$=$1;
-                                        cout << $$->identifier << endl;
-                                        $$->print();
+                                        //cout << $$->identifier << endl;
+                                        //$$->print();
                                    }
 	;
 %%
 
 
 int main(){
-	cout << "Parser Version 0.0.0.0011" << endl;
+	cout << "Parser Version 0.0.1.00" << endl;
 	initSymbolTable(997);
-
-	isarray = 0;
+        main_f = NULL;
 	lastparam = new vector<ASTExpr*>();
 	if(yyparse()) return -1;
-	//Type a = typeArray(10,typeArray(10,typeInteger));
-        //printType(a);
-        	//while(yylex());
-        //TODO: STRING IN FUCNTION HEADER
-        cout << endl;
-	printf("Hello World\n");
-        printf("Wavepacket\n");
+
+        sem_check_fdef(main_f);
 }
