@@ -1,6 +1,7 @@
 extern "C"
 {
 #include "symbol.h"
+#include "error.h"
 }
 #include "sem.h"
 #include "ast.h"
@@ -62,6 +63,7 @@ void printSymbolTable ()
 }
 
 int sem_check_fdef(ASTfdef* func){
+        cout << "HELLLO" << endl;
         if(func==NULL){
                 cout << "WAIT WHAT";
                 exit(-1);
@@ -82,23 +84,28 @@ int sem_check_fdef(ASTfdef* func){
         }
 
         endFunctionHeader(f,header->type);
-        printSymbolTable();
+        //printSymbolTable();
         sem_check_stmt(func->body);
         closeScope();
-        return 1;
+        return 0;
 }
 int sem_check_stmt(ASTstmt* stmt){
+        //cout << "HI" << endl;
         if(stmt==NULL){
                 //cout << "DONE" << endl;
-                exit(0);
+                return 0;
+                //exit(0);
         }
         //TODO: maybe eliminate recursion , for auto i : stmts in func do sem_check_stmt(i);
         //cout << "NEXT ONE" << endl;
+        //goto cont;
         switch(stmt->type){
                 case TSKIP: break;
                 case TPC: break;
                 case TIF:
-                        sem_check_expr(stmt->ifnode->condition);
+                        if( ! equalType(sem_check_expr(stmt->ifnode->condition),typeBoolean)){
+                                //error("If statement needs a condition");
+                        }
                         break;
                 case TFDEF:
                         sem_check_fdef(stmt->def);
@@ -124,45 +131,56 @@ int sem_check_stmt(ASTstmt* stmt){
                         break;
                 case TLOOP: break;
         }
+cont:
+        //if(stmt->type==TFDEF) sem_check_fdef(stmt->def);
         //printSymbolTable();
+        //cout << "HERE" << endl;
+        printSymbolTable();
         sem_check_stmt(stmt->tail);
+        //cout << "NOT HERE" << endl;
         return 0;
 }
 //TODO:fix error messages using error.h
 //TODO: Rwta gia default type cast apo int se char
 Type sem_check_expr(ASTExpr* expr){
+        //return typeVoid;
+        return typeVoid;
         if(expr==NULL){
                 return typeVoid;
         }
+        SymbolEntry *a;
         Type left = sem_check_expr(expr->left);
         Type right = sem_check_expr(expr->right);
         switch(expr->op){
                 case '+':
                         //FIXME: UNARYPLUS
-                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
-                                cout << "WHYYYYYYYYYYYYY";
-                                exit(-1);
+                        if(!equalType(left,right)){
+                                error("Typemismatch");
                         }
-                        return typeInteger;
+
+                        return left;
                 case '-':
                         //FIXME: UNARYMINUS
-                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                        if(!equalType(left,right)){
                                 cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
-                        return typeInteger;
+
+                        return left;
                 case '*':
-                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                        if(!equalType(left,right)){
                                 cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
-                        return typeInteger;
+
+                        return left;
                 case '/':
-                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                        if(!equalType(left,right)){
                                 cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
-                        return typeInteger;
+
+                        return left;
                 case '&':
                         if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
                                 cout << "WHYYYYYYYYYYYYY";
@@ -175,10 +193,17 @@ Type sem_check_expr(ASTExpr* expr){
                                 exit(-1);
                         }
                         return typeInteger;
-                case '!': break;
+                case '!':
+                        if(!equalType(right,typeInteger)){
+                                cout << "WHYYYYYYYYYYYYY";
+                                exit(-1);
+                        }
+                        return typeInteger;
                 case 'i': break;
                 case 'c': return typeInteger;
-                case 'f': break;
+                case 'f':
+                        a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                        //printType(a->u.eFunction.resultType);
                 case 'x': return typeChar;
                 case '>': break;
                 case '<': break;
@@ -186,24 +211,26 @@ Type sem_check_expr(ASTExpr* expr){
                 case 's': break;
                 case 'e': break;
                 case 'd': break;
-                case 'b': return typeChar;
+                case 'b': return typeBoolean;
                 case 'a':
-                        if(!equalType(left,typeChar) || !equalType(right,typeChar)){
-                                cout << "WHYYYYYYYYYYYYY";
-                                exit(-1);
+                        if(!equalType(left,typeBoolean) || !equalType(right,typeBoolean)){
+                                //handle case where
+                                //cout << "WHYYYYYYYYYYYYY";
+                                //exit(-1);
                         }
-                        return typeChar;
+                        return typeBoolean;
                 case 'o':
-                        if(!equalType(left,typeChar) || !equalType(right,typeChar)){
-                                cout << "WHYYYYYYYYYYYYY";
-                                exit(-1);
+                        if(!equalType(left,typeBoolean) || !equalType(right,typeBoolean)){
+                                //handle case where
+                                //cout << "WHYYYYYYYYYYYYY";
+                                //exit(-1);
                         }
-                        return typeChar;
+                        return typeBoolean;
                 case 'n':
-                        if(!equalType(right,typeChar)){
+                        if(!equalType(right,typeBoolean)){
                                 cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
-                        return typeChar;
+                        return typeBoolean;
         }
 }

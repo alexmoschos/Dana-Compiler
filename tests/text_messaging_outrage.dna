@@ -1,0 +1,99 @@
+def Program
+    def work is int: P as int, K as int, L as int, freq as int[]
+        def ArraySort: x as int[], n as int
+            def swap: x y as ref int
+            var t is int
+            begin
+                t := x
+                x := y
+                y := t
+            end
+
+        var changed is byte
+        var i is int
+        begin
+            loop:
+            begin
+                changed := false
+                i := 0
+                loop:
+                begin
+                    if i < n-1:
+                    begin
+                        if x[i] > x[i+1]:
+                        begin
+                            swap: x[i], x[i+1]
+                            changed := true
+                        end
+                        i := i+1
+                    end
+                    else: begin break end
+                end
+                if not changed: begin break end
+            end
+        end
+
+    var i j res is int
+    var placed is int[12]
+    begin
+        j := 0
+        res := 0
+        ArraySort: freq, L
+
+        i := 0
+        loop:
+        begin
+            if i = 12: begin break end
+            placed[i] := 0
+            i := i + 1
+        end
+
+        i := L - 1
+        loop:
+        begin
+            placed[j] := placed[j] + 1
+            res := res + freq[i] * placed[j]
+            if i = 0: begin break end
+            loop:
+            begin
+                j := (j + 1) % K
+                if placed[j] <> P: begin break end
+            end
+            i := i - 1
+        end
+        return: res
+    end
+
+    def main
+    var i j N P K L Y is int
+    var freq is int[100]
+    begin
+        N := readInteger()
+        i := 0
+        loop:
+        begin
+            if i = N: begin break end
+            P := readInteger()
+            K := readInteger()
+            L := readInteger()
+            j := 0
+            loop:
+            begin
+                if j = L: begin break end
+                freq[j] := readInteger()
+                j := j + 1
+            end
+
+            Y := work(P,K,L,freq)
+
+            writeString: "Case #"
+            writeInteger: i+1
+            writeString: ": "
+            writeInteger: Y
+            writeString: "\n"
+            i := i + 1
+        end
+    end
+begin
+    main
+end

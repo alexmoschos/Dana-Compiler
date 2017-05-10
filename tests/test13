@@ -1,6 +1,6 @@
-def h : a b c d e kremmudi as int[17][42], kremmudaki skulos asthenoforo as byte
+def h is int[45]: a b c d e kremmudi as int[17][42], kremmudaki skulos asthenoforo as byte
    a := 1 + 2
    a := 1 /2
    a := 0 * 2
    a := 111111111 -1
-   if true and false or 1: skip
+   a := h(5)

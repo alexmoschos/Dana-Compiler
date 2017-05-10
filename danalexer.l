@@ -117,7 +117,7 @@ ref 		{return(REF);}
 "*"		{return('*');}
 "/"		{return('/');}
 ":="		{return(ASSIGNMENT);}
-"=="		{return(EQ);}
+"="		{return(EQ);}
 "!"		{return('!');}
 [%]		{return('%');}
 "&" 		{return('&');}
@@ -174,6 +174,7 @@ ref 		{return(REF);}
     		        return 0;
     		    }
     		    printf("Unexpected Character %d\n",yytext[0]);
+                    printf("Line no: %d \n",nl);
     		    exit(-1);
 	        }
 

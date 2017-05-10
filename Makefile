@@ -1,4 +1,4 @@
-FLAGS = -std=c++11 -O2
+FLAGS = -std=c++11 -O2 -g
 simple: lexer.o parser.o ast.o symbol.o general.o error.o sem.o
 	g++ -o $@ $^ -lfl
 
