@@ -1,1 +1,6 @@
-dsaklfhjadklsfja
+def main
+ if((word[i]>='A') and (word[i]<='Z')):
+    writeChar: word[i]
+ elif((word[i]>='a') and (word[i]<='z')):
+    writeChar: word[i]+'A'-'a'
+ writeString: " "

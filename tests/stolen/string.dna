@@ -1,0 +1,14 @@
+# Dexetai leksh kai ektupwnei tous xarakthres 0, 2, 4...
+
+def main
+	var i is int
+	var s is byte[21]
+
+	writeString: "Give a word with maximum 20 letters.\n"
+	readString: 21, s
+	i := 0
+	loop:
+		if (i>=strlen(s)):
+			break
+		writeChar: s[i]
+		i := i+2

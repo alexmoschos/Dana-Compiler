@@ -60,7 +60,7 @@
 %nonassoc NOT
 %nonassoc SMALLER LARGER LARGEREQ SMALLEREQ EQ DIFF
 %left '+' '-' '|'
-%left '*' '/' '&'
+%left '*' '/' '&' '%'
 %precedence UNARYPL
 %precedence UNARYMINUS
 %precedence BANG
@@ -230,12 +230,14 @@ loop
 
 mif
 	: IF condition ':'  stmt_list END ELSE ':'  stmt_list END	{
+                                                                            cout << "AAA" << endl;
 		                                                            $$ = new ASTif($2,$4);
 		                                                            auto else_node = new ASTif(NULL,$8);
 		                                                            $$->tail = else_node;
 		                                                            else_node->tail = NULL;
 	                                                                }
 	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt {
+                                                                                          cout << "BBB" << endl;
 		       		                                                          $$ = new ASTif($2,$4);
 		                                                                          auto else_node = new ASTif($7,$9);
 		                                                                          $$->tail = else_node;
@@ -263,6 +265,7 @@ condition
 
 eliftstmt
 	: ELSE ':'  stmt_list END {$$ = new ASTif(NULL,$3);}
+        | %empty {$$ = NULL;}
 	| ELIF condition ':'  stmt_list END eliftstmt {$$ = new ASTif($2,$4);$$->tail=$6;}
 	;
 
@@ -271,6 +274,7 @@ expression
 	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
 	| expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
 	| expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
+        | expression '%' expression        {$$=new ASTExpr('%',NULL,0,$1,$3);}
 	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
 	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}
 	| '+' expression %prec UNARYPL     {$$=new ASTExpr('+',NULL,0,NULL,$2);}

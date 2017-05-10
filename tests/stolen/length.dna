@@ -1,0 +1,33 @@
+# Ypologizei to (x2-x1)+(y2-y1) (kati san metro xwris tetragwno kai riza)
+
+def main
+    
+    def length is int: x1 y1 x2 y2 as int
+        var dx dy is int
+
+	dx := x1-x2
+	dy := y1-y2
+        return: dx + dy
+
+    var x1 y1 x2 y2 l is int
+
+    loop :
+        writeString: "Give the coordinates of the first point:\n"
+        writeString: "x1 = "
+        x1 := readInteger()
+        writeString: "y1 = "
+        y1 := readInteger()
+        writeString: "Give the coordinates of the second point:\n"
+        writeString: "x2 = "
+        x2 := readInteger()
+        writeString: "y2 = "
+        y2 := readInteger()
+
+        l := length(x1, y1, x2, y2)
+
+        writeString: "The length of this segment is "
+	writeInteger: l
+	writeString: "\n"
+
+	if (l<=0):
+	    break

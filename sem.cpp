@@ -63,7 +63,7 @@ void printSymbolTable ()
 }
 
 int sem_check_fdef(ASTfdef* func){
-        cout << "HELLLO" << endl;
+        //cout << "HELLLO" << endl;
         if(func==NULL){
                 cout << "WAIT WHAT";
                 exit(-1);
@@ -103,9 +103,8 @@ int sem_check_stmt(ASTstmt* stmt){
                 case TSKIP: break;
                 case TPC: break;
                 case TIF:
-                        if( ! equalType(sem_check_expr(stmt->ifnode->condition),typeBoolean)){
+                        //if( ! equalType(sem_check_expr(stmt->ifnode->condition),typeBoolean)){
                                 //error("If statement needs a condition");
-                        }
                         break;
                 case TFDEF:
                         sem_check_fdef(stmt->def);
@@ -127,7 +126,7 @@ int sem_check_stmt(ASTstmt* stmt){
                         }
                         break;
                 case TASSIGN:
-                        sem_check_expr(stmt->expr);
+                        //sem_check_expr(stmt->expr);
                         break;
                 case TLOOP: break;
         }
@@ -144,7 +143,7 @@ cont:
 //TODO: Rwta gia default type cast apo int se char
 Type sem_check_expr(ASTExpr* expr){
         //return typeVoid;
-        return typeVoid;
+        //return typeVoid;
         if(expr==NULL){
                 return typeVoid;
         }
@@ -199,18 +198,52 @@ Type sem_check_expr(ASTExpr* expr){
                                 exit(-1);
                         }
                         return typeInteger;
-                case 'i': break;
+                case 'i':
+                        //ASTlval* lv = expr->operand;
+                        //SymbolEntry* s = lookupEntry(lv->identifier,LOOKUP_ALL_SCOPES,true);
+                        //if(s->entryType == )
+                        return typeVoid;
                 case 'c': return typeInteger;
                 case 'f':
-                        a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                        //a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
                         //printType(a->u.eFunction.resultType);
                 case 'x': return typeChar;
-                case '>': break;
-                case '<': break;
-                case 'l': break;
-                case 's': break;
-                case 'e': break;
-                case 'd': break;
+                case '>':
+                        if(!equalType(left,right)){
+                                error("Cant compare operands of different types");
+                                exit(-1);
+                        }
+                        return typeBoolean;
+                case '<':
+                        if(!equalType(left,right)){
+                                error("Cant compare operands of different types");
+                                exit(-1);
+                        }
+                        return typeBoolean;
+                case 'l':
+                        if(!equalType(left,right)){
+                                error("Cant compare operands of different types");
+                                exit(-1);
+                        }
+                        return typeBoolean;
+                case 's':
+                        if(!equalType(left,right)){
+                                error("Cant compare operands of different types");
+                                exit(-1);
+                        }
+                        return typeBoolean;
+                case 'e':
+                        if(!equalType(left,right)){
+                                error("Cant compare operands of different types");
+                                exit(-1);
+                        }
+                        return typeBoolean;
+                case 'd':
+                        if(!equalType(left,right)){
+                                error("Cant compare operands of different types");
+                                exit(-1);
+                        }
+                        return typeBoolean;
                 case 'b': return typeBoolean;
                 case 'a':
                         if(!equalType(left,typeBoolean) || !equalType(right,typeBoolean)){
@@ -228,9 +261,10 @@ Type sem_check_expr(ASTExpr* expr){
                         return typeBoolean;
                 case 'n':
                         if(!equalType(right,typeBoolean)){
-                                cout << "WHYYYYYYYYYYYYY";
-                                exit(-1);
+                                //cout << "WHYYYYYYYYYYYYY";
+                                //exit(-1);
                         }
                         return typeBoolean;
         }
+        return typeChar;
 }
