@@ -1,9 +1,5 @@
 def h : a b c d e kremmudi as int[17][42], kremmudaki skulos asthenoforo as byte
-   skip
    def f : kremmudi police as byte[][12]
-    skip
-    kremmudu := "helloworld"[0][1]
-    jedi := 'a'
     decl g is int : skulaki puppy doggo as byte
     def hello
       def world
@@ -15,4 +11,7 @@ def h : a b c d e kremmudi as int[17][42], kremmudaki skulos asthenoforo as byte
 
 
                *) *) hello *)
-       # 
+       #
+     skip
+    skip
+  skip

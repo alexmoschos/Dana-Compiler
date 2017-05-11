@@ -1,10 +1,10 @@
 def h : a b c d e kremmudi as int[17][42], kremmudaki skulos asthenoforo as byte
-   skip
    var z x y l is int
+   decl hello
    skip
    kremmudu := "helloworld"[0][1]
    jedi := 'a'
-   decl g is int : skulaki puppy doggo as byte
+   #ecl g is int : skulaki puppy doggo as byte
    skip
    if condition :
      skip

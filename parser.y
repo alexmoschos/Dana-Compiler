@@ -44,7 +44,7 @@
 %token<const_val> CONST CHAR_CONST
 %token<idstring> IDENTIFIER STRINGLITERAL
 %type<func> fdef fdecl mainfunc
-%type<statement> stmt_list stmt loop
+%type<statement> stmt_list stmt loop decl decl_list
 %type<ifp> mif eliftstmt
 %type<expr> expression condition param
 %type<head> header
@@ -72,7 +72,7 @@ mainfunc
         : fdef {$$ = $1;main_f = $1;}
         ;
 fdef
-	:DEF header  stmt_list END {$$ = new ASTfdef($2,$3);}
+	:DEF header  decl_list END {$$ = new ASTfdef($2,$3);}
 	;
 
 fdecl
@@ -138,7 +138,20 @@ stmt_list
                         }
 	;
 
-
+decl_list
+        : stmt_list { cout << "GEIA SOU";$$ = $1;}
+        | decl decl_list {cout << "ANTE GEIA";$$ = $1; $1->tail=$2;}
+        ;
+decl
+        : fdef                  {
+                                    $$ = new ASTstmt(TFDEF,NULL,NULL,"");
+                                    $$->def = $1;
+                                }
+        | fdecl                 {
+                                       $$ = new ASTstmt(TFDECL,NULL,NULL,"");
+                                       $$->def = $1;
+                                }
+        | VAR idlist IS type    {$$ = new ASTstmt(TDECL,NULL,NULL,""); $$->identifiers=$2;$$->t=$4;}
 
 type
 	: type '[' CONST ']' {
@@ -175,25 +188,16 @@ stmt
 		                        $$ = new ASTstmt(TIF,NULL,NULL,"");
 		                        $$->ifnode = $1;
 	                        }
-	| fdef                 	{
-                                    $$ = new ASTstmt(TFDEF,NULL,NULL,"");
-                                    $$->def = $1;
-                                }
 	| loop                  {$$ = $1;}
 	| lval ASSIGNMENT expression{
                                        $$ = new ASTstmt(TASSIGN,NULL,NULL,"");
                                        $$->expr = $3;
                                        $$->lvalue = $1;
                                    }
-	| VAR idlist IS type       {$$ = new ASTstmt(TDECL,NULL,NULL,""); $$->identifiers=$2;$$->t=$4;}
 	| BREAK                    {$$ = new ASTstmt(TBREAK,NULL,NULL,"");}
 	| BREAK ':' IDENTIFIER     {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
 	| CONT                     {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
 	| CONT ':' IDENTIFIER      {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}
-	| fdecl                    {
-                                       $$ = new ASTstmt(TFDECL,NULL,NULL,"");
-                                       $$->def = $1;
-                                   }
 	| EXIT                     {$$ = new ASTstmt(TEXIT,NULL,NULL,"");}
 	| RETURN ':' expression    {
                                        $$ = new ASTstmt(TRET,NULL,NULL,"");
