@@ -1,77 +1,15 @@
 extern "C"
-{
 #include "symbol.h"
 #include "error.h"
-}
 #include "sem.h"
 #include "ast.h"
-
 #include <stdio.h>
-void printSymbolTable ()
-{
-    Scope       * scp;
-    SymbolEntry * e;
-    SymbolEntry * args;
 
-    scp = currentScope;
-    if (scp == NULL)
-        printf("no scope\n");
-    else
-        while (scp != NULL) {
-            printf("scope: ");
-            e = scp->entries;
-            while (e != NULL) {
-                if (e->entryType == ENTRY_TEMPORARY)
-                    printf("$%d", e->u.eTemporary.number);
-                else
-                    printf("%s", e->id);
-                switch (e->entryType) {
-                    case ENTRY_FUNCTION:
-                        printf("(");
-                        args = e->u.eFunction.firstArgument;
-                        while (args != NULL) {
-                            printMode(args->u.eParameter.mode);
-                            printf("%s : ", args->id);
-                            printType(args->u.eParameter.type);
-                            args = args->u.eParameter.next;
-                            if (args != NULL)
-                                printf("; ");
-                        }
-                        printf(") : ");
-                        printType(e->u.eFunction.resultType);
-                        break;
-#ifdef SHOW_OFFSETS
-                    case ENTRY_VARIABLE:
-                        printf("[%d]", e->u.eVariable.offset);
-                        break;
-                    case ENTRY_PARAMETER:
-                        printf("[%d]", e->u.eParameter.offset);
-                        break;
-                    case ENTRY_TEMPORARY:
-                        printf("[%d]", e->u.eTemporary.offset);
-                        break;
-#endif
-                }
-                e = e->nextInScope;
-                if (e != NULL)
-                    printf(", ");
-            }
-            scp = scp->parent;
-            printf("\n");
-        }
-    printf("----------------------------------------\n");
-}
-
-int sem_check_fdef(ASTfdef* func){
-        //cout << "HELLLO" << endl;
-        if(func==NULL){
-                cout << "WAIT WHAT";
-                exit(-1);
-        }
+void sem_check_fdef(ASTfdef* func){
+        if(func==NULL) exit(-1);
         openScope();
-
-        ASTheader* header = func->header;
-        SymbolEntry* f = newFunction(header->identifier.c_str());
+        ASTheader *header = func->header;
+        SymbolEntry *f = newFunction(header->identifier.c_str());
         ASTparam *iter = header->paramlist;
         while(iter != NULL){
                 for(auto st : *iter->identifiers){
@@ -84,62 +22,170 @@ int sem_check_fdef(ASTfdef* func){
         }
 
         endFunctionHeader(f,header->type);
-        //printSymbolTable();
         sem_check_stmt(func->body);
         closeScope();
-        return 0;
 }
-int sem_check_stmt(ASTstmt* stmt){
-        //cout << "HI" << endl;
-        if(stmt==NULL){
-                //cout << "DONE" << endl;
-                return 0;
-                //exit(0);
-        }
-        //TODO: maybe eliminate recursion , for auto i : stmts in func do sem_check_stmt(i);
-        //cout << "NEXT ONE" << endl;
-        //goto cont;
+
+
+void sem_check_stmt(ASTstmt* stmt){
+        if(stmt==NULL) return;
+
         switch(stmt->type){
                 case TSKIP: break;
-                case TPC: break;
+
+                case TPC:
+                        { 
+                          SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+  
+                          if(s->entryType!=ENTRY_FUNCTION) error("identifier is not a function");
+                          if(!equalType(s->u.eFunction.resultType,typeVoid)) error("non-void function cannot be called as a command"); 
+
+                          SymbolEntry par = s -> u.eFunction.firstArument;
+
+                          vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters); 
+                          int counter  = 0, size = par_vector.size();
+                    
+                          while(par->next){
+
+                              if(counter >= size) {error("fewer parameter provided in function"); exit(1);}
+                              if(!equalType(par->u.eParameter.Type,typeVoid),sem_check_expr(par_vector[counter])) 
+                                    {error("Type mismatch in real and typical parameters"); exit(1);}
+                               counter++;
+                               par = par -> next;
+                           }
+
+                          if(counter < size) {error("more parameters provided in function than required"); exit(1);}
+
+                          if(stmt->tail) sem_check_stmt(tail);
+                          break; 
+                        }
+
+                case TFCALL: 
+                        { 
+                          SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+
+                          if(s->entryType!=ENTRY_FUNCTION) {error("identifier is not a function"); exit(1);}
+                          if(!equalType(s->u.eFunction.resultType,typeVoid)) error("non-void function cannot be called as a command"); 
+
+                          SymbolEntry par = s -> u.eFunction.firstArument;
+
+                          vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters); 
+                          int counter  = 0, size = par_vector.size();
+                     
+                          while(par -> next){
+
+                             if(counter >= size) {error("fewer parameter provided in function"); exit(1);}
+                             if(!equalType(par->u.eParameter.Type,typeVoid),sem_check_expr(par_vector[counter])) 
+                                  {error("Type mismatch in real and typical parameters"); exit(1);}
+                             counter++;
+                             par = par -> next;
+                          }
+
+                          if(counter < size) {error("more parameters provided in function than required"); exit(1);}
+
+                          if(stmt->tail) sem_check_stmt(tail);
+                          break;
+                        }
+ 
                 case TIF:
-                        //if( ! equalType(sem_check_expr(stmt->ifnode->condition),typeBoolean)){
-                                //error("If statement needs a condition");
-                        break;
+                        { 
+                          Type cond_type = sem_check_expr(stmt->ifnode->condition)
+                          if(!equalType(cond_type,typeBoolean) && !equalType(cond_type,typeChar) && !equalType(cond_type,typeInteger))
+                             {error("wrong type in if-condition"); exit(1);}
+
+                          sem_check_stmt(stmt->ifnode->body);
+
+                          ASTif* new_ifnode = stmt->ifnode->tail;
+                          while(new_ifnode){
+
+                             sem_check_stmt(new_ifnode->body)
+                             if(new_ifnode->condition){
+                               
+                                Type cond_type2 = sem_check_expr(new_ifnode->condition)
+                                if(!equalType(cond_type2,typeBoolean) && !equalType(cond_type2,typeChar) && !equalType(cond_type2,typeInteger))
+                                     {error("wrong type in if-condition"); exit(1);}
+                             }
+                             new_ifnode = new_ifnode->tail;
+                          }  
+                          break;
+                        }
+
                 case TFDEF:
+                        {
+                          sem_check_fdef(stmt->def);
+                          SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                          forwardFunction (s);
+                          break;
+                        }
+
+                case TFDECL:
                         sem_check_fdef(stmt->def);
                         break;
-                case TFDECL:
-                        //TODO: think about function declarations.
-                        break;
+
                 case TEXIT: break;
-                case TRET: break;
-                case TFCALL: break;
-                case TCONTM: break;
+
+                case TRET: 
+                        { 
+                           Type _TRET_TYPE = sem_check_expr(stmt->expr);
+                          
+                           if(stmt->def == NULL) {error("should have a ASTdef to check function type with return type") exit(1);}      
+
+                           SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                           if (s->entryType != ENTRY_FUNCTION)
+                               internal("NOT a Function");   //redundant all astdef in stack are functions...
+
+                           if(!equalType(_TRET_TYPE,s->u.eFunction.resultType)) {error("Function type and return type different"); exit(1);}
+                           break; 
+                         }  
+
+                case TCONTM: 
+                         {
+                           SymbolEntry *s = lookupEntry(stmt->label.c_str(),LOOKUP_ALL_SCOPES,true);
+                           if (s->entryType != ENTRY_CONSTANT) internal("NOT a label");     
+                           if(!equalType(s->u.eConstant.resultType,typeVoid)) {error("Function type and return type different"); exit(1);}
+                           break;
+                          }
+ 
                 case TCONT: break;
-                case TBREAKM: break;
+                case TBREAKM:
+                          { 
+                            SymbolEntry *s = lookupEntry(stmt->label.c_str(),LOOKUP_ALL_SCOPES,true);
+                            if (s->entryType != ENTRY_CONSTANT)  internal("NOT a label");     
+                            if(!equalType(s->u.eConstant.resultType,typeVoid)) {error("Function type and return type different"); exit(1);}
+                            break;
+                          }
+
                 case TBREAK: break;
-                case TDECL:
-                        //cout << "Hello" << endl;
-                        for(auto st : *stmt->identifiers){
-                                newVariable(st.c_str(),stmt->t);
-                        }
-                        break;
-                case TASSIGN:
+
+                case TDECL: 
+                          {
+                             for(auto st : *stmt->identifiers) newVariable(st.c_str(),stmt->t);
+                             break;
+                          }
+
+                case TLOOP: 
+                         {
+                            if((stmt->label).compare("")!=0) newConstant(stmt->label.c_str(),typeVoid);
+                            if(stmt->tail) sem_check_stmt(tail);
+                            break;
+                         }     
+      
+                case TASSIGN: // to aristera kai to dexia na exoun idio type
                         //sem_check_expr(stmt->expr);
                         break;
-                case TLOOP: break;
-        }
-cont:
-        //if(stmt->type==TFDEF) sem_check_fdef(stmt->def);
-        //printSymbolTable();
-        //cout << "HERE" << endl;
-        printSymbolTable();
-        sem_check_stmt(stmt->tail);
-        //cout << "NOT HERE" << endl;
-        return 0;
+
+
+
+        }   
 }
-//TODO:fix error messages using error.h
+
+
+
+
+
+
+
+
 //TODO: Rwta gia default type cast apo int se char
 Type sem_check_expr(ASTExpr* expr){
         //return typeVoid;
@@ -161,40 +207,34 @@ Type sem_check_expr(ASTExpr* expr){
                 case '-':
                         //FIXME: UNARYMINUS
                         if(!equalType(left,right)){
-                                cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
 
                         return left;
                 case '*':
                         if(!equalType(left,right)){
-                                cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
 
                         return left;
                 case '/':
                         if(!equalType(left,right)){
-                                cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
 
                         return left;
                 case '&':
                         if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
-                                cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
                         return typeInteger;
                 case '|':
                         if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
-                                cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
                         return typeInteger;
                 case '!':
                         if(!equalType(right,typeInteger)){
-                                cout << "WHYYYYYYYYYYYYY";
                                 exit(-1);
                         }
                         return typeInteger;

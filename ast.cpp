@@ -1,5 +1,6 @@
 #include "ast.h"
 using namespace std;
+
 ASTstmt::ASTstmt(stmt_type type, ASTstmt *body,ASTstmt *tail,string label){
     this->type = type;
     this->body = body;
@@ -8,23 +9,21 @@ ASTstmt::ASTstmt(stmt_type type, ASTstmt *body,ASTstmt *tail,string label){
 }
 
 ASTExpr::ASTExpr(char op,ASTlval* operand,int constval,ASTExpr *left,ASTExpr *right){
-    //cout << "hello world" << endl;
     this->op = op;
     this->operand=operand;
     this->constant_val=constval;
     this->left = left;
     this->right = right;
-
 }
 
 ASTfcall::ASTfcall(string identifier){
     this->identifier = identifier;
     parameters = new vector<ASTExpr*>;
 }
-ASTlval::ASTlval(bool constant,string identifier){
     this->constant = constant;
     this->identifier = identifier;
     this->indices = new vector<ASTExpr*>();
+ASTlval::ASTlval(bool constant,string identifier){
 }
 
 ASTfdef::ASTfdef(ASTheader *header,ASTstmt *body){
@@ -42,7 +41,7 @@ ASTparam::ASTparam(vector<string>* id, Type p, ASTparam *next){
     this->identifiers = id;
     this->p = p;
     this->byref = 0;
-    //this->indices = new vector<int>();
+
     this->next = next;
 }
 ASTif::ASTif(ASTExpr* condition,ASTstmt* body){

@@ -63,16 +63,16 @@ Grammar
    36      | expression
 
    37 stmt: SKIP
-   38     | pc
-   39     | mif
-   40     | loop
-   41     | lval ASSIGNMENT expression
-   42     | BREAK
-   43     | BREAK ':' IDENTIFIER
-   44     | CONT
-   45     | CONT ':' IDENTIFIER
-   46     | EXIT
-   47     | RETURN ':' expression
+   38     | mif
+   39     | loop
+   40     | lval ASSIGNMENT expression
+   41     | BREAK
+   42     | BREAK ':' IDENTIFIER
+   43     | CONT
+   44     | CONT ':' IDENTIFIER
+   45     | EXIT
+   46     | RETURN ':' expression
+   47     | pc
    48     | fcall
 
    49 fcall: IDENTIFIER '(' param ')'
@@ -140,7 +140,7 @@ $end (0) 0
 ',' (44) 10 11 35
 '-' (45) 75 82
 '/' (47) 77
-':' (58) 4 6 33 43 45 47 53 54 55 56 57 71 73
+':' (58) 4 6 33 42 44 46 53 54 55 56 57 71 73
 '[' (91) 17 18 19 20 21 29 91
 ']' (93) 17 18 19 20 21 29 91
 '|' (124) 80
@@ -162,24 +162,24 @@ EQ (271) 62
 DIFF (272) 63
 LARGER (273) 58
 SMALLER (274) 59
-RETURN (275) 47
-EXIT (276) 46
+RETURN (275) 46
+EXIT (276) 45
 REF (277) 15 16
 LARGEREQ (278) 60
 SMALLEREQ (279) 61
-ASSIGNMENT (280) 41
+ASSIGNMENT (280) 40
 AND (281) 66
 NOT (282) 68
 OR (283) 67
 ELIF (284) 56 73
 TRUE (285) 64
 FALSE (286) 65
-BREAK (287) 42 43
-CONT (288) 44 45
+BREAK (287) 41 42
+CONT (288) 43 44
 BEG (289)
 CONST (290) 19 20 21 29 85
 CHAR_CONST (291) 88
-IDENTIFIER (292) 4 5 6 7 33 34 43 45 49 50 51 52 53 89
+IDENTIFIER (292) 4 5 6 7 33 34 42 44 49 50 51 52 53 89
 STRINGLITERAL (293) 90
 UNARYPL (294)
 UNARYMINUS (295)
@@ -217,7 +217,7 @@ type (68)
 type_term (69)
     on left: 31 32, on right: 30
 pc (70)
-    on left: 33 34, on right: 38
+    on left: 33 34, on right: 47
 param (71)
     on left: 35 36, on right: 33 35 49
 stmt (72)
@@ -227,9 +227,9 @@ fcall (73)
 idlist (74)
     on left: 51 52, on right: 8 9 10 11 28 52
 loop (75)
-    on left: 53 54, on right: 40
+    on left: 53 54, on right: 39
 mif (76)
-    on left: 55 56 57, on right: 39
+    on left: 55 56 57, on right: 38
 condition (77)
     on left: 58 59 60 61 62 63 64 65 66 67 68 69 70, on right: 55 56
     57 66 67 68 69 73
@@ -237,10 +237,10 @@ eliftstmt (78)
     on left: 71 72 73, on right: 56 73
 expression (79)
     on left: 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88, on right:
-    35 36 41 47 58 59 60 61 62 63 70 74 75 76 77 78 79 80 81 82 83
+    35 36 40 46 58 59 60 61 62 63 70 74 75 76 77 78 79 80 81 82 83
     86 91
 lval (80)
-    on left: 89 90 91, on right: 41 84 91
+    on left: 89 90 91, on right: 40 84 91
 
 
 State 0
@@ -408,36 +408,36 @@ State 13
 
 State 14
 
-   47 stmt: RETURN . ':' expression
+   46 stmt: RETURN . ':' expression
 
     ':'  shift, and go to state 56
 
 
 State 15
 
-   46 stmt: EXIT .
+   45 stmt: EXIT .
 
-    $default  reduce using rule 46 (stmt)
+    $default  reduce using rule 45 (stmt)
 
 
 State 16
 
-   42 stmt: BREAK .
-   43     | BREAK . ':' IDENTIFIER
+   41 stmt: BREAK .
+   42     | BREAK . ':' IDENTIFIER
 
     ':'  shift, and go to state 57
 
-    $default  reduce using rule 42 (stmt)
+    $default  reduce using rule 41 (stmt)
 
 
 State 17
 
-   44 stmt: CONT .
-   45     | CONT . ':' IDENTIFIER
+   43 stmt: CONT .
+   44     | CONT . ':' IDENTIFIER
 
     ':'  shift, and go to state 58
 
-    $default  reduce using rule 44 (stmt)
+    $default  reduce using rule 43 (stmt)
 
 
 State 18
@@ -523,9 +523,9 @@ State 24
 
 State 25
 
-   38 stmt: pc .
+   47 stmt: pc .
 
-    $default  reduce using rule 38 (stmt)
+    $default  reduce using rule 47 (stmt)
 
 
 State 26
@@ -563,21 +563,21 @@ State 27
 
 State 28
 
-   40 stmt: loop .
-
-    $default  reduce using rule 40 (stmt)
-
-
-State 29
-
-   39 stmt: mif .
+   39 stmt: loop .
 
     $default  reduce using rule 39 (stmt)
 
 
+State 29
+
+   38 stmt: mif .
+
+    $default  reduce using rule 38 (stmt)
+
+
 State 30
 
-   41 stmt: lval . ASSIGNMENT expression
+   40 stmt: lval . ASSIGNMENT expression
    91 lval: lval . '[' expression ']'
 
     ASSIGNMENT  shift, and go to state 64
@@ -893,7 +893,7 @@ State 55
 
 State 56
 
-   47 stmt: RETURN ':' . expression
+   46 stmt: RETURN ':' . expression
 
     CONST          shift, and go to state 41
     CHAR_CONST     shift, and go to state 42
@@ -911,14 +911,14 @@ State 56
 
 State 57
 
-   43 stmt: BREAK ':' . IDENTIFIER
+   42 stmt: BREAK ':' . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 97
 
 
 State 58
 
-   45 stmt: CONT ':' . IDENTIFIER
+   44 stmt: CONT ':' . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 98
 
@@ -986,7 +986,7 @@ State 63
 
 State 64
 
-   41 stmt: lval ASSIGNMENT . expression
+   40 stmt: lval ASSIGNMENT . expression
 
     CONST          shift, and go to state 41
     CHAR_CONST     shift, and go to state 42
@@ -1523,7 +1523,7 @@ State 95
 
 State 96
 
-   47 stmt: RETURN ':' expression .
+   46 stmt: RETURN ':' expression .
    74 expression: expression . '+' expression
    75           | expression . '-' expression
    76           | expression . '*' expression
@@ -1540,21 +1540,21 @@ State 96
     '&'  shift, and go to state 91
     '%'  shift, and go to state 92
 
-    $default  reduce using rule 47 (stmt)
+    $default  reduce using rule 46 (stmt)
 
 
 State 97
 
-   43 stmt: BREAK ':' IDENTIFIER .
+   42 stmt: BREAK ':' IDENTIFIER .
 
-    $default  reduce using rule 43 (stmt)
+    $default  reduce using rule 42 (stmt)
 
 
 State 98
 
-   45 stmt: CONT ':' IDENTIFIER .
+   44 stmt: CONT ':' IDENTIFIER .
 
-    $default  reduce using rule 45 (stmt)
+    $default  reduce using rule 44 (stmt)
 
 
 State 99
@@ -1604,7 +1604,7 @@ State 102
 
 State 103
 
-   41 stmt: lval ASSIGNMENT expression .
+   40 stmt: lval ASSIGNMENT expression .
    74 expression: expression . '+' expression
    75           | expression . '-' expression
    76           | expression . '*' expression
@@ -1621,7 +1621,7 @@ State 103
     '&'  shift, and go to state 91
     '%'  shift, and go to state 92
 
-    $default  reduce using rule 41 (stmt)
+    $default  reduce using rule 40 (stmt)
 
 
 State 104

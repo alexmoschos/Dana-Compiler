@@ -30,6 +30,7 @@ class ASTif;
 class ASTExpr;
 class ASTparam;
 class ASTfcall;
+
 class ASTNode{
     int he;
     //virtual void run() = 0;
@@ -59,6 +60,7 @@ public:
     ASTheader *header;
     ASTstmt *body;
 };
+
 class ASTstmt:ASTNode{
 public:
     ASTstmt(stmt_type,ASTstmt*,ASTstmt*,string);
@@ -67,13 +69,14 @@ public:
     string label;
     ASTlval *lvalue;
     ASTExpr *expr;
-    ASTif* ifnode;
+    ASTif *ifnode;
     vector<string>* identifiers;
     ASTstmt *body;
     ASTstmt *tail;
     ASTfdef *def;
     Type t;
 };
+
 class ASTlval:ASTNode{
 public:
     ASTlval(bool,string);
@@ -88,20 +91,21 @@ public:
         cout << endl;
     }
 };
+
 class ASTparam:ASTNode{
 public:
     ASTparam(vector<string>*,Type,ASTparam*);
     vector<string>* identifiers;
     Type p;
-    //ASTtype with
     bool byref;
     ASTparam *next;
 };
+
 class ASTfcall:ASTNode{
 public:
     ASTfcall(string);
     string identifier;
-    vector<ASTExpr*>* parameters;
+    vector<ASTExpr*> *parameters;
 };
 
 class ASTif
@@ -111,7 +115,5 @@ public:
     ASTExpr* condition;
     ASTstmt* body;
     ASTif* tail;
-    //~ASTif();
-
 };
 #endif

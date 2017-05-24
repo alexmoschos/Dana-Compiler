@@ -249,18 +249,4 @@ int charToInt(char c)
 	return -1;
 }
 
-/*
-int main(int argc, char const *argv[])
-{
-	//indent_stack[0]=0;
-	int token;
-	while(yylex());
-	printf("Level is %d\n",level);
-	/*
-	while(level>0){
-		printf("}\n");
-		level--;
-	}
 
-	return 0;
-}*/
