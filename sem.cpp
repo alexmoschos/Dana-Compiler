@@ -174,137 +174,177 @@ void sem_check_stmt(ASTstmt* stmt){
                         //sem_check_expr(stmt->expr);
                         break;
 
-
-
         }   
 }
 
 
-
-
-
-
-
-
 //TODO: Rwta gia default type cast apo int se char
 Type sem_check_expr(ASTExpr* expr){
-        //return typeVoid;
-        //return typeVoid;
+
         if(expr==NULL){
                 return typeVoid;
         }
+
         SymbolEntry *a;
         Type left = sem_check_expr(expr->left);
         Type right = sem_check_expr(expr->right);
         switch(expr->op){
                 case '+':
-                        //FIXME: UNARYPLUS
-                        if(!equalType(left,right)){
+                        if(!equalType(typeInteger,right)){
                                 error("Typemismatch");
+                                exit(1);
                         }
+                        return right;
 
-                        return left;
                 case '-':
-                        //FIXME: UNARYMINUS
-                        if(!equalType(left,right)){
-                                exit(-1);
+                        if(!equalType(typeInteger,right)){
+                                error("Typemismatch");
+                                exit(1);
                         }
+                        return right;
 
-                        return left;
                 case '*':
-                        if(!equalType(left,right)){
-                                exit(-1);
+                       if(!(equalType(typeInteger,right) && equalType(typeInteger,left)) ||
+                           !(equalType(typeChar,right) && equalType(typeChar,left)) ) {
+                                error("Typemismatch");
+                                exit(1);
                         }
-
-                        return left;
+                        return right;
                 case '/':
-                        if(!equalType(left,right)){
-                                exit(-1);
+                         if(!(equalType(typeInteger,right) && equalType(typeInteger,left)) ||
+                           !(equalType(typeChar,right) && equalType(typeChar,left)) ) {
+                                error("Typemismatch");
+                                exit(1);
                         }
+                        return right;
 
-                        return left;
                 case '&':
-                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                        if(!equalType(left,typeChar) || !equalType(right,typeChar)){
+                                error("Typemismatch");
                                 exit(-1);
                         }
-                        return typeInteger;
+                        return right;
                 case '|':
-                        if(!equalType(left,typeInteger) || !equalType(right,typeInteger)){
+                        if(!equalType(left,typeChar) || !equalType(right,typeChar)){
+                                error("Typemismatch");
                                 exit(-1);
                         }
-                        return typeInteger;
+                        return right;
                 case '!':
-                        if(!equalType(right,typeInteger)){
+                        if(!equalType(right,typeChar)){
+                                error("Typemismatch");
                                 exit(-1);
                         }
-                        return typeInteger;
-                case 'i':
-                        //ASTlval* lv = expr->operand;
-                        //SymbolEntry* s = lookupEntry(lv->identifier,LOOKUP_ALL_SCOPES,true);
-                        //if(s->entryType == )
-                        return typeVoid;
+                        return right;
+
                 case 'c': return typeInteger;
-                case 'f':
-                        //a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-                        //printType(a->u.eFunction.resultType);
-                case 'x': return typeChar;
+
+                case 'x': return typeChar;   
+
+                case 'b': return typeBoolean;
+
                 case '>':
                         if(!equalType(left,right)){
                                 error("Cant compare operands of different types");
-                                exit(-1);
+                                exit(1);
+                        }
+                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                                error("operator > can be used only with int or byte");
+                                exit(1);
                         }
                         return typeBoolean;
                 case '<':
                         if(!equalType(left,right)){
                                 error("Cant compare operands of different types");
-                                exit(-1);
+                                exit(1);
                         }
-                        return typeBoolean;
+                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                                error("operator < can be used only with int or byte");
+                                exit(1);
+                        }
+                        return typeBoolean;    
+
                 case 'l':
-                        if(!equalType(left,right)){
+                         if(!equalType(left,right)){
                                 error("Cant compare operands of different types");
-                                exit(-1);
+                                exit(1);
                         }
-                        return typeBoolean;
+                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                                error("operator >= can be used only with int or byte");
+                                exit(1);
+                        }
+                        return typeBoolean; 
+
                 case 's':
-                        if(!equalType(left,right)){
+                         if(!equalType(left,right)){
                                 error("Cant compare operands of different types");
-                                exit(-1);
+                                exit(1);
                         }
-                        return typeBoolean;
+                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                                error("operator <= can be used only with int or byte");
+                                exit(1);
+                        }
+                        return typeBoolean;  
+
                 case 'e':
                         if(!equalType(left,right)){
                                 error("Cant compare operands of different types");
-                                exit(-1);
+                                exit(1);
                         }
-                        return typeBoolean;
+                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                                error("operator = can be used only with int or byte");
+                                exit(1);
+                        }
+                        return typeBoolean; 
+
                 case 'd':
                         if(!equalType(left,right)){
                                 error("Cant compare operands of different types");
-                                exit(-1);
+                                exit(1);
                         }
-                        return typeBoolean;
-                case 'b': return typeBoolean;
+                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                                error("operator <> can be used only with int or byte");
+                                exit(1);
+                        }
+                        return typeBoolean; 
+
                 case 'a':
                         if(!equalType(left,typeBoolean) || !equalType(right,typeBoolean)){
-                                //handle case where
-                                //cout << "WHYYYYYYYYYYYYY";
-                                //exit(-1);
+                                error("and operator requires boolean condition");
+                                exit(1);
                         }
-                        return typeBoolean;
+                        return right;
                 case 'o':
                         if(!equalType(left,typeBoolean) || !equalType(right,typeBoolean)){
-                                //handle case where
-                                //cout << "WHYYYYYYYYYYYYY";
-                                //exit(-1);
+                                error("or operator requires boolean condition");
+                                exit(1);
                         }
-                        return typeBoolean;
+                        return right;
                 case 'n':
                         if(!equalType(right,typeBoolean)){
-                                //cout << "WHYYYYYYYYYYYYY";
-                                //exit(-1);
+                                error("not operator requires boolean condition");
+                                exit(1);
                         }
-                        return typeBoolean;
+                        return right;        
+
+                case 'f':
+                        SymbolEntry a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                        if(a->entryType != ENTRY_FUNCTION) error("Expression not a function");
+                        if(equalType(a->u.eFunction.resultType,typeVoid)) error("void function in expression!"); 
+
+ 
+
+
+
+
+
+                case 'i':
+                        //ASTlval* lv = expr->operand;
+                        //SymbolEntry* s = lookupEntry(lv->identifier,LOOKUP_ALL_SCOPES,true);
+                        //if(s->entryType == )
+                        return typeVoid;
+               
+
+                
         }
-        return typeChar;
 }
