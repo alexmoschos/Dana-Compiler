@@ -20,10 +20,11 @@ ASTfcall::ASTfcall(string identifier){
     this->identifier = identifier;
     parameters = new vector<ASTExpr*>;
 }
+   
+ASTlval::ASTlval(bool constant,string identifier){
     this->constant = constant;
     this->identifier = identifier;
     this->indices = new vector<ASTExpr*>();
-ASTlval::ASTlval(bool constant,string identifier){
 }
 
 ASTfdef::ASTfdef(ASTheader *header,ASTstmt *body){

@@ -1,6 +1,7 @@
 %{
-	extern "C"
-    #include "symbol.h"
+	extern "C"{
+      #include "symbol.h"
+    }
     #include "sem.h"
 	#include "ast.h"
 	#include <stdio.h>
@@ -73,18 +74,18 @@ mainfunc
     ;
 
 fdef
-	:DEF header decl_list END {$$ = new ASTfdef($2,$3);}
+	:DEF header {FUNCTION_NAMES.push(new ASTfdef($2,NULL));} decl_list END {$$ = new ASTfdef($2,$4); FUNCTION_NAMES.pop();}
 	;
 
 fdecl
-	:DECL header       {$$ = new ASTfdef($2,NULL); FUNCTION_NAMES.push($$);}
+	:DECL header       {$$ = new ASTfdef($2,NULL);}  
 	;
 
 header
 	: IDENTIFIER IS type ':' optparam    {$$ = new ASTheader($3,$5,$1);}
     | IDENTIFIER IS type                 {$$ = new ASTheader($3,NULL,$1);}
-	| IDENTIFIER ':' optparam            {$$ = new ASTheader(typeVoid,$3,$1); FUNCTION_NAMES.pop();}
-	| IDENTIFIER                         {$$ = new ASTheader(typeVoid,NULL,$1); FUNCTION_NAMES.pop()}
+	| IDENTIFIER ':' optparam            {$$ = new ASTheader(typeVoid,$3,$1);}
+	| IDENTIFIER                         {$$ = new ASTheader(typeVoid,NULL,$1);}
 	;
 
 optparam
@@ -155,9 +156,9 @@ stmt
 	| BREAK                      {$$ = new ASTstmt(TBREAK,NULL,NULL,"");}
 	| BREAK ':' IDENTIFIER       {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
 	| CONT                       {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
-	| CONT ':' IDENTIFIER        {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}  //maybe strdup??
+	| CONT ':' IDENTIFIER        {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);} 
 	| EXIT                       {$$ = new ASTstmt(TEXIT,NULL,NULL,"");}
-	| RETURN ':' expression      {$$ = new ASTstmt(TRET,NULL,NULL,""); $$->expr = $3; $$->def = FUNCTION_NAMES.top(); FUNCTION_NAMES.pop()}
+	| RETURN ':' expression      {$$ = new ASTstmt(TRET,NULL,NULL,""); $$->expr = $3; $$->def = FUNCTION_NAMES.top();}
     | pc                   	     {
                                   $$ = new ASTstmt(TPC,NULL,NULL,"");
                                   $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
@@ -189,7 +190,7 @@ mif
 		                                                            $$ = new ASTif($2,$4);
 		                                                            auto else_node = new ASTif(NULL,$8);
 		                                                            $$->tail = else_node;
-		                                                            //else_node->tail = NULL; doesn't  need
+		                                                            else_node->tail = NULL; 
 	                                                             }
 	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt {
 		       		                                                                 $$ = new ASTif($2,$4);
@@ -254,7 +255,7 @@ int main(){
 	initSymbolTable(997);
     main_f = NULL;
 	lastparam = new vector<ASTExpr*>();
-	FUNCTION_NAMES = new stack<ASTfdef*>();
+	FUNCTION_NAMES =  stack<ASTfdef*>();
 	if(yyparse()) return -1;
     sem_check_fdef(main_f);
     destroySymbolTable();
