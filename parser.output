@@ -96,33 +96,33 @@ Grammar
    62          | expression SMALLEREQ expression
    63          | expression EQ expression
    64          | expression DIFF expression
-   65          | TRUE
-   66          | FALSE
-   67          | condition AND condition
-   68          | condition OR condition
-   69          | NOT condition
-   70          | '(' condition ')'
-   71          | expression
+   65          | condition AND condition
+   66          | condition OR condition
+   67          | NOT condition
+   68          | '(' condition ')'
+   69          | expression
 
-   72 eliftstmt: ELSE ':' stmt_list END
-   73          | %empty
-   74          | ELIF condition ':' stmt_list END eliftstmt
+   70 eliftstmt: ELSE ':' stmt_list END
+   71          | %empty
+   72          | ELIF condition ':' stmt_list END eliftstmt
 
-   75 expression: expression '+' expression
-   76           | expression '-' expression
-   77           | expression '*' expression
-   78           | expression '/' expression
-   79           | expression '%' expression
-   80           | expression '&' expression
-   81           | expression '|' expression
-   82           | '+' expression
-   83           | '-' expression
-   84           | '!' expression
-   85           | lval
-   86           | CONST
-   87           | '(' expression ')'
-   88           | fcall
-   89           | CHAR_CONST
+   73 expression: expression '+' expression
+   74           | expression '-' expression
+   75           | expression '*' expression
+   76           | expression '/' expression
+   77           | expression '%' expression
+   78           | expression '&' expression
+   79           | expression '|' expression
+   80           | '+' expression
+   81           | '-' expression
+   82           | '!' expression
+   83           | lval
+   84           | CONST
+   85           | '(' expression ')'
+   86           | fcall
+   87           | CHAR_CONST
+   88           | TRUE
+   89           | FALSE
 
    90 lval: IDENTIFIER
    91     | STRINGLITERAL
@@ -132,31 +132,31 @@ Grammar
 Terminals, with rules where they appear
 
 $end (0) 0
-'!' (33) 84
-'%' (37) 79
-'&' (38) 80
-'(' (40) 50 51 70 87
-')' (41) 50 51 70 87
-'*' (42) 77
-'+' (43) 75 82
+'!' (33) 82
+'%' (37) 77
+'&' (38) 78
+'(' (40) 50 51 68 85
+')' (41) 50 51 68 85
+'*' (42) 75
+'+' (43) 73 80
 ',' (44) 11 12 36
-'-' (45) 76 83
-'/' (47) 78
-':' (58) 5 7 34 43 45 47 54 55 56 57 58 72 74
+'-' (45) 74 81
+'/' (47) 76
+':' (58) 5 7 34 43 45 47 54 55 56 57 58 70 72
 '[' (91) 18 19 20 21 22 30 92
 ']' (93) 18 19 20 21 22 30 92
-'|' (124) 81
+'|' (124) 79
 error (256)
 INT (258) 14 16 18 20 32
 BYTE (259) 15 17 19 21 33
 IF (260) 56 57 58
-ELSE (261) 56 72
+ELSE (261) 56 70
 LOOP (262) 54 55
 AS (263) 9 10 11 12
 SKIP (264) 38
 DECL (265) 4
 DEF (266) 3
-END (267) 3 54 55 56 57 58 72 74
+END (267) 3 54 55 56 57 58 70 72
 VAR (268) 29
 IS (269) 5 6 29
 TEOF (270)
@@ -170,17 +170,17 @@ REF (277) 16 17
 LARGEREQ (278) 61
 SMALLEREQ (279) 62
 ASSIGNMENT (280) 41
-AND (281) 67
-NOT (282) 69
-OR (283) 68
-ELIF (284) 57 74
-TRUE (285) 65
-FALSE (286) 66
+AND (281) 65
+NOT (282) 67
+OR (283) 66
+ELIF (284) 57 72
+TRUE (285) 88
+FALSE (286) 89
 BREAK (287) 42 43
 CONT (288) 44 45
 BEG (289)
-CONST (290) 20 21 22 30 86
-CHAR_CONST (291) 89
+CONST (290) 20 21 22 30 84
+CHAR_CONST (291) 87
 IDENTIFIER (292) 5 6 7 8 34 35 43 45 50 51 52 53 54 90
 STRINGLITERAL (293) 91
 UNARYPL (294)
@@ -211,7 +211,7 @@ reftype (64)
 bp (65)
     on left: 18 19 20 21 22, on right: 13 22
 stmt_list (66)
-    on left: 23 24, on right: 24 25 54 55 56 57 58 72 74
+    on left: 23 24, on right: 24 25 54 55 56 57 58 70 72
 decl_list (67)
     on left: 25 26, on right: 3 26
 decl (68)
@@ -227,7 +227,7 @@ param (72)
 stmt (73)
     on left: 38 39 40 41 42 43 44 45 46 47 48 49, on right: 23 24
 fcall (74)
-    on left: 50 51, on right: 49 88
+    on left: 50 51, on right: 49 86
 idlist (75)
     on left: 52 53, on right: 9 10 11 12 29 53
 loop (76)
@@ -235,16 +235,16 @@ loop (76)
 mif (77)
     on left: 56 57 58, on right: 39
 condition (78)
-    on left: 59 60 61 62 63 64 65 66 67 68 69 70 71, on right: 56 57
-    58 67 68 69 70 74
+    on left: 59 60 61 62 63 64 65 66 67 68 69, on right: 56 57 58 65
+    66 67 68 72
 eliftstmt (79)
-    on left: 72 73 74, on right: 57 74
+    on left: 70 71 72, on right: 57 72
 expression (80)
-    on left: 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89, on right:
-    36 37 41 47 59 60 61 62 63 64 71 75 76 77 78 79 80 81 82 83 84
-    87 92
+    on left: 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89, on right:
+    36 37 41 47 59 60 61 62 63 64 69 73 74 75 76 77 78 79 80 81 82
+    85 92
 lval (81)
-    on left: 90 91 92, on right: 41 85 92
+    on left: 90 91 92, on right: 41 83 92
 
 
 State 0
@@ -698,7 +698,7 @@ State 42
 
 State 43
 
-   69 condition: NOT . condition
+   67 condition: NOT . condition
 
     NOT            shift, and go to state 43
     TRUE           shift, and go to state 44
@@ -720,30 +720,30 @@ State 43
 
 State 44
 
-   65 condition: TRUE .
+   88 expression: TRUE .
 
-    $default  reduce using rule 65 (condition)
+    $default  reduce using rule 88 (expression)
 
 
 State 45
 
-   66 condition: FALSE .
+   89 expression: FALSE .
 
-    $default  reduce using rule 66 (condition)
+    $default  reduce using rule 89 (expression)
 
 
 State 46
 
-   86 expression: CONST .
+   84 expression: CONST .
 
-    $default  reduce using rule 86 (expression)
+    $default  reduce using rule 84 (expression)
 
 
 State 47
 
-   89 expression: CHAR_CONST .
+   87 expression: CHAR_CONST .
 
-    $default  reduce using rule 89 (expression)
+    $default  reduce using rule 87 (expression)
 
 
 State 48
@@ -759,8 +759,10 @@ State 48
 
 State 49
 
-   82 expression: '+' . expression
+   80 expression: '+' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -777,8 +779,10 @@ State 49
 
 State 50
 
-   83 expression: '-' . expression
+   81 expression: '-' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -795,8 +799,8 @@ State 50
 
 State 51
 
-   70 condition: '(' . condition ')'
-   87 expression: '(' . expression ')'
+   68 condition: '(' . condition ')'
+   85 expression: '(' . expression ')'
 
     NOT            shift, and go to state 43
     TRUE           shift, and go to state 44
@@ -818,8 +822,10 @@ State 51
 
 State 52
 
-   84 expression: '!' . expression
+   82 expression: '!' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -836,9 +842,9 @@ State 52
 
 State 53
 
-   88 expression: fcall .
+   86 expression: fcall .
 
-    $default  reduce using rule 88 (expression)
+    $default  reduce using rule 86 (expression)
 
 
 State 54
@@ -846,8 +852,8 @@ State 54
    56 mif: IF condition . ':' stmt_list END ELSE ':' stmt_list END
    57    | IF condition . ':' stmt_list END ELIF condition ':' stmt_list END eliftstmt
    58    | IF condition . ':' stmt_list END
-   67 condition: condition . AND condition
-   68          | condition . OR condition
+   65 condition: condition . AND condition
+   66          | condition . OR condition
 
     AND  shift, and go to state 86
     OR   shift, and go to state 87
@@ -862,14 +868,14 @@ State 55
    62          | expression . SMALLEREQ expression
    63          | expression . EQ expression
    64          | expression . DIFF expression
-   71          | expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   69          | expression .
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     EQ         shift, and go to state 89
     DIFF       shift, and go to state 90
@@ -885,17 +891,17 @@ State 55
     '&'        shift, and go to state 100
     '%'        shift, and go to state 101
 
-    $default  reduce using rule 71 (condition)
+    $default  reduce using rule 69 (condition)
 
 
 State 56
 
-   85 expression: lval .
+   83 expression: lval .
    92 lval: lval . '[' expression ']'
 
     '['  shift, and go to state 70
 
-    $default  reduce using rule 85 (expression)
+    $default  reduce using rule 83 (expression)
 
 
 State 57
@@ -948,6 +954,8 @@ State 61
 
    47 stmt: RETURN ':' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -980,6 +988,8 @@ State 64
 
    34 pc: IDENTIFIER ':' . param
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1000,6 +1010,8 @@ State 65
    50 fcall: IDENTIFIER '(' . param ')'
    51      | IDENTIFIER '(' . ')'
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1041,6 +1053,8 @@ State 69
 
    41 stmt: lval ASSIGNMENT . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1059,6 +1073,8 @@ State 70
 
    92 lval: lval '[' . expression ']'
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1150,17 +1166,19 @@ State 78
 
 State 79
 
-   67 condition: condition . AND condition
-   68          | condition . OR condition
-   69          | NOT condition .
+   65 condition: condition . AND condition
+   66          | condition . OR condition
+   67          | NOT condition .
 
-    $default  reduce using rule 69 (condition)
+    $default  reduce using rule 67 (condition)
 
 
 State 80
 
-   87 expression: '(' . expression ')'
+   85 expression: '(' . expression ')'
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1177,37 +1195,37 @@ State 80
 
 State 81
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
-   82           | '+' expression .
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
+   80           | '+' expression .
 
-    $default  reduce using rule 82 (expression)
+    $default  reduce using rule 80 (expression)
 
 
 State 82
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
-   83           | '-' expression .
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
+   81           | '-' expression .
 
-    $default  reduce using rule 83 (expression)
+    $default  reduce using rule 81 (expression)
 
 
 State 83
 
-   67 condition: condition . AND condition
-   68          | condition . OR condition
-   70          | '(' condition . ')'
+   65 condition: condition . AND condition
+   66          | condition . OR condition
+   68          | '(' condition . ')'
 
     AND  shift, and go to state 86
     OR   shift, and go to state 87
@@ -1222,15 +1240,15 @@ State 84
    62          | expression . SMALLEREQ expression
    63          | expression . EQ expression
    64          | expression . DIFF expression
-   71          | expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
-   87           | '(' expression . ')'
+   69          | expression .
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
+   85           | '(' expression . ')'
 
     EQ         shift, and go to state 89
     DIFF       shift, and go to state 90
@@ -1247,27 +1265,27 @@ State 84
     '%'        shift, and go to state 101
     ')'        shift, and go to state 124
 
-    ')'       [reduce using rule 71 (condition)]
-    $default  reduce using rule 71 (condition)
+    ')'       [reduce using rule 69 (condition)]
+    $default  reduce using rule 69 (condition)
 
 
 State 85
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
-   84           | '!' expression .
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
+   82           | '!' expression .
 
-    $default  reduce using rule 84 (expression)
+    $default  reduce using rule 82 (expression)
 
 
 State 86
 
-   67 condition: condition AND . condition
+   65 condition: condition AND . condition
 
     NOT            shift, and go to state 43
     TRUE           shift, and go to state 44
@@ -1289,7 +1307,7 @@ State 86
 
 State 87
 
-   68 condition: condition OR . condition
+   66 condition: condition OR . condition
 
     NOT            shift, and go to state 43
     TRUE           shift, and go to state 44
@@ -1338,6 +1356,8 @@ State 89
 
    63 condition: expression EQ . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1356,6 +1376,8 @@ State 90
 
    64 condition: expression DIFF . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1374,6 +1396,8 @@ State 91
 
    59 condition: expression LARGER . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1392,6 +1416,8 @@ State 92
 
    60 condition: expression SMALLER . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1410,6 +1436,8 @@ State 93
 
    61 condition: expression LARGEREQ . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1428,6 +1456,8 @@ State 94
 
    62 condition: expression SMALLEREQ . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1444,8 +1474,10 @@ State 94
 
 State 95
 
-   75 expression: expression '+' . expression
+   73 expression: expression '+' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1462,8 +1494,10 @@ State 95
 
 State 96
 
-   76 expression: expression '-' . expression
+   74 expression: expression '-' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1480,8 +1514,10 @@ State 96
 
 State 97
 
-   81 expression: expression '|' . expression
+   79 expression: expression '|' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1498,8 +1534,10 @@ State 97
 
 State 98
 
-   77 expression: expression '*' . expression
+   75 expression: expression '*' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1516,8 +1554,10 @@ State 98
 
 State 99
 
-   78 expression: expression '/' . expression
+   76 expression: expression '/' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1534,8 +1574,10 @@ State 99
 
 State 100
 
-   80 expression: expression '&' . expression
+   78 expression: expression '&' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1552,8 +1594,10 @@ State 100
 
 State 101
 
-   79 expression: expression '%' . expression
+   77 expression: expression '%' . expression
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -1612,13 +1656,13 @@ State 104
 State 105
 
    47 stmt: RETURN ':' expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1656,13 +1700,13 @@ State 109
 
    36 param: expression . ',' param
    37      | expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1693,13 +1737,13 @@ State 111
 State 112
 
    41 stmt: lval ASSIGNMENT expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1714,13 +1758,13 @@ State 112
 
 State 113
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
    92 lval: lval '[' expression . ']'
 
     '+'  shift, and go to state 95
@@ -1801,14 +1845,14 @@ State 121
 
 State 122
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
-   87           | '(' expression . ')'
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
+   85           | '(' expression . ')'
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1822,36 +1866,36 @@ State 122
 
 State 123
 
-   70 condition: '(' condition ')' .
+   68 condition: '(' condition ')' .
 
-    $default  reduce using rule 70 (condition)
+    $default  reduce using rule 68 (condition)
 
 
 State 124
 
-   87 expression: '(' expression ')' .
+   85 expression: '(' expression ')' .
 
-    $default  reduce using rule 87 (expression)
+    $default  reduce using rule 85 (expression)
 
 
 State 125
 
-   67 condition: condition . AND condition
-   67          | condition AND condition .
-   68          | condition . OR condition
+   65 condition: condition . AND condition
+   65          | condition AND condition .
+   66          | condition . OR condition
 
-    $default  reduce using rule 67 (condition)
+    $default  reduce using rule 65 (condition)
 
 
 State 126
 
-   67 condition: condition . AND condition
-   68          | condition . OR condition
-   68          | condition OR condition .
+   65 condition: condition . AND condition
+   66          | condition . OR condition
+   66          | condition OR condition .
 
     AND  shift, and go to state 86
 
-    $default  reduce using rule 68 (condition)
+    $default  reduce using rule 66 (condition)
 
 
 State 127
@@ -1866,13 +1910,13 @@ State 127
 State 128
 
    63 condition: expression EQ expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1888,13 +1932,13 @@ State 128
 State 129
 
    64 condition: expression DIFF expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1910,13 +1954,13 @@ State 129
 State 130
 
    59 condition: expression LARGER expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1932,13 +1976,13 @@ State 130
 State 131
 
    60 condition: expression SMALLER expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1954,13 +1998,13 @@ State 131
 State 132
 
    61 condition: expression LARGEREQ expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1976,13 +2020,13 @@ State 132
 State 133
 
    62 condition: expression SMALLEREQ expression .
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '+'  shift, and go to state 95
     '-'  shift, and go to state 96
@@ -1997,115 +2041,115 @@ State 133
 
 State 134
 
-   75 expression: expression . '+' expression
-   75           | expression '+' expression .
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   73           | expression '+' expression .
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '*'  shift, and go to state 98
     '/'  shift, and go to state 99
     '&'  shift, and go to state 100
     '%'  shift, and go to state 101
 
-    $default  reduce using rule 75 (expression)
+    $default  reduce using rule 73 (expression)
 
 
 State 135
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   76           | expression '-' expression .
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   74           | expression '-' expression .
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
     '*'  shift, and go to state 98
     '/'  shift, and go to state 99
     '&'  shift, and go to state 100
     '%'  shift, and go to state 101
 
-    $default  reduce using rule 76 (expression)
+    $default  reduce using rule 74 (expression)
 
 
 State 136
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
-   81           | expression '|' expression .
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
+   79           | expression '|' expression .
 
     '*'  shift, and go to state 98
     '/'  shift, and go to state 99
     '&'  shift, and go to state 100
     '%'  shift, and go to state 101
 
-    $default  reduce using rule 81 (expression)
+    $default  reduce using rule 79 (expression)
 
 
 State 137
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   77           | expression '*' expression .
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   75           | expression '*' expression .
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
-    $default  reduce using rule 77 (expression)
+    $default  reduce using rule 75 (expression)
 
 
 State 138
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   78           | expression '/' expression .
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   76           | expression '/' expression .
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
-    $default  reduce using rule 78 (expression)
+    $default  reduce using rule 76 (expression)
 
 
 State 139
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   80           | expression . '&' expression
-   80           | expression '&' expression .
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   78           | expression . '&' expression
+   78           | expression '&' expression .
+   79           | expression . '|' expression
 
-    $default  reduce using rule 80 (expression)
+    $default  reduce using rule 78 (expression)
 
 
 State 140
 
-   75 expression: expression . '+' expression
-   76           | expression . '-' expression
-   77           | expression . '*' expression
-   78           | expression . '/' expression
-   79           | expression . '%' expression
-   79           | expression '%' expression .
-   80           | expression . '&' expression
-   81           | expression . '|' expression
+   73 expression: expression . '+' expression
+   74           | expression . '-' expression
+   75           | expression . '*' expression
+   76           | expression . '/' expression
+   77           | expression . '%' expression
+   77           | expression '%' expression .
+   78           | expression . '&' expression
+   79           | expression . '|' expression
 
-    $default  reduce using rule 79 (expression)
+    $default  reduce using rule 77 (expression)
 
 
 State 141
@@ -2136,6 +2180,8 @@ State 144
 
    36 param: expression ',' . param
 
+    TRUE           shift, and go to state 44
+    FALSE          shift, and go to state 45
     CONST          shift, and go to state 46
     CHAR_CONST     shift, and go to state 47
     IDENTIFIER     shift, and go to state 48
@@ -2316,8 +2362,8 @@ State 162
 State 163
 
    57 mif: IF condition ':' stmt_list END ELIF condition . ':' stmt_list END eliftstmt
-   67 condition: condition . AND condition
-   68          | condition . OR condition
+   65 condition: condition . AND condition
+   66          | condition . OR condition
 
     AND  shift, and go to state 86
     OR   shift, and go to state 87
@@ -2375,21 +2421,21 @@ State 168
     ELSE  shift, and go to state 169
     ELIF  shift, and go to state 170
 
-    $default  reduce using rule 73 (eliftstmt)
+    $default  reduce using rule 71 (eliftstmt)
 
     eliftstmt  go to state 171
 
 
 State 169
 
-   72 eliftstmt: ELSE . ':' stmt_list END
+   70 eliftstmt: ELSE . ':' stmt_list END
 
     ':'  shift, and go to state 172
 
 
 State 170
 
-   74 eliftstmt: ELIF . condition ':' stmt_list END eliftstmt
+   72 eliftstmt: ELIF . condition ':' stmt_list END eliftstmt
 
     NOT            shift, and go to state 43
     TRUE           shift, and go to state 44
@@ -2418,7 +2464,7 @@ State 171
 
 State 172
 
-   72 eliftstmt: ELSE ':' . stmt_list END
+   70 eliftstmt: ELSE ':' . stmt_list END
 
     IF             shift, and go to state 17
     LOOP           shift, and go to state 18
@@ -2441,9 +2487,9 @@ State 172
 
 State 173
 
-   67 condition: condition . AND condition
-   68          | condition . OR condition
-   74 eliftstmt: ELIF condition . ':' stmt_list END eliftstmt
+   65 condition: condition . AND condition
+   66          | condition . OR condition
+   72 eliftstmt: ELIF condition . ':' stmt_list END eliftstmt
 
     AND  shift, and go to state 86
     OR   shift, and go to state 87
@@ -2452,14 +2498,14 @@ State 173
 
 State 174
 
-   72 eliftstmt: ELSE ':' stmt_list . END
+   70 eliftstmt: ELSE ':' stmt_list . END
 
     END  shift, and go to state 176
 
 
 State 175
 
-   74 eliftstmt: ELIF condition ':' . stmt_list END eliftstmt
+   72 eliftstmt: ELIF condition ':' . stmt_list END eliftstmt
 
     IF             shift, and go to state 17
     LOOP           shift, and go to state 18
@@ -2482,32 +2528,32 @@ State 175
 
 State 176
 
-   72 eliftstmt: ELSE ':' stmt_list END .
+   70 eliftstmt: ELSE ':' stmt_list END .
 
-    $default  reduce using rule 72 (eliftstmt)
+    $default  reduce using rule 70 (eliftstmt)
 
 
 State 177
 
-   74 eliftstmt: ELIF condition ':' stmt_list . END eliftstmt
+   72 eliftstmt: ELIF condition ':' stmt_list . END eliftstmt
 
     END  shift, and go to state 178
 
 
 State 178
 
-   74 eliftstmt: ELIF condition ':' stmt_list END . eliftstmt
+   72 eliftstmt: ELIF condition ':' stmt_list END . eliftstmt
 
     ELSE  shift, and go to state 169
     ELIF  shift, and go to state 170
 
-    $default  reduce using rule 73 (eliftstmt)
+    $default  reduce using rule 71 (eliftstmt)
 
     eliftstmt  go to state 179
 
 
 State 179
 
-   74 eliftstmt: ELIF condition ':' stmt_list END eliftstmt .
+   72 eliftstmt: ELIF condition ':' stmt_list END eliftstmt .
 
-    $default  reduce using rule 74 (eliftstmt)
+    $default  reduce using rule 72 (eliftstmt)

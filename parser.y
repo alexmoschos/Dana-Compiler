@@ -208,8 +208,6 @@ condition
 	| expression SMALLEREQ expression  {$$=new ASTExpr('s',NULL,0,$1,$3);}
 	| expression EQ expression         {$$=new ASTExpr('e',NULL,0,$1,$3);}
 	| expression DIFF expression       {$$=new ASTExpr('d',NULL,0,$1,$3);}
-	| TRUE                             {$$=new ASTExpr('b',NULL,1,NULL,NULL);}
-	| FALSE                            {$$=new ASTExpr('b',NULL,0,NULL,NULL);}
 	| condition AND condition          {$$=new ASTExpr('a',NULL,0,$1,$3);}
 	| condition OR condition           {$$=new ASTExpr('o',NULL,0,$1,$3);}
 	| NOT condition                    {$$=new ASTExpr('n',NULL,0,NULL,$2);}
@@ -229,17 +227,19 @@ expression
 	| expression '-' expression	       {$$=new ASTExpr('-',NULL,0,$1,$3);}
 	| expression '*' expression	       {$$=new ASTExpr('*',NULL,0,$1,$3);}
 	| expression '/' expression	       {$$=new ASTExpr('/',NULL,0,$1,$3);}
-    | expression '%' expression        {$$=new ASTExpr('%',NULL,0,$1,$3);}
+        | expression '%' expression        {$$=new ASTExpr('%',NULL,0,$1,$3);}
 	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
 	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}
 	| '+' expression %prec UNARYPL     {$$=new ASTExpr('+',NULL,0,NULL,$2);}
 	| '-' expression %prec UNARYMINUS  {$$=new ASTExpr('-',NULL,0,NULL,$2);}
-    | '!' expression %prec BANG        {$$=new ASTExpr('!',NULL,0,NULL,$2);}
+        | '!' expression %prec BANG        {$$=new ASTExpr('!',NULL,0,NULL,$2);}
 	| lval                             {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
 	| CONST                            {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
 	| '(' expression ')'               {$$ = $2;}
 	| fcall                            {$$ = new ASTExpr('f',NULL,0,NULL,NULL); $$->f = $1;}
 	| CHAR_CONST                       {$$ = new ASTExpr('x',NULL,$1,NULL,NULL);}
+        | TRUE                             {$$=new ASTExpr('b',NULL,1,NULL,NULL);}
+        | FALSE                            {$$=new ASTExpr('b',NULL,0,NULL,NULL);}
 	;
 
 lval

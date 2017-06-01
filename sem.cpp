@@ -68,6 +68,7 @@ void sem_check_fdef(ASTfdef* func){
         cout << "I just started a function definition check" << endl;
         ASTheader *header = func->header;
         SymbolEntry *f = newFunction(header->identifier.c_str());
+        openScope();
         cout << "the new function is " << header->identifier << endl;;
         ASTparam *iter = header->paramlist;
         while(iter != NULL){
@@ -81,7 +82,7 @@ void sem_check_fdef(ASTfdef* func){
         }
 
         endFunctionHeader(f,header->type);
-        openScope();
+
         sem_check_stmt(func->body);
         cout << "HERE" << endl;
         closeScope();

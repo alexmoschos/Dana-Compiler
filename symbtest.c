@@ -240,7 +240,7 @@ int main ()
 
    newTemporary(typeInteger);
    newTemporary(typeInteger);
-
+   lookupEntry("pr",LOOKUP_ALL_SCOPES,true);
    printSymbolTable();
 
 /* SOURCE : end. (* of program p *) */
