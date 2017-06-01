@@ -221,7 +221,13 @@ void sem_check_stmt(ASTstmt* stmt){
                 case TASSIGN:
                 {
                         Type rval_type = sem_check_expr(stmt->expr);
+                        cout << "i didnt do this yes" << endl;
                         SymbolEntry *s = lookupEntry(stmt->lvalue->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                        cout << "What is happening here" << endl;
+                        if(s==NULL) {
+                                cout << "Hello";
+                                exit(1);
+                        }
                         Type lval_type;
                         if(s->entryType == ENTRY_PARAMETER)
                                 lval_type = s->u.eParameter.type;
@@ -321,7 +327,7 @@ Type sem_check_expr(ASTExpr* expr){
 
                 case 'x': return typeChar;
 
-                case 'b': return typeBoolean;
+                case 'b': return typeChar;
 
                 case '>':
                         if(!equalType(left,right)){
@@ -419,6 +425,9 @@ Type sem_check_expr(ASTExpr* expr){
                         {
                           ASTlval* lv = expr->operand;
                           SymbolEntry* s = lookupEntry(lv->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                          if(s==NULL) {
+                                  exit(1);
+                          }
                           Type lval_type;
                           if(s->entryType == ENTRY_PARAMETER)
                                     lval_type = s->u.eParameter.type;
