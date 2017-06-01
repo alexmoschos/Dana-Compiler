@@ -5,26 +5,85 @@ extern "C"{
 #include "sem.h"
 #include "ast.h"
 #include <stdio.h>
+//TODO: petrou an kati eiani int[1][2][3] tha prepei na mporei na mpei se sunarthsh me type int[][2][3]
+
+void printSymbolTable ()
+{
+    Scope       * scp;
+    SymbolEntry * e;
+    SymbolEntry * args;
+
+    scp = currentScope;
+    if (scp == NULL)
+        printf("no scope\n");
+    else
+        while (scp != NULL) {
+            printf("scope: ");
+            e = scp->entries;
+            while (e != NULL) {
+                if (e->entryType == ENTRY_TEMPORARY)
+                    printf("$%d", e->u.eTemporary.number);
+                else
+                    printf("%s", e->id);
+                switch (e->entryType) {
+                    case ENTRY_FUNCTION:
+                        printf("(");
+                        args = e->u.eFunction.firstArgument;
+                        while (args != NULL) {
+                            printMode(args->u.eParameter.mode);
+                            printf("%s : ", args->id);
+                            printType(args->u.eParameter.type);
+                            args = args->u.eParameter.next;
+                            if (args != NULL)
+                                printf("; ");
+                        }
+                        printf(") : ");
+                        printType(e->u.eFunction.resultType);
+                        break;
+#ifdef SHOW_OFFSETS
+                    case ENTRY_VARIABLE:
+                        printf("[%d]", e->u.eVariable.offset);
+                        break;
+                    case ENTRY_PARAMETER:
+                        printf("[%d]", e->u.eParameter.offset);
+                        break;
+                    case ENTRY_TEMPORARY:
+                        printf("[%d]", e->u.eTemporary.offset);
+                        break;
+#endif
+                }
+                e = e->nextInScope;
+                if (e != NULL)
+                    printf(", ");
+            }
+            scp = scp->parent;
+            printf("\n");
+        }
+    printf("----------------------------------------\n");
+}
+
 
 void sem_check_fdef(ASTfdef* func){
         if(func==NULL) exit(-1);
-        openScope();
         cout << "I just started a function definition check" << endl;
         ASTheader *header = func->header;
         SymbolEntry *f = newFunction(header->identifier.c_str());
+        cout << "the new function is " << header->identifier << endl;;
         ASTparam *iter = header->paramlist;
         while(iter != NULL){
                 for(auto st : *iter->identifiers){
                         if(iter->byref)
                                 newParameter(st.c_str(),iter->p,PASS_BY_REFERENCE,f);
                         else
-                                newParameter(st.c_str(),iter->p,PASS_BY_VALUE,f); //Can arrays be passed by value??
+                                newParameter(st.c_str(),iter->p,PASS_BY_VALUE,f); //Can arrays be passed by value?? NO parser doesnt allow it
                 }
                 iter = iter->next;
         }
 
         endFunctionHeader(f,header->type);
+        openScope();
         sem_check_stmt(func->body);
+        cout << "HERE" << endl;
         closeScope();
 }
 
@@ -35,7 +94,6 @@ void sem_check_stmt(ASTstmt* stmt){
         switch(stmt->type){
                 case TSKIP:
                         {
-                           sem_check_stmt(stmt->tail);
                            break;
                         }
 
@@ -78,8 +136,10 @@ void sem_check_stmt(ASTstmt* stmt){
 
                 case TFCALL:
                         {
+                          printSymbolTable();
+                          cout <<"PRIN" << endl;
                           SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-
+                          cout << "WHAT";
                           if(s->entryType!=ENTRY_FUNCTION) {
                                error("\ridentifier is not a function");
                                exit(1);
@@ -221,9 +281,9 @@ void sem_check_stmt(ASTstmt* stmt){
                 case TASSIGN:
                 {
                         Type rval_type = sem_check_expr(stmt->expr);
-                        cout << "i didnt do this yes" << endl;
+                        //cout << "i didnt do this yes" << endl;
                         SymbolEntry *s = lookupEntry(stmt->lvalue->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-                        cout << "What is happening here" << endl;
+                        //cout << "What is happening here" << endl;
                         if(s==NULL) {
                                 cout << "Hello";
                                 exit(1);
@@ -264,7 +324,6 @@ void sem_check_stmt(ASTstmt* stmt){
 }
 
 
-//TODO: Rwta gia default type cast apo int se char
 Type sem_check_expr(ASTExpr* expr){
 
         if(expr==NULL){
@@ -276,6 +335,7 @@ Type sem_check_expr(ASTExpr* expr){
         Type right = sem_check_expr(expr->right);
         switch(expr->op){
                 case '+':
+                        //FIXME: a + b giati koitas mono to b
                         if(!equalType(typeInteger,right)){
                                 error("\rTypemismatch in add");
                                 exit(1);
@@ -283,6 +343,7 @@ Type sem_check_expr(ASTExpr* expr){
                         return right;
 
                 case '-':
+                        //FIXME: ta idia
                         if(!equalType(typeInteger,right)){
                                 error("\rTypemismatch in minus");
                                 exit(1);
@@ -290,6 +351,7 @@ Type sem_check_expr(ASTExpr* expr){
                         return right;
 
                 case '*':
+                        //FIXME: thelei or den einai kai ta 2 int h den einai kai ta 2 byte
                        if(!(equalType(typeInteger,right) && equalType(typeInteger,left)) &&
                            !(equalType(typeChar,right) && equalType(typeChar,left)) ) {
                                 error("\rTypemismatch in multiplication");
@@ -297,6 +359,7 @@ Type sem_check_expr(ASTExpr* expr){
                         }
                         return right;
                 case '/':
+                        //FIXME: ta idia
                          if(!(equalType(typeInteger,right) && equalType(typeInteger,left)) &&
                             !(equalType(typeChar,right) && equalType(typeChar,left)) ) {
                                 error("\rTypemismatch in div");
@@ -417,6 +480,7 @@ Type sem_check_expr(ASTExpr* expr){
                         {
                           SymbolEntry *a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
                           if(a->entryType != ENTRY_FUNCTION) error("\rExpression not a function");
+                          //TODO: PARAMETER CHECKING
                           if(equalType(a->u.eFunction.resultType,typeVoid)) error("\rvoid function in expression!");
                           return a->u.eFunction.resultType;
                         }
@@ -425,9 +489,7 @@ Type sem_check_expr(ASTExpr* expr){
                         {
                           ASTlval* lv = expr->operand;
                           SymbolEntry* s = lookupEntry(lv->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-                          if(s==NULL) {
-                                  exit(1);
-                          }
+                          //TODO: CONSIDER a[0][1] if a is 2d array a[0][1] is int
                           Type lval_type;
                           if(s->entryType == ENTRY_PARAMETER)
                                     lval_type = s->u.eParameter.type;

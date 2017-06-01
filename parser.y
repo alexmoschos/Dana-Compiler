@@ -90,9 +90,9 @@ header
 
 optparam
 	: idlist AS ftype               {$$ = new ASTparam($1,$3,NULL);}
-    | idlist AS reftype             {$$ = new ASTparam($1,$3,NULL); $$->byref = 1;}
+        | idlist AS reftype             {$$ = new ASTparam($1,$3,NULL); $$->byref = 1;}
 	| idlist AS ftype ',' optparam  {$$ = new ASTparam($1,$3,$5);}
-    | idlist AS reftype','optparam  {$$ = new ASTparam($1,$3,$5); $$->byref = 1;}
+        | idlist AS reftype','optparam  {$$ = new ASTparam($1,$3,$5); $$->byref = 1;}
 	;
 
 ftype
@@ -253,11 +253,13 @@ lval
 int main(){
 	cout << "Parser Version 0.0.1.00" << endl;
 	initSymbolTable(997);
+        openScope();
         main_f = NULL;
 	lastparam = new vector<ASTExpr*>();
 	FUNCTION_NAMES =  stack<ASTfdef*>();
 	if(yyparse()) return -1;
         cout << "Parser is done!" << endl;
         sem_check_fdef(main_f);
+        closeScope();
         destroySymbolTable();
 }

@@ -2222,11 +2222,13 @@ yyreturn:
 int main(){
 	cout << "Parser Version 0.0.1.00" << endl;
 	initSymbolTable(997);
+        openScope();
         main_f = NULL;
 	lastparam = new vector<ASTExpr*>();
 	FUNCTION_NAMES =  stack<ASTfdef*>();
 	if(yyparse()) return -1;
         cout << "Parser is done!" << endl;
         sem_check_fdef(main_f);
+        closeScope();
         destroySymbolTable();
 }
