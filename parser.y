@@ -78,7 +78,7 @@ fdef
 	;
 
 fdecl
-	:DECL header       {$$ = new ASTfdef($2,NULL);}  
+	:DECL header       {$$ = new ASTfdef($2,NULL);}
 	;
 
 header
@@ -156,7 +156,7 @@ stmt
 	| BREAK                      {$$ = new ASTstmt(TBREAK,NULL,NULL,"");}
 	| BREAK ':' IDENTIFIER       {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
 	| CONT                       {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
-	| CONT ':' IDENTIFIER        {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);} 
+	| CONT ':' IDENTIFIER        {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}
 	| EXIT                       {$$ = new ASTstmt(TEXIT,NULL,NULL,"");}
 	| RETURN ':' expression      {$$ = new ASTstmt(TRET,NULL,NULL,""); $$->expr = $3; $$->def = FUNCTION_NAMES.top();}
     | pc                   	     {
@@ -190,7 +190,7 @@ mif
 		                                                            $$ = new ASTif($2,$4);
 		                                                            auto else_node = new ASTif(NULL,$8);
 		                                                            $$->tail = else_node;
-		                                                            else_node->tail = NULL; 
+		                                                            else_node->tail = NULL;
 	                                                             }
 	| IF condition ':'  stmt_list END ELIF condition ':'  stmt_list END eliftstmt {
 		       		                                                                 $$ = new ASTif($2,$4);
@@ -253,10 +253,11 @@ lval
 int main(){
 	cout << "Parser Version 0.0.1.00" << endl;
 	initSymbolTable(997);
-    main_f = NULL;
+        main_f = NULL;
 	lastparam = new vector<ASTExpr*>();
 	FUNCTION_NAMES =  stack<ASTfdef*>();
 	if(yyparse()) return -1;
-    sem_check_fdef(main_f);
-    destroySymbolTable();
+        cout << "Parser is done!" << endl;
+        sem_check_fdef(main_f);
+        destroySymbolTable();
 }

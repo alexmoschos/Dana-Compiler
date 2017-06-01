@@ -167,7 +167,8 @@ ref 		{return(REF);}
                             level--;
                         }
                         printf("Read %d lines\n",nl);
-				}
+                        printf("Done!");
+		}
 
 .               {
     		    if(yytext[0]==0) {
@@ -248,5 +249,3 @@ int charToInt(char c)
 		printf("lexer: %s not a proper char expression",yytext);
 	return -1;
 }
-
-

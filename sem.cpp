@@ -9,6 +9,7 @@ extern "C"{
 void sem_check_fdef(ASTfdef* func){
         if(func==NULL) exit(-1);
         openScope();
+        cout << "I just started a function definition check" << endl;
         ASTheader *header = func->header;
         SymbolEntry *f = newFunction(header->identifier.c_str());
         ASTparam *iter = header->paramlist;
@@ -30,37 +31,37 @@ void sem_check_fdef(ASTfdef* func){
 
 void sem_check_stmt(ASTstmt* stmt){
         if(stmt==NULL) return;
-
+        cout << " i just started a stmt check" << endl;
         switch(stmt->type){
                 case TSKIP:
                         {
                            sem_check_stmt(stmt->tail);
                            break;
-                        }   
+                        }
 
                 case TPC:
-                        { 
+                        {
                           SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-  
+
                           if(s->entryType!=ENTRY_FUNCTION){
                                error("\ridentifier is not a function");
                                exit(1);
-                          }    
+                          }
                           if(!equalType(s->u.eFunction.resultType,typeVoid)) {
-                               error("\rnon-void function cannot be called as a command"); 
+                               error("\rnon-void function cannot be called as a command");
                                exit(1);
-                          }    
+                          }
 
                           SymbolEntry *par = s -> u.eFunction.firstArgument;
 
-                          vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters); 
+                          vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters);
                           int counter  = 0, size = par_vector.size();
-                    
+
                           while(par->u.eParameter.next){
 
                               if(counter >= size) {error("\rfewer parameter provided in function"); exit(1);}
                               if(!equalType(par->u.eParameter.type,sem_check_expr(par_vector[counter]))) {
-                                    error("\rType mismatch in real and typical parameters"); 
+                                    error("\rType mismatch in real and typical parameters");
                                     exit(1);
                                }
                                counter++;
@@ -68,39 +69,38 @@ void sem_check_stmt(ASTstmt* stmt){
                            }
 
                           if(counter < size) {
-                               error("\rmore parameters provided in function than required"); 
+                               error("\rmore parameters provided in function than required");
                                exit(1);
                           }
 
-                          sem_check_stmt(stmt->tail);
-                          break; 
+                          break;
                         }
 
-                case TFCALL: 
-                        { 
+                case TFCALL:
+                        {
                           SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
 
                           if(s->entryType!=ENTRY_FUNCTION) {
-                               error("\ridentifier is not a function"); 
+                               error("\ridentifier is not a function");
                                exit(1);
                           }
                           if(!equalType(s->u.eFunction.resultType,typeVoid)) {
-                               error("\rnon-void function cannot be called as a command"); 
+                               error("\rnon-void function cannot be called as a command");
                                exit(1);
-                          }  
+                          }
 
                           SymbolEntry *par = s -> u.eFunction.firstArgument;
 
-                          vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters); 
+                          vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters);
                           int counter  = 0, size = par_vector.size();
-                     
+
                           while(par->u.eParameter.next){
                              if(counter >= size) {
-                                 error("\rfewer parameter provided in function"); 
+                                 error("\rfewer parameter provided in function");
                                  exit(1);
                               }
                              if(!equalType(par->u.eParameter.type,sem_check_expr(par_vector[counter]))){
-                                 error("\rType mismatch in real and typical parameters"); 
+                                 error("\rType mismatch in real and typical parameters");
                                  exit(1);
                               }
                              counter++;
@@ -111,15 +111,14 @@ void sem_check_stmt(ASTstmt* stmt){
                               error("\rmore parameters provided in function than required");
                               exit(1);
                           }
-                          sem_check_stmt(stmt->tail);
                           break;
                         }
- 
+
                 case TIF:
-                        { 
+                        {
                           Type cond_type = sem_check_expr(stmt->ifnode->condition);
                           if(!equalType(cond_type,typeBoolean) && !equalType(cond_type,typeChar) && !equalType(cond_type,typeInteger)){
-                              error("\rwrong type in if-condition"); 
+                              error("\rwrong type in if-condition");
                               exit(1);
                           }
                           sem_check_stmt(stmt->ifnode->body);
@@ -129,16 +128,15 @@ void sem_check_stmt(ASTstmt* stmt){
 
                              sem_check_stmt(new_ifnode->body);
                              if(new_ifnode->condition){
-                               
+
                                 Type cond_type2 = sem_check_expr(new_ifnode->condition);
                                 if(!equalType(cond_type2,typeBoolean) && !equalType(cond_type2,typeChar) && !equalType(cond_type2,typeInteger)){
-                                      error("\rwrong type in if-condition"); 
+                                      error("\rwrong type in if-condition");
                                       exit(1);
                                 }
                              }
                              new_ifnode = new_ifnode->tail;
-                          } 
-                          sem_check_stmt(stmt->tail);
+                          }
                           break;
                         }
 
@@ -147,128 +145,116 @@ void sem_check_stmt(ASTstmt* stmt){
                           sem_check_fdef(stmt->def);
                           SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
                           forwardFunction (s);
-                          sem_check_stmt(stmt->tail);
                           break;
                         }
 
                 case TFDECL:
                           sem_check_fdef(stmt->def);
-                          sem_check_stmt(stmt->tail);
                           break;
 
-                case TEXIT: 
-                        {
-                           sem_check_stmt(stmt->tail);
+                case TEXIT:
                            break;
-                        }  
 
-                case TRET: 
-                        { 
+                case TRET:
+                        {
                            Type _TRET_TYPE = sem_check_expr(stmt->expr);
-                          
+
                            if(stmt->def == NULL) {
                                  error("\rshould have a ASTdef to check function type with return type");
                                  exit(1);
-                           }      
+                           }
 
                            SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
                            if (s->entryType != ENTRY_FUNCTION)
                                internal("NOT a Function");   //redundant all astdef in stack are functions...
 
                            if(!equalType(_TRET_TYPE,s->u.eFunction.resultType)) {
-                                 error("\rFunction type and return type different"); 
+                                 error("\rFunction type and return type different");
                                  exit(1);
                            }
-                           sem_check_stmt(stmt->tail);
-                           break; 
-                        }  
+                           break;
+                        }
 
-                case TCONTM: 
+                case TCONTM:
                          {
                            SymbolEntry *s = lookupEntry(stmt->label.c_str(),LOOKUP_ALL_SCOPES,true);
-                           if (s->entryType != ENTRY_CONSTANT) internal("NOT a label");     
+                           if (s->entryType != ENTRY_CONSTANT) internal("NOT a label");
                            if(!equalType(s->u.eConstant.type,typeVoid)) {
-                                  error("\rFunction type and return type different"); 
+                                  error("\rFunction type and return type different");
                                   exit(1);
                            }
-                           sem_check_stmt(stmt->tail);
                            break;
                          }
- 
-                case TCONT: 
+
+                case TCONT:
                          {
-                           sem_check_stmt(stmt->tail); 
                            break;
-                         }  
+                         }
                 case TBREAKM:
-                         { 
+                         {
                             SymbolEntry *s = lookupEntry(stmt->label.c_str(),LOOKUP_ALL_SCOPES,true);
-                            if (s->entryType != ENTRY_CONSTANT)  internal("NOT a label");     
+                            if (s->entryType != ENTRY_CONSTANT)  internal("NOT a label");
                             if(!equalType(s->u.eConstant.type,typeVoid)) {
-                                   error("\rFunction type and return type different"); 
+                                   error("\rFunction type and return type different");
                                    exit(1);
                             }
-                            sem_check_stmt(stmt->tail);
                             break;
                          }
 
-                case TBREAK: 
+                case TBREAK:
                          {
-                            sem_check_stmt(stmt->tail);
                             break;
-                         }  
+                         }
 
-                case TDECL: 
+                case TDECL:
                           {
                              for(auto st : *stmt->identifiers) newVariable(st.c_str(),stmt->t);
-                             sem_check_stmt(stmt->tail);
                              break;
                           }
 
-                case TLOOP: 
+                case TLOOP:
                          {
                             if((stmt->label).compare("")!=0) newConstant(stmt->label.c_str(),typeVoid);
-                            sem_check_stmt(stmt->tail);
                             break;
-                         }     
-      
+                         }
+
                 case TASSIGN:
-                         { 
-                            Type rval_type = sem_check_expr(stmt->expr);
-                            SymbolEntry *s = lookupEntry(stmt->label.c_str(),LOOKUP_ALL_SCOPES,true);
-                            Type lval_type;
-                            if(s->entryType == ENTRY_PARAMETER)
-                                   lval_type = s->u.eParameter.type;
-                            else if(s->entryType == ENTRY_VARIABLE)
-                                   lval_type = s->u.eVariable.type;
-                            else{
+                {
+                        Type rval_type = sem_check_expr(stmt->expr);
+                        SymbolEntry *s = lookupEntry(stmt->lvalue->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
+                        Type lval_type;
+                        if(s->entryType == ENTRY_PARAMETER)
+                                lval_type = s->u.eParameter.type;
+                        else if(s->entryType == ENTRY_VARIABLE)
+                                lval_type = s->u.eVariable.type;
+                        else{
                                 error("\rNot an lvalue !!");
                                 exit(1);
-                            }     
-                            if(lval_type->kind == 5){
-                                  Type new_rval_type =  typeArray(lval_type->size,rval_type);
-                                  if(!equalType( lval_type, new_rval_type)){
+                        }
+                        if(lval_type->kind == 5){
+                                Type new_rval_type =  typeArray(lval_type->size,rval_type);
+                                if(!equalType( lval_type, new_rval_type)){
                                         error("\rlvalue and rvalue Typemismatch");
                                         exit(1);
                                   }
-                            }      
-                            else if(lval_type->kind == 6){
-                                  Type new_rval_type = typeIArray(rval_type);
-                                  if(!equalType( lval_type, new_rval_type)){
+                        }
+                        else if(lval_type->kind == 6){
+                                Type new_rval_type = typeIArray(rval_type);
+                                if(!equalType( lval_type, new_rval_type)){
                                         error("\rlvalue and rvalue Typemismatch");
                                         exit(1);
-                                  }
-                            }
-                            else if(!equalType(lval_type,rval_type)){
-                                    error("\rlvalue and rvalue Typemismatch");
-                                    exit(1);
-                            }
-                            
-                            sem_check_stmt(stmt->tail);
-                            break;
-                         }  
+                                }
+                        }
+                        else if(!equalType(lval_type,rval_type)){
+                                error("\rlvalue and rvalue Typemismatch");
+                                exit(1);
+                        }
 
-        }   
+                            break;
+              }
+        }
+        sem_check_stmt(stmt->tail);
+
 }
 
 
@@ -333,7 +319,7 @@ Type sem_check_expr(ASTExpr* expr){
 
                 case 'c': return typeInteger;
 
-                case 'x': return typeChar;   
+                case 'x': return typeChar;
 
                 case 'b': return typeBoolean;
 
@@ -356,7 +342,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\roperator < can be used only with int or byte");
                                 exit(1);
                         }
-                        return typeBoolean;    
+                        return typeBoolean;
 
                 case 'l':
                          if(!equalType(left,right)){
@@ -367,7 +353,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\roperator >= can be used only with int or byte");
                                 exit(1);
                         }
-                        return typeBoolean; 
+                        return typeBoolean;
 
                 case 's':
                          if(!equalType(left,right)){
@@ -378,7 +364,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\roperator <= can be used only with int or byte");
                                 exit(1);
                         }
-                        return typeBoolean;  
+                        return typeBoolean;
 
                 case 'e':
                         if(!equalType(left,right)){
@@ -389,7 +375,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\roperator = can be used only with int or byte");
                                 exit(1);
                         }
-                        return typeBoolean; 
+                        return typeBoolean;
 
                 case 'd':
                         if(!equalType(left,right)){
@@ -400,7 +386,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\roperator <> can be used only with int or byte");
                                 exit(1);
                         }
-                        return typeBoolean; 
+                        return typeBoolean;
 
                 case 'a':
                         if(!equalType(left,typeBoolean) || !equalType(right,typeBoolean)){
@@ -419,15 +405,15 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\rnot operator requires boolean condition");
                                 exit(1);
                         }
-                        return right;        
+                        return right;
 
                 case 'f':
                         {
                           SymbolEntry *a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
                           if(a->entryType != ENTRY_FUNCTION) error("\rExpression not a function");
-                          if(equalType(a->u.eFunction.resultType,typeVoid)) error("\rvoid function in expression!"); 
+                          if(equalType(a->u.eFunction.resultType,typeVoid)) error("\rvoid function in expression!");
                           return a->u.eFunction.resultType;
-                        } 
+                        }
 
                  case 'i':
                         {
@@ -441,10 +427,10 @@ Type sem_check_expr(ASTExpr* expr){
                           else{
                                  error("\rNot an lvalue !!");
                                  exit(1);
-                          } 
+                          }
                           return lval_type;
                         }
-                    
+
         }
         return typeVoid;
 }
