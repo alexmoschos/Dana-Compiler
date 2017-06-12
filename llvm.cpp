@@ -1,19 +1,22 @@
 #include "ast.h"
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Function.h>
-#include <llvm/IR/PassManager.h>
+#include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/Pass.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Type.h>
+#include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/DerivedTypes.h>
-
+#include <llvm/Support/raw_ostream.h>
+#include <iostream>
 
 using namespace llvm;
 static LLVMContext context;
 static IRBuilder<> Builder(context);
-static Module* module;
+static Module* mod;
 
 Value* CompileExpression(ASTExpr* expr){
     if(expr == NULL){
@@ -24,54 +27,48 @@ Value* CompileExpression(ASTExpr* expr){
     switch(expr->op){
         case '+':
             return Builder.CreateBinOp(Instruction::Add,left,right,"");
-            break;
         case '-':
             return Builder.CreateBinOp(Instruction::Sub,left,right,"");
-            break;
+
         case '*':
             return Builder.CreateBinOp(Instruction::Mul,left,right,"");
-            break;
         case '/':
             return Builder.CreateBinOp(Instruction::SDiv,left,right,"");
-            break;
         case '&':
             return Builder.CreateAnd(left,right,"");
-            break;
         case '|':
             return Builder.CreateOr(left,right,"");
-            break;
         case '!':
             return Builder.CreateNot(right,"");
-            break;
         case 'c':
             return ConstantInt::get(llvm::Type::getInt32Ty(context),expr->constant_val,true);
-            break;
         case 'x':
-            break;
+            return ConstantInt::get(llvm::Type::getInt8Ty(context),expr->constant_val,true);
         case 'b':
-            break;
+            return ConstantInt::get(llvm::Type::getInt8Ty(context),expr->constant_val,true);
         case '>':
-            break;
+            return Builder.CreateICmpSLT(left,right,"");
         case '<':
-            break;
+            return Builder.CreateICmpSGT(left,right,"");
         case 'l':
-            break;
+            return Builder.CreateICmpSGE(left,right,"");
         case 's':
-            break;
+            return Builder.CreateICmpSLE(left,right,"");
         case 'e':
-            break;
+            return Builder.CreateICmpEQ(left,right,"");
         case 'd':
-            break;
+            return Builder.CreateICmpNE(left,right,"");
         case 'a':
-            break;
+            return Builder.CreateAnd(left,right,"");
         case 'o':
-            break;
+            return Builder.CreateOr(left,right,"");
         case 'n':
-            break;
+            return Builder.CreateNot(right,"");
         case 'f':
             break;
 
         case 'i':
+
             break;
         default: exit(1);
 
@@ -117,19 +114,33 @@ Value* CompileStatements(ASTstmt* stmt){
 }
 
 int main(int argc, char const *argv[]) {
+    mod = new Module("arx.ll", getGlobalContext());
+    mod->setDataLayout("");
+    mod->setTargetTriple("x86_64-pc-linux-gnu");
+
     vector<const llvm::Type*> argTypes;
     FunctionType* ftype = FunctionType::get(llvm::Type::getVoidTy(context),false);
-    Function* mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
-
+    //Function* mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
+    Function* mainFunction = Function::Create(
+     /*Type=*/ftype,
+     /*Linkage=*/GlobalValue::ExternalLinkage,
+     /*Name=*/"main", mod);
+    //mainFunction->setCallingConv(CallingConv::C);
     BasicBlock* bl = BasicBlock::Create(context,"entry",mainFunction,0);
     //ASTExpr* b = new ASTExpr('c',NULL,42,NULL,NULL);
-
+    //Builder.CreateBr(bl);
+    Builder.SetInsertPoint(bl);
     auto b = new ASTExpr('c',NULL,42,NULL,NULL);
-    auto c = new ASTExpr('*',NULL,0,b,b);
+    auto d = new ASTExpr('x',NULL,12,NULL,NULL);
+    //d = new ASTExpr('e',NULL,0,b,d);
+    auto c = new ASTExpr('*',NULL,0,b,d);
     Value* a = CompileExpression(c);
-    a->print(errs());
-    //PassManager pm;
-    //pm.add(createPrintModulePass(a);
+    Builder.CreateRet(a);
+    //a->print(errs());
+    legacy::PassManager pm;
+    pm.add(createPrintModulePass(outs()));
+    pm.run(*mod);
+    std::cout << "Hello world";
 //    if(a != NULL) exit(1);
     return 0;
 }
