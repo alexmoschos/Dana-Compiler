@@ -90,9 +90,9 @@ header
 
 optparam
 	: idlist AS ftype               {$$ = new ASTparam($1,$3,NULL);}
-        | idlist AS reftype             {$$ = new ASTparam($1,$3,NULL); $$->byref = 1;}
+    | idlist AS reftype             {$$ = new ASTparam($1,$3,NULL); $$->byref = 1;}
 	| idlist AS ftype ',' optparam  {$$ = new ASTparam($1,$3,$5);}
-        | idlist AS reftype','optparam  {$$ = new ASTparam($1,$3,$5); $$->byref = 1;}
+    | idlist AS reftype','optparam  {$$ = new ASTparam($1,$3,$5); $$->byref = 1;}
 	;
 
 ftype
@@ -160,14 +160,15 @@ stmt
 	| EXIT                       {$$ = new ASTstmt(TEXIT,NULL,NULL,"");}
 	| RETURN ':' expression      {$$ = new ASTstmt(TRET,NULL,NULL,""); $$->expr = $3; $$->def = FUNCTION_NAMES.top();}
     | pc                   	     {
-                                  $$ = new ASTstmt(TPC,NULL,NULL,"");
-                                  $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
-                                  $$->expr->f = $1;
+                                   $$ = new ASTstmt(TPC,NULL,NULL,"");
+                                   $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
+                                   $$->expr->f = $1;
                                  }
 	| fcall                      {
-                                  $$ = new ASTstmt(TFCALL,NULL,NULL,"");
-                                  $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
-                                  $$->expr->f = $1;}
+                                   $$ = new ASTstmt(TFCALL,NULL,NULL,"");
+                                   $$->expr = new ASTExpr('f',NULL,0,NULL,NULL);
+                                   $$->expr->f = $1;
+                                 }
 	;
 
 fcall
@@ -224,22 +225,22 @@ eliftstmt
 
 expression
 	: expression '+' expression        {$$=new ASTExpr('+',NULL,0,$1,$3);}
-	| expression '-' expression	       {$$=new ASTExpr('-',NULL,0,$1,$3);}
-	| expression '*' expression	       {$$=new ASTExpr('*',NULL,0,$1,$3);}
-	| expression '/' expression	       {$$=new ASTExpr('/',NULL,0,$1,$3);}
-        | expression '%' expression        {$$=new ASTExpr('%',NULL,0,$1,$3);}
+	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
+    | expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
+    | expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
+    | expression '%' expression        {$$=new ASTExpr('%',NULL,0,$1,$3);}
 	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
 	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}
 	| '+' expression %prec UNARYPL     {$$=new ASTExpr('+',NULL,0,NULL,$2);}
 	| '-' expression %prec UNARYMINUS  {$$=new ASTExpr('-',NULL,0,NULL,$2);}
-        | '!' expression %prec BANG        {$$=new ASTExpr('!',NULL,0,NULL,$2);}
+    | '!' expression %prec BANG        {$$=new ASTExpr('!',NULL,0,NULL,$2);}
 	| lval                             {$$ = new ASTExpr('i',$1,0,NULL,NULL);}
 	| CONST                            {$$ = new ASTExpr('c',NULL,$1,NULL,NULL);}
 	| '(' expression ')'               {$$ = $2;}
 	| fcall                            {$$ = new ASTExpr('f',NULL,0,NULL,NULL); $$->f = $1;}
 	| CHAR_CONST                       {$$ = new ASTExpr('x',NULL,$1,NULL,NULL);}
-        | TRUE                             {$$=new ASTExpr('b',NULL,1,NULL,NULL);}
-        | FALSE                            {$$=new ASTExpr('b',NULL,0,NULL,NULL);}
+    | TRUE                             {$$=new ASTExpr('b',NULL,1,NULL,NULL);}
+    | FALSE                            {$$=new ASTExpr('b',NULL,0,NULL,NULL);}
 	;
 
 lval
@@ -253,13 +254,13 @@ lval
 int main(){
 	cout << "Parser Version 0.0.1.00" << endl;
 	initSymbolTable(997);
-        openScope();
-        main_f = NULL;
-	lastparam = new vector<ASTExpr*>();
-	FUNCTION_NAMES =  stack<ASTfdef*>();
-	if(yyparse()) return -1;
-        cout << "Parser is done!" << endl;
-        sem_check_fdef(main_f);
-        closeScope();
-        destroySymbolTable();
+    openScope();
+    main_f = NULL;
+    lastparam = new vector<ASTExpr*>();
+    FUNCTION_NAMES =  stack<ASTfdef*>();
+    if(yyparse()) return -1;
+    cout << "Parser is done!" << endl;
+    sem_check_fdef(main_f);
+    closeScope();
+    destroySymbolTable();
 }

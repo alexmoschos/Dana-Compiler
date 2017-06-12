@@ -1,6 +1,5 @@
 #ifndef ast_h
 #define ast_h
-
 #include "symbol.h"
 #include <iostream>
 #include <string>
@@ -32,8 +31,9 @@ class ASTparam;
 class ASTfcall;
 
 class ASTNode{
-    int he;
-    //virtual void run() = 0;
+        int he;
+        //ASTNode(int a) { he = a ;}
+        //virtual void run() = 0;
 };
 class ASTExpr:ASTNode{
 public:

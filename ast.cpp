@@ -1,4 +1,5 @@
 #include "ast.h"
+
 using namespace std;
 
 ASTstmt::ASTstmt(stmt_type type, ASTstmt *body,ASTstmt *tail,string label){
@@ -20,7 +21,7 @@ ASTfcall::ASTfcall(string identifier){
     this->identifier = identifier;
     parameters = new vector<ASTExpr*>;
 }
-   
+
 ASTlval::ASTlval(bool constant,string identifier){
     this->constant = constant;
     this->identifier = identifier;
