@@ -131,10 +131,11 @@ int main(int argc, char const *argv[]) {
     //Builder.CreateBr(bl);
     Builder.SetInsertPoint(bl);
     auto b = new ASTExpr('c',NULL,42,NULL,NULL);
-    auto d = new ASTExpr('x',NULL,12,NULL,NULL);
+    auto e = new ASTExpr('x',NULL,12,NULL,NULL);
     //d = new ASTExpr('e',NULL,0,b,d);
-    auto c = new ASTExpr('*',NULL,0,b,d);
-    Value* a = CompileExpression(c);
+    auto c = new ASTExpr('*',NULL,0,b,e);
+    auto d = new ASTExpr('/',NULL,0,c,c);
+    Value* a = CompileExpression(d);
     Builder.CreateRet(a);
     //a->print(errs());
     legacy::PassManager pm;
