@@ -225,9 +225,9 @@ eliftstmt
 
 expression
 	: expression '+' expression        {$$=new ASTExpr('+',NULL,0,$1,$3);}
-	| expression '-' expression	   {$$=new ASTExpr('-',NULL,0,$1,$3);}
-    | expression '*' expression	   {$$=new ASTExpr('*',NULL,0,$1,$3);}
-    | expression '/' expression	   {$$=new ASTExpr('/',NULL,0,$1,$3);}
+	| expression '-' expression	       {$$=new ASTExpr('-',NULL,0,$1,$3);}
+    | expression '*' expression	       {$$=new ASTExpr('*',NULL,0,$1,$3);}
+    | expression '/' expression	       {$$=new ASTExpr('/',NULL,0,$1,$3);}
     | expression '%' expression        {$$=new ASTExpr('%',NULL,0,$1,$3);}
 	| expression '&' expression        {$$=new ASTExpr('&',NULL,0,$1,$3);}
 	| expression '|' expression        {$$=new ASTExpr('|',NULL,0,$1,$3);}

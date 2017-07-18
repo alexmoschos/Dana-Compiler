@@ -101,7 +101,7 @@ void sem_check_stmt(ASTstmt* stmt){
                 case TPC:
                         {
                           SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-
+                           printf("%s",s ->id);
                           if(s->entryType!=ENTRY_FUNCTION){
                                error("\ridentifier is not a function");
                                exit(1);
@@ -114,15 +114,36 @@ void sem_check_stmt(ASTstmt* stmt){
                           SymbolEntry *par = s -> u.eFunction.firstArgument;
 
                           vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters);
+                          std::reverse(par_vector.begin(),par_vector.end());
                           int counter  = 0, size = par_vector.size();
 
-                          while(par->u.eParameter.next){
+                          printf("\n" );
 
+                          while(par){
+                               printf("%s \n",par->id);
                               if(counter >= size) {error("\rfewer parameter provided in function"); exit(1);}
-                              if(!equalType(par->u.eParameter.type,sem_check_expr(par_vector[counter]))) {
-                                    error("\rType mismatch in real and typical parameters");
-                                    exit(1);
+                              Type par_type = sem_check_expr(par_vector[counter]);
+                              if(!equalType(par->u.eParameter.type,par_type)) {
+                                   
+                                    if(par_type->kind == 5 && par->u.eParameter.type->kind == 5){
+                                      if(par->u.eParameter.type->size>0){
+                                        error("\rType mismatch in real and typical parameters");
+                                        exit(1);
+                                      }
+                                    }
+                                   // if(par_vector[counter]->f!=NULL)
+                                     // printf("%s\n", par_vector[counter]->f->identifier.c_str());
+
+                                    //printf("%d\n",counter );
+                                    //printSymbolTable();
+                                  //  printf("\n");
+                                   // printType(sem_check_expr(par_vector[counter]));
+                                    //printf("\n");
+                                    //printType( par->u.eParameter.type);
+                                    //printf("%d\n", par->u.eParameter.type->size);
+                                    //printf("\n");
                                }
+
                                counter++;
                                par = par->u.eParameter.next;
                            }
@@ -177,6 +198,7 @@ void sem_check_stmt(ASTstmt* stmt){
 
                 case TIF:
                         {
+                          printf("TIF\n");
                           Type cond_type = sem_check_expr(stmt->ifnode->condition);
                           if(!equalType(cond_type,typeBoolean) && !equalType(cond_type,typeChar) && !equalType(cond_type,typeInteger)){
                               error("\rwrong type in if-condition");
@@ -276,15 +298,17 @@ void sem_check_stmt(ASTstmt* stmt){
                 case TLOOP:
                          {
                             if((stmt->label).compare("")!=0) newConstant(stmt->label.c_str(),typeVoid);
+                            printf("TLOOP\n");
+                            sem_check_stmt(stmt->body);
                             break;
                          }
 
                 case TASSIGN:
                 {
+                         printf("TASSIGN\n");
                         Type rval_type = sem_check_expr(stmt->expr);
-                        //cout << "i didnt do this yes" << endl;
                         SymbolEntry *s = lookupEntry(stmt->lvalue->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-                        //cout << "What is happening here" << endl;
+                        
                         if(s==NULL) {
                                 cout << "Hello";
                                 exit(1);
@@ -298,22 +322,24 @@ void sem_check_stmt(ASTstmt* stmt){
                                 error("\rNot an lvalue !!");
                                 exit(1);
                         }
-                        if(lval_type->kind == 5){
-                                Type new_rval_type =  typeArray(lval_type->size,rval_type);
-                                if(!equalType( lval_type, new_rval_type)){
-                                        error("\rlvalue and rvalue Typemismatch");
-                                        exit(1);
-                                  }
-                        }
-                        else if(lval_type->kind == 6){
-                                Type new_rval_type = typeIArray(rval_type);
-                                if(!equalType( lval_type, new_rval_type)){
-                                        error("\rlvalue and rvalue Typemismatch");
-                                        exit(1);
-                                }
-                        }
-                        else if(!equalType(lval_type,rval_type)){
+                        printf("%s",s->id);
+
+
+                        if((lval_type->kind == 5 && ((*stmt->lvalue->indices)).size()>0) || lval_type->kind == 6){
+                            int size = (*stmt->lvalue->indices).size();
+                            while(lval_type->refType != NULL && size > 0 ){
+                              lval_type = lval_type->refType;
+                              size --;
+                            }
+                            printType(lval_type);
+                          }
+                       
+                       if(equalType(lval_type,typeChar) && equalType(rval_type,typeInteger)) break;
+                         
+                       if(!equalType(lval_type,rval_type)){
+
                                 error("\rlvalue and rvalue Typemismatch");
+
                                 exit(1);
                         }
 
@@ -336,23 +362,20 @@ Type sem_check_expr(ASTExpr* expr){
         Type right = sem_check_expr(expr->right);
         switch(expr->op){
                 case '+':
-                        //FIXME: a + b giati koitas mono to b
-                        if(!equalType(typeInteger,right)){
+                        if(!equalType(typeInteger,right) || (!equalType(typeInteger,left) && !equalType(typeVoid,left))){
                                 error("\rTypemismatch in add");
                                 exit(1);
                         }
                         return right;
 
                 case '-':
-                        //FIXME: ta idia
-                        if(!equalType(typeInteger,right)){
+                        if(!equalType(typeInteger,right) ||  (!equalType(typeInteger,left) && !equalType(typeVoid,left))){
                                 error("\rTypemismatch in minus");
                                 exit(1);
                         }
                         return right;
 
                 case '*':
-                        //FIXME: thelei or den einai kai ta 2 int h den einai kai ta 2 byte
                        if(!(equalType(typeInteger,right) && equalType(typeInteger,left)) &&
                            !(equalType(typeChar,right) && equalType(typeChar,left)) ) {
                                 error("\rTypemismatch in multiplication");
@@ -360,13 +383,20 @@ Type sem_check_expr(ASTExpr* expr){
                         }
                         return right;
                 case '/':
-                        //FIXME: ta idia
                          if(!(equalType(typeInteger,right) && equalType(typeInteger,left)) &&
                             !(equalType(typeChar,right) && equalType(typeChar,left)) ) {
                                 error("\rTypemismatch in div");
                                 exit(1);
                         }
                         return right;
+
+                case '%':
+                         if(!(equalType(typeInteger,right) && equalType(typeInteger,left)) &&
+                            !(equalType(typeChar,right) && equalType(typeChar,left)) ) {
+                                error("\rTypemismatch in mod");
+                                exit(1);
+                        }
+                        return right;        
 
                 case '&':
                         if(!equalType(left,typeChar) || !equalType(right,typeChar)){
@@ -389,7 +419,7 @@ Type sem_check_expr(ASTExpr* expr){
 
                 case 'c': return typeInteger;
 
-                case 'x': return typeChar;
+                case 'x': {return typeChar;}
 
                 case 'b': return typeChar;
 
@@ -398,7 +428,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\rCan't compare operands of different types");
                                 exit(1);
                         }
-                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                        else if(!equalType(left,typeChar) && !equalType(left,typeInteger)){
                                 error("\roperator > can be used only with int or byte");
                                 exit(1);
                         }
@@ -408,7 +438,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\rCant compare operands of different types");
                                 exit(1);
                         }
-                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                        else if(!equalType(left,typeChar) && !equalType(left,typeInteger)){
                                 error("\roperator < can be used only with int or byte");
                                 exit(1);
                         }
@@ -419,7 +449,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\rCan't compare operands of different types");
                                 exit(1);
                         }
-                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                        else if(!equalType(left,typeChar) && !equalType(left,typeInteger)){
                                 error("\roperator >= can be used only with int or byte");
                                 exit(1);
                         }
@@ -430,7 +460,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\rCan't compare operands of different types");
                                 exit(1);
                         }
-                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                        else if(!equalType(left,typeChar) && !equalType(left,typeInteger)){
                                 error("\roperator <= can be used only with int or byte");
                                 exit(1);
                         }
@@ -441,7 +471,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\rCan't compare operands of different types");
                                 exit(1);
                         }
-                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                        else if(!equalType(left,typeChar) && !equalType(left,typeInteger)){
                                 error("\roperator = can be used only with int or byte");
                                 exit(1);
                         }
@@ -452,7 +482,7 @@ Type sem_check_expr(ASTExpr* expr){
                                 error("\rCan't compare operands of different types");
                                 exit(1);
                         }
-                        else if(!equalType(left,typeChar) || !equalType(left,typeInteger)){
+                        else if(!equalType(left,typeChar) && !equalType(left,typeInteger)){
                                 error("\roperator <> can be used only with int or byte");
                                 exit(1);
                         }
@@ -471,7 +501,7 @@ Type sem_check_expr(ASTExpr* expr){
                         }
                         return right;
                 case 'n':
-                        if(!equalType(right,typeBoolean)){
+                        if(!equalType(right,typeBoolean) && !equalType(right,typeChar)){
                                 error("\rnot operator requires boolean condition");
                                 exit(1);
                         }
@@ -480,18 +510,63 @@ Type sem_check_expr(ASTExpr* expr){
                 case 'f':
                         {
                           SymbolEntry *a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-                          if(a->entryType != ENTRY_FUNCTION) error("\rExpression not a function");
-                          //TODO: PARAMETER CHECKING
+                          if(a->entryType != ENTRY_FUNCTION) {
+                             error("\rExpression not a function");
+                             exit(1);
+                           }  
+                          
+
+                          SymbolEntry *par = a -> u.eFunction.firstArgument;
+
+                          vector<ASTExpr*> par_vector = *(expr->f->parameters);
+                          std::reverse(par_vector.begin(),par_vector.end());
+                          int counter  = 0, size = par_vector.size();
+
+                          
+                          while(par){
+                               
+                              if(counter >= size) {error("\rfewer parameter provided in function"); exit(1);}
+                              Type par_type = sem_check_expr(par_vector[counter]);
+                              if(!equalType(par->u.eParameter.type,par_type)) {
+                                   
+                                    if(par_type->kind == 5 && par->u.eParameter.type->kind == 5){
+                                      if(par->u.eParameter.type->size>0){
+                                        error("\rType mismatch in real and typical parameters");
+                                        exit(1);
+                                      }
+                                    }
+                                    
+                               }
+                          
+                               counter++;
+                               par = par->u.eParameter.next;
+                           }
+
+                          if(counter < size) {
+                               error("\rmore parameters provided in function than required");
+                               exit(1);
+                          }
+
                           if(equalType(a->u.eFunction.resultType,typeVoid)) error("\rvoid function in expression!");
                           return a->u.eFunction.resultType;
+                     
+
                         }
 
                  case 'i':
                         {
                           ASTlval* lv = expr->operand;
+
+                          //for stringliteral
+                          if(lv->constant == true) {
+                            return typeArray(strlen(lv->identifier.c_str())+1, typeChar);
+                          }
+
+
                           SymbolEntry* s = lookupEntry(lv->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
                           //TODO: CONSIDER a[0][1] if a is 2d array a[0][1] is int
                           Type lval_type;
+
                           if(s->entryType == ENTRY_PARAMETER)
                                     lval_type = s->u.eParameter.type;
                           else if(s->entryType == ENTRY_VARIABLE)
@@ -499,7 +574,14 @@ Type sem_check_expr(ASTExpr* expr){
                           else{
                                  error("\rNot an lvalue !!");
                                  exit(1);
+                          }           
+                                                    
+                          if((lval_type->kind == 5 && ((*lv->indices)).size()>0) || lval_type->kind == 6){
+                            while(lval_type->refType != NULL){
+                              lval_type = lval_type->refType;
+                            }
                           }
+
                           return lval_type;
                         }
 
