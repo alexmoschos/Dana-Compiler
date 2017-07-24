@@ -65,13 +65,13 @@ int charToInt (char);
 		            return(CONST);
 			}
 
-if		{indent_stack[++level] = indent;return(IF);}
+if			{indent_stack[++level] = indent;return(IF);}
 else		{indent_stack[++level] = indent;return(ELSE);}
 elif		{indent_stack[++level] = indent;return(ELIF);}
 loop		{indent_stack[++level] = indent;return(LOOP);}
-int		{return(INT);}
+int			{return(INT);}
 byte		{return(BYTE);}
-as		{return(AS);}
+as			{return(AS);}
 skip		{return(SKIP);}
 decl		{return(DECL);}
 begin		{return(BEG);}
@@ -86,12 +86,12 @@ begin		{return(BEG);}
 			exit(-1);
                     }
 		}
-def		{indent_stack[++level] = indent;return(DEF);}
-is		{return(IS);}
-var		{return(VAR);}
-not		{return(NOT);}
-and		{return(AND);}
-or 		{return(OR);}
+def			{indent_stack[++level] = indent;return(DEF);}
+is			{return(IS);}
+var			{return(VAR);}
+not			{return(NOT);}
+and			{return(AND);}
+or 			{return(OR);}
 true		{return(TRUE);}
 false		{return(FALSE);}
 break		{return(BREAK);}
@@ -105,29 +105,29 @@ ref 		{return(REF);}
 			yylval.idstring = strdup(yytext);
 			return(IDENTIFIER);
 		}
-"("		{return('(');}
-")"		{return(')');}
-"["		{return('[');}
-"]"		{return(']');}
+"("			{return('(');}
+")"			{return(')');}
+"["			{return('[');}
+"]"			{return(']');}
 
-"."		{return('.');}
-","		{return(',');}
-"+"		{return('+');}
-"-"		{return('-');}
-"*"		{return('*');}
-"/"		{return('/');}
+"."			{return('.');}
+","			{return(',');}
+"+"			{return('+');}
+"-"			{return('-');}
+"*"			{return('*');}
+"/"			{return('/');}
 ":="		{return(ASSIGNMENT);}
-"="		{return(EQ);}
-"!"		{return('!');}
-[%]		{return('%');}
+"="			{return(EQ);}
+"!"			{return('!');}
+[%]			{return('%');}
 "&" 		{return('&');}
-"|"		{return('|');}
-"<"		{return(SMALLER);}
+"|"			{return('|');}
+"<"			{return(SMALLER);}
 "<="		{return(SMALLEREQ);}
 ">="		{return(LARGEREQ);}
 "<>"		{return(DIFF);}
-">"		{return(LARGER);}
-":"		{return(':');}
+">"			{return(LARGER);}
+":"			{return(':');}
 "\""		{printf("Unclosed String Error\n");exit(-1);}
 \"([^\n\"\'\\]|{ESCAPE})*\" {
         		        //printf("String Literal %s \n",yytext);

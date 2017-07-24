@@ -5,63 +5,6 @@ extern "C"{
 #include "sem.h"
 #include "ast.h"
 #include <stdio.h>
-//TODO: petrou an kati eiani int[1][2][3] tha prepei na mporei na mpei se sunarthsh me type int[][2][3]
-
-void printSymbolTable ()
-{
-    Scope       * scp;
-    SymbolEntry * e;
-    SymbolEntry * args;
-
-    scp = currentScope;
-    if (scp == NULL)
-        printf("no scope\n");
-    else
-        while (scp != NULL) {
-            printf("scope: ");
-            e = scp->entries;
-            while (e != NULL) {
-                if (e->entryType == ENTRY_TEMPORARY)
-                    printf("$%d", e->u.eTemporary.number);
-                else
-                    printf("%s", e->id);
-                switch (e->entryType) {
-                    case ENTRY_FUNCTION:
-                        printf("(");
-                        args = e->u.eFunction.firstArgument;
-                        while (args != NULL) {
-                            printMode(args->u.eParameter.mode);
-                            printf("%s : ", args->id);
-                            printType(args->u.eParameter.type);
-                            args = args->u.eParameter.next;
-                            if (args != NULL)
-                                printf("; ");
-                        }
-                        printf(") : ");
-                        printType(e->u.eFunction.resultType);
-                        break;
-#ifdef SHOW_OFFSETS
-                    case ENTRY_VARIABLE:
-                        printf("[%d]", e->u.eVariable.offset);
-                        break;
-                    case ENTRY_PARAMETER:
-                        printf("[%d]", e->u.eParameter.offset);
-                        break;
-                    case ENTRY_TEMPORARY:
-                        printf("[%d]", e->u.eTemporary.offset);
-                        break;
-#endif
-                }
-                e = e->nextInScope;
-                if (e != NULL)
-                    printf(", ");
-            }
-            scp = scp->parent;
-            printf("\n");
-        }
-    printf("----------------------------------------\n");
-}
-
 
 void sem_check_fdef(ASTfdef* func){
         if(func==NULL) exit(-1);
@@ -82,7 +25,6 @@ void sem_check_fdef(ASTfdef* func){
         }
 
         endFunctionHeader(f,header->type);
-
         sem_check_stmt(func->body);
         cout << "HERE" << endl;
         closeScope();
@@ -100,8 +42,13 @@ void sem_check_stmt(ASTstmt* stmt){
 
                 case TPC:
                         {
+                          if(strcmp(stmt->expr->f->identifier.c_str(),"writeString" ) == 0 ||
+                             strcmp(stmt->expr->f->identifier.c_str(),"writeInteger") == 0 ||
+                             strcmp(stmt->expr->f->identifier.c_str(),"writeByte"   ) == 0 ||
+                             strcmp(stmt->expr->f->identifier.c_str(),"writeChar"   ) == 0 ) break;
+
                           SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-                           printf("%s",s ->id);
+                           
                           if(s->entryType!=ENTRY_FUNCTION){
                                error("\ridentifier is not a function");
                                exit(1);
@@ -117,10 +64,8 @@ void sem_check_stmt(ASTstmt* stmt){
                           std::reverse(par_vector.begin(),par_vector.end());
                           int counter  = 0, size = par_vector.size();
 
-                          printf("\n" );
-
                           while(par){
-                               printf("%s \n",par->id);
+                              
                               if(counter >= size) {error("\rfewer parameter provided in function"); exit(1);}
                               Type par_type = sem_check_expr(par_vector[counter]);
                               if(!equalType(par->u.eParameter.type,par_type)) {
@@ -158,11 +103,14 @@ void sem_check_stmt(ASTstmt* stmt){
 
                 case TFCALL:
                         {
-                          printSymbolTable();
-                          cout <<"PRIN" << endl;
+                          if(strcmp(stmt->expr->f->identifier.c_str(),"writeString" ) == 0 ||
+                             strcmp(stmt->expr->f->identifier.c_str(),"writeInteger") == 0 ||
+                             strcmp(stmt->expr->f->identifier.c_str(),"writeByte"   ) == 0 ||
+                             strcmp(stmt->expr->f->identifier.c_str(),"writeChar"   ) == 0 ) break;
+
                           SymbolEntry *s = lookupEntry(stmt->expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
-                          cout << "WHAT";
-                          if(s->entryType!=ENTRY_FUNCTION) {
+                           
+                          if(s->entryType!=ENTRY_FUNCTION){
                                error("\ridentifier is not a function");
                                exit(1);
                           }
@@ -174,25 +122,32 @@ void sem_check_stmt(ASTstmt* stmt){
                           SymbolEntry *par = s -> u.eFunction.firstArgument;
 
                           vector<ASTExpr*> par_vector = *(stmt->expr->f->parameters);
+                          std::reverse(par_vector.begin(),par_vector.end());
                           int counter  = 0, size = par_vector.size();
 
-                          while(par->u.eParameter.next){
-                             if(counter >= size) {
-                                 error("\rfewer parameter provided in function");
-                                 exit(1);
-                              }
-                             if(!equalType(par->u.eParameter.type,sem_check_expr(par_vector[counter]))){
-                                 error("\rType mismatch in real and typical parameters");
-                                 exit(1);
-                              }
-                             counter++;
-                             par = par->u.eParameter.next;
-                          }
+                          while(par){
+
+                              if(counter >= size) {error("\rfewer parameter provided in function"); exit(1);}
+                              Type par_type = sem_check_expr(par_vector[counter]);
+                              if(!equalType(par->u.eParameter.type,par_type)) {
+                                   
+                                    if(par_type->kind == 5 && par->u.eParameter.type->kind == 5){
+                                      if(par->u.eParameter.type->size>0){
+                                        error("\rType mismatch in real and typical parameters");
+                                        exit(1);
+                                      }
+                                    }
+                               }
+
+                               counter++;
+                               par = par->u.eParameter.next;
+                           }
 
                           if(counter < size) {
-                              error("\rmore parameters provided in function than required");
-                              exit(1);
+                               error("\rmore parameters provided in function than required");
+                               exit(1);
                           }
+
                           break;
                         }
 
@@ -322,8 +277,6 @@ void sem_check_stmt(ASTstmt* stmt){
                                 error("\rNot an lvalue !!");
                                 exit(1);
                         }
-                        printf("%s",s->id);
-
 
                         if((lval_type->kind == 5 && ((*stmt->lvalue->indices)).size()>0) || lval_type->kind == 6){
                             int size = (*stmt->lvalue->indices).size();
@@ -331,15 +284,11 @@ void sem_check_stmt(ASTstmt* stmt){
                               lval_type = lval_type->refType;
                               size --;
                             }
-                            printType(lval_type);
                           }
                        
-                       if(equalType(lval_type,typeChar) && equalType(rval_type,typeInteger)) break;
-                         
+                       if(equalType(lval_type,typeChar) && equalType(rval_type,typeInteger)) break;  
                        if(!equalType(lval_type,rval_type)){
-
                                 error("\rlvalue and rvalue Typemismatch");
-
                                 exit(1);
                         }
 
@@ -509,6 +458,10 @@ Type sem_check_expr(ASTExpr* expr){
 
                 case 'f':
                         {
+                          if(strcmp(expr->f->identifier.c_str(),"readInteger" ) == 0 ) return typeInteger;
+                          else if(strcmp(expr->f->identifier.c_str(),"readByte" ) == 0 ) return typeChar;
+                          else if(strcmp(expr->f->identifier.c_str(),"readChar" ) == 0 ) return typeChar;
+
                           SymbolEntry *a = lookupEntry(expr->f->identifier.c_str(),LOOKUP_ALL_SCOPES,true);
                           if(a->entryType != ENTRY_FUNCTION) {
                              error("\rExpression not a function");
