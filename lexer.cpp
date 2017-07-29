@@ -1424,33 +1424,32 @@ case YY_STATE_EOF(INITIAL):
 {
                         unput(0);
                         howmany=level;
-                        //printf("the level is %d\n",level);
                         while(level>0){
                             unput('}');
                             level--;
                         }
                         printf("Read %d lines\n",nl);
-                        printf("Done!");
+                        printf("Syntax analysis is Done!\n");
 		}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 173 "danalexer.l"
+#line 172 "danalexer.l"
 {
     		    if(yytext[0]==0) {
     		        return 0;
     		    }
     		    printf("Unexpected Character %d\n",yytext[0]);
-                    printf("Line no: %d \n",nl);
+                printf("Line no: %d \n",nl);
     		    exit(-1);
 	        }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 186 "danalexer.l"
+#line 185 "danalexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1453 "lexer.cpp"
+#line 1452 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2452,7 +2451,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 186 "danalexer.l"
+#line 185 "danalexer.l"
 
 unsigned int white_count(char* line) {
         unsigned int count = 0 ;

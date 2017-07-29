@@ -1,5 +1,4 @@
 #include "ast.h"
-
 using namespace std;
 
 ASTstmt::ASTstmt(stmt_type type, ASTstmt *body,ASTstmt *tail,string label){
@@ -46,6 +45,7 @@ ASTparam::ASTparam(vector<string>* id, Type p, ASTparam *next){
 
     this->next = next;
 }
+
 ASTif::ASTif(ASTExpr* condition,ASTstmt* body){
     this->tail = NULL;
     this->condition = condition;

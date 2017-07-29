@@ -82,6 +82,8 @@ public:
     ASTlval(bool,string);
     string identifier;
     bool constant;
+    int nesting_diff = 0; //these are the starting values and may change
+    int offset = 0;
     std::vector<ASTExpr*> *indices;
     void print(){
         cout << "Printing bracket lists" << endl;
@@ -106,6 +108,7 @@ public:
     ASTfcall(string);
     string identifier;
     vector<ASTExpr*> *parameters;
+    int nesting_diff = 0;  //these are the starting values and may change
 };
 
 class ASTif

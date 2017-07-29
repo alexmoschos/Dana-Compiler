@@ -310,6 +310,8 @@ SymbolEntry * newConstant (const char * name, Type type, ...)
                 strcpy(buffer, "\"");
                 strAppendString(buffer, value.vString);
                 strcat(buffer, "\"");
+           
+                   
         }
         e = newEntry(buffer);
     }
@@ -335,6 +337,7 @@ SymbolEntry * newConstant (const char * name, Type type, ...)
                 break;
             case TYPE_ARRAY:
                 e->u.eConstant.value.vString = value.vString;
+           
         }
     }
     return e;
@@ -593,7 +596,7 @@ Type typePointer (Type refType)
 
 void destroyType (Type type)
 {
-    switch (type->kind) {
+    switch (type->kind) {             
         case TYPE_ARRAY:
         case TYPE_IARRAY:
         case TYPE_POINTER:
@@ -601,6 +604,7 @@ void destroyType (Type type)
                 destroyType(type->refType);
                 delete(type);
             }
+
     }
 }
 

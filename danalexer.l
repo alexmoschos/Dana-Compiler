@@ -161,13 +161,12 @@ ref 		{return(REF);}
 <<EOF>>         {
                         unput(0);
                         howmany=level;
-                        //printf("the level is %d\n",level);
                         while(level>0){
                             unput('}');
                             level--;
                         }
                         printf("Read %d lines\n",nl);
-                        printf("Done!");
+                        printf("Syntax analysis is Done!\n");
 		}
 
 .               {
@@ -175,7 +174,7 @@ ref 		{return(REF);}
     		        return 0;
     		    }
     		    printf("Unexpected Character %d\n",yytext[0]);
-                    printf("Line no: %d \n",nl);
+                printf("Line no: %d \n",nl);
     		    exit(-1);
 	        }
 

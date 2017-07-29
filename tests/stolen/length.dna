@@ -5,8 +5,8 @@ def main
     def length is int: x1 y1 x2 y2 as int
         var dx dy is int
 
-	dx := x1-x2
-	dy := y1-y2
+	    dx := x1-x2
+	    dy := y1-y2
         return: dx + dy
 
     var x1 y1 x2 y2 l is int
