@@ -1,0 +1,4 @@
+def main is int: a as ref int,x as int[][42], b as ref int
+  def f is int
+    return: x[0]
+  return: a+b
