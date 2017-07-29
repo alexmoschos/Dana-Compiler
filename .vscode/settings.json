@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "symbol.c": "cpp",
-        "*.tcc": "cpp",
-        "functional": "cpp"
-    }
-}
