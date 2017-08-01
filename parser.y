@@ -2,6 +2,7 @@
 	extern "C"{
       #include "symbol.h"
     }
+	#include "llvm.h"
     #include "sem.h"
 	#include "ast.h"
 	#include <stdio.h>
@@ -265,6 +266,9 @@ int main(){
     cout << "Parser is done!" << endl;
     sem_check_fdef(main_f);
     cout << "Semantic analysis is done!" << endl;
+	cout << "Emitting LLVM" << endl;
+	cout << endl;
+	Compile(main_f);
     closeScope();
     destroySymbolTable();
 }

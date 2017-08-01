@@ -1,6 +1,7 @@
 extern "C"{
     #include "symbol.h"
 }
+#include "llvm.h"
 #include "ast.h"
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Function.h>
@@ -17,13 +18,49 @@ extern "C"{
 #include <iostream>
 #include <vector>
 
-using namespace llvm;
-Value* CompileStatements(ASTstmt* stmt);
-static LLVMContext context;
-static IRBuilder<> Builder(context);
-static Module *mod;
-StructType *currentFrame;
+llvm::Value* CompileStatements(ASTstmt* stmt);
+llvm::Value* CompileFunction(ASTfdef*);
 
+static llvm::LLVMContext context;
+static llvm::IRBuilder<> Builder(context);
+static llvm::Module *mod;
+llvm::StructType *currentFrame;
+llvm::Type* translate(Type a){
+    if(equalType(a,typeInteger))
+        return llvm::Type::getInt16Ty(context);
+    if(equalType(a,typeChar))
+        return llvm::Type::getInt8Ty(context);
+
+    cout << "Type that i dont know yet.Probably array or byref"; 
+    exit(-1);
+
+}
+
+using namespace llvm;
+void push_decl(ASTstmt *decl, std::vector<llvm::Type*>& fields){
+    //std::cout << "hello" << std::endl;
+    if(decl == NULL) return;
+    //std::cout << "hello" << std::endl;
+    switch(decl->type){
+    case TFDEF:
+        CompileFunction(decl->def);
+
+        break;
+    case TFDECL:
+        break;
+    case TDECL:
+        //std::cout << "beginf" << std::endl;
+        for(auto i : *decl->identifiers){
+            //std::cout << "loopf" << std::endl;
+            fields.push_back(translate(decl->t));
+        }
+        break;
+    default:
+        return;
+    }
+    push_decl(decl->tail,fields);
+
+}
 Value* CompileFunction(ASTfdef *func){
     StructType *old = currentFrame;
     if(func == NULL) return NULL;
@@ -33,25 +70,23 @@ Value* CompileFunction(ASTfdef *func){
     }
     std::vector<llvm::Type*>frame_fields;
     frame_fields.push_back(PointerType::get(currentFrame, 0));
-    frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
-    frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
-    frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
+    //frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
 
+
+    currentFrame = frame;
+    push_decl(func->body,frame_fields);
     if (frame->isOpaque()) {
         frame->setBody(frame_fields, /*isPacked=*/false);
     }
-    currentFrame = frame;
-    CompileStatements(func->body);
+    //CompileStatements(func->body);
     currentFrame = old;
     //done with definitions start 
     vector<const llvm::Type*> argTypes;
-    FunctionType* ftype = FunctionType::get(llvm::Type::getInt16Ty(context),false);
-    //Function* mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
+    FunctionType* ftype = FunctionType::get(translate(func->header->type),false);
     Function* function = Function::Create(
      /*Type=*/ftype,
      /*Linkage=*/GlobalValue::ExternalLinkage,
      /*Name=*/func->header->identifier, mod);
-    //mainFunction->setCallingConv(CallingConv::C);
     BasicBlock* bl = BasicBlock::Create(context,"",function,0);
     Builder.SetInsertPoint(bl);
 
@@ -131,7 +166,6 @@ Value* CompileStatements(ASTstmt* stmt){
         case TIF:
             break;
         case TFDEF:
-            CompileFunction(stmt->def);
             break;
         case TFDECL:
             break;
@@ -157,39 +191,41 @@ Value* CompileStatements(ASTstmt* stmt){
     return NULL;
 }
 
-int main(int argc, char const *argv[]) {
+int Compile(ASTfdef* main) {
     mod = new Module("arx.ll", getGlobalContext());
     mod->setDataLayout("");
     mod->setTargetTriple("x86_64-pc-linux-gnu");
-
+    /*
     vector<const llvm::Type*> argTypes;
     FunctionType* ftype = FunctionType::get(llvm::Type::getInt16Ty(context),false);
-    //Function* mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
     Function* mainFunction = Function::Create(
-     /*Type=*/ftype,
-     /*Linkage=*/GlobalValue::ExternalLinkage,
-     /*Name=*/"main", mod);
+    // /*Type=*///ftype,
+    // /*Linkage=*/GlobalValue::ExternalLinkage,
+    // /*Name=*/"main", mod);
     //mainFunction->setCallingConv(CallingConv::C);
-    BasicBlock* bl = BasicBlock::Create(context,"entry",mainFunction,0);
-    //ASTExpr* b = new ASTExpr('c',NULL,42,NULL,NULL);
-    //Builder.CreateBr(bl);
-    auto b = new ASTExpr('c',NULL,42,NULL,NULL);
-    auto e = new ASTExpr('x',NULL,12,NULL,NULL);
-    //d = new ASTExpr('e',NULL,0,b,d);
-    auto c = new ASTExpr('*',NULL,0,b,e);
-    auto d = new ASTExpr('/',NULL,0,c,c);
-    Value* a = CompileExpression(c);
+    //BasicBlock* bl = BasicBlock::Create(context,"entry",mainFunction,0);
+    
+
     currentFrame = StructType::create(mod->getContext(), "struct.dummy");
-    auto second_func = new ASTstmt(TFDEF,NULL,NULL,"");
-    second_func->def =new ASTfdef(new ASTheader(typeInteger,NULL,"asthenoforo"),NULL);
-    CompileFunction(new ASTfdef(new ASTheader(typeInteger,NULL,"kremmudi"), second_func));
-    Builder.SetInsertPoint(bl);
-    Builder.CreateRet(a);
+    //auto second_func = new ASTstmt(TFDEF,NULL,NULL,"");
+    //second_func->def =new ASTfdef(new ASTheader(typeInteger,NULL,"asthenoforo"),NULL);
+
+    //auto dec = new ASTstmt(TDECL,NULL,NULL,"");
+    //second_func->def->body = dec;
+    //std::vector<std::string> *id = new std::vector<std::string>();
+    //id->push_back("hello");
+    //id->push_back("world");
+    //dec->identifiers = id;
+    //dec->t = typeInteger; 
+    //CompileFunction(new ASTfdef(new ASTheader(typeChar,NULL,"kremmudi"), second_func));
+    CompileFunction(main);
+
+    //Builder.SetInsertPoint(bl);
+    //Builder.CreateRet(a);
     //a->print(errs());
     legacy::PassManager pm;
     pm.add(createPrintModulePass(outs()));
     pm.run(*mod);
-    std::cout << "Hello world";
 //    if(a != NULL) exit(1);
     return 0;
 }

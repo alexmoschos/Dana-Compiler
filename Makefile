@@ -2,8 +2,8 @@ SHELL := /bin/bash
 CPP = clang++
 FLAGS = -std=c++11 -O2 -g
 #LLVMFLAGS = `llvm-config-3.8 --cxxflags --ldflags --libs  --system-libs`
-LLVMFLAGS = 
-simple: lexer.o parser.o ast.o symbol.o general.o error.o sem.o
+LLVMFLAGS = `llvm-config --cxxflags --ldflags --libs core --system-libs`
+simple: lexer.o parser.o ast.o symbol.o general.o error.o sem.o llvm.o
 	$(CPP) -$(FLAGS) -o $@ $^ -lfl  $(LLVMFLAGS)
 
 lexer: lexer.cpp
@@ -17,11 +17,14 @@ parser.hpp parser.cpp: parser.y ast.h ast.cpp
 
 lexer.o: lexer.cpp parser.hpp
 
+llvm.o: llvm.cpp llvm.h
+	$(CPP) llvm.cpp -c `llvm-config --cxxflags` 
+
 
 parser.o: parser.cpp parser.hpp symbol.c symbol.h
-	$(CPP) $(FLAGS) $(LLVMFLAGS)  -c $<
+	$(CPP) $(FLAGS)   -c $<
 %.o: %.cpp
-	$(CPP) $(FLAGS) $(LLVMFLAGS)  -c $<
+	$(CPP) $(FLAGS) -c $<
 
 clean :
 	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o *~
