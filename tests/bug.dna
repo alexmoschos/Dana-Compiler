@@ -1,0 +1,5 @@
+def main is int
+  def f is int
+   var l is byte
+   return: l
+  return: 'a'

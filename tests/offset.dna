@@ -1,4 +1,13 @@
-def main is int: a as ref int,x as int[][42], b as ref int
-  def f is int
-    return: x[0]
-  return: a+b
+def main: a as int, c as int
+  var b is int
+  var bb is int
+  def f is int: aa as int
+    var k is byte
+    var l is int
+    return : aa + l
+    return: k
+  def g is int: ccc as int
+    var cccc is int
+    return: ccc + cccc
+  var d is int 
+  a := b+c+d++bb

@@ -39,6 +39,7 @@
 Scope        * currentScope;           /* �������� ��������              */
 unsigned int   quadNext;               /* ������� �������� ��������      */
 unsigned int   tempNumber;             /* �������� ��� temporaries       */
+int hack;
 
 static unsigned int   hashTableSize;   /* ������� ������ ��������������� */
 static SymbolEntry ** hashTable;       /* ������� ���������������        */
@@ -170,7 +171,7 @@ void openScope ()
 {
     Scope * newScope = (Scope *) new(sizeof(Scope));
 
-    newScope->negOffset = START_NEGATIVE_OFFSET;
+    newScope->negOffset = hack;
     newScope->parent    = currentScope;
     newScope->entries   = NULL;
 
@@ -239,8 +240,9 @@ SymbolEntry * newVariable (const char * name, Type type)
         e->entryType = ENTRY_VARIABLE;
         e->u.eVariable.type = type;
         type->refCount++;
-        currentScope->negOffset -= sizeOfType(type);
         e->u.eVariable.offset = currentScope->negOffset;
+        currentScope->negOffset += sizeOfType(type);
+        //e->u.eVariable.offset = currentScope->negOffset;
     }
     return e;
 }
@@ -424,13 +426,15 @@ SymbolEntry * newParameter (const char * name, Type type,
 
 static unsigned int fixOffset (SymbolEntry * args)
 {
+    //printf("enter ");
     if (args == NULL)
         return 0;
     else {
         unsigned int rest = fixOffset(args->u.eParameter.next);
 
-        args->u.eParameter.offset = START_POSITIVE_OFFSET + rest;
-        if (args->u.eParameter.mode == PASS_BY_REFERENCE)
+        args->u.eParameter.offset =rest;
+        //printf("\toffset %d\n",args->u.eParameter.offset);
+	if (args->u.eParameter.mode == PASS_BY_REFERENCE)
             return rest + 2;
         else
             return rest + sizeOfType(args->u.eParameter.type);
@@ -453,7 +457,9 @@ void endFunctionHeader (SymbolEntry * f, Type type)
             internal("Cannot end parameters in an already defined function");
             break;
         case PARDEF_DEFINE:
-            fixOffset(f->u.eFunction.firstArgument);
+            hack = fixOffset(f->u.eFunction.firstArgument);
+	    //printf("%d hack\n",hack);
+	    currentScope->negOffset = hack;
             f->u.eFunction.resultType = type;
             type->refCount++;
             break;

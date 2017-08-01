@@ -1,3 +1,6 @@
+extern "C"{
+    #include "symbol.h"
+}
 #include "ast.h"
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Function.h>
@@ -12,12 +15,51 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/Support/raw_ostream.h>
 #include <iostream>
+#include <vector>
 
 using namespace llvm;
+Value* CompileStatements(ASTstmt* stmt);
 static LLVMContext context;
 static IRBuilder<> Builder(context);
-static Module* mod;
+static Module *mod;
+StructType *currentFrame;
 
+Value* CompileFunction(ASTfdef *func){
+    StructType *old = currentFrame;
+    if(func == NULL) return NULL;
+    StructType *frame = mod->getTypeByName("struct."+func->header->identifier);
+    if (!frame) {
+        frame = StructType::create(mod->getContext(), "struct."+func->header->identifier);
+    }
+    std::vector<llvm::Type*>frame_fields;
+    frame_fields.push_back(PointerType::get(currentFrame, 0));
+    frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
+    frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
+    frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
+
+    if (frame->isOpaque()) {
+        frame->setBody(frame_fields, /*isPacked=*/false);
+    }
+    currentFrame = frame;
+    CompileStatements(func->body);
+    currentFrame = old;
+    //done with definitions start 
+    vector<const llvm::Type*> argTypes;
+    FunctionType* ftype = FunctionType::get(llvm::Type::getInt16Ty(context),false);
+    //Function* mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
+    Function* function = Function::Create(
+     /*Type=*/ftype,
+     /*Linkage=*/GlobalValue::ExternalLinkage,
+     /*Name=*/func->header->identifier, mod);
+    //mainFunction->setCallingConv(CallingConv::C);
+    BasicBlock* bl = BasicBlock::Create(context,"",function,0);
+    Builder.SetInsertPoint(bl);
+
+    Builder.CreateAlloca(frame, 0, "my_frame");
+    return Builder.CreateRet(ConstantInt::get(llvm::Type::getInt16Ty(context),42,true));
+
+    
+}
 Value* CompileExpression(ASTExpr* expr){
     if(expr == NULL){
         return NULL;
@@ -41,7 +83,7 @@ Value* CompileExpression(ASTExpr* expr){
         case '!':
             return Builder.CreateNot(right,"");
         case 'c':
-            return ConstantInt::get(llvm::Type::getInt32Ty(context),expr->constant_val,true);
+            return ConstantInt::get(llvm::Type::getInt16Ty(context),expr->constant_val,true);
         case 'x':
             return ConstantInt::get(llvm::Type::getInt8Ty(context),expr->constant_val,true);
         case 'b':
@@ -78,6 +120,7 @@ Value* CompileExpression(ASTExpr* expr){
 }
 
 Value* CompileStatements(ASTstmt* stmt){
+    if(stmt == NULL) return NULL;
     switch(stmt->type){
         case TSKIP:
             break;
@@ -88,6 +131,7 @@ Value* CompileStatements(ASTstmt* stmt){
         case TIF:
             break;
         case TFDEF:
+            CompileFunction(stmt->def);
             break;
         case TFDECL:
             break;
@@ -119,7 +163,7 @@ int main(int argc, char const *argv[]) {
     mod->setTargetTriple("x86_64-pc-linux-gnu");
 
     vector<const llvm::Type*> argTypes;
-    FunctionType* ftype = FunctionType::get(llvm::Type::getVoidTy(context),false);
+    FunctionType* ftype = FunctionType::get(llvm::Type::getInt16Ty(context),false);
     //Function* mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", module);
     Function* mainFunction = Function::Create(
      /*Type=*/ftype,
@@ -129,13 +173,17 @@ int main(int argc, char const *argv[]) {
     BasicBlock* bl = BasicBlock::Create(context,"entry",mainFunction,0);
     //ASTExpr* b = new ASTExpr('c',NULL,42,NULL,NULL);
     //Builder.CreateBr(bl);
-    Builder.SetInsertPoint(bl);
     auto b = new ASTExpr('c',NULL,42,NULL,NULL);
     auto e = new ASTExpr('x',NULL,12,NULL,NULL);
     //d = new ASTExpr('e',NULL,0,b,d);
     auto c = new ASTExpr('*',NULL,0,b,e);
     auto d = new ASTExpr('/',NULL,0,c,c);
-    Value* a = CompileExpression(d);
+    Value* a = CompileExpression(c);
+    currentFrame = StructType::create(mod->getContext(), "struct.dummy");
+    auto second_func = new ASTstmt(TFDEF,NULL,NULL,"");
+    second_func->def =new ASTfdef(new ASTheader(typeInteger,NULL,"asthenoforo"),NULL);
+    CompileFunction(new ASTfdef(new ASTheader(typeInteger,NULL,"kremmudi"), second_func));
+    Builder.SetInsertPoint(bl);
     Builder.CreateRet(a);
     //a->print(errs());
     legacy::PassManager pm;
