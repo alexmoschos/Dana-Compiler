@@ -1,0 +1,8 @@
+def main: a as int, c as int
+  var b is int
+  var bb is int
+  var d is int
+  a := b+c+d++bb
+  b := 5
+  skip
+  skip

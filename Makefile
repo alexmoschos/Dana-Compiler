@@ -22,7 +22,7 @@ llvm.o: llvm.cpp llvm.h
 
 
 parser.o: parser.cpp parser.hpp symbol.c symbol.h
-	$(CPP) $(FLAGS)   -c $<
+	$(CPP) $(FLAGS) -c $<
 %.o: %.cpp
 	$(CPP) $(FLAGS) -c $<
 

@@ -30,35 +30,34 @@ llvm::Type* translate(Type a){
         return llvm::Type::getInt16Ty(context);
     if(equalType(a,typeChar))
         return llvm::Type::getInt8Ty(context);
+    if(equalType(a,typeVoid))
+        return llvm::Type::getVoidTy(context);
 
-    cout << "Type that i dont know yet.Probably array or byref"; 
+    cout << "Type that i dont know yet.Probably array or byref" << endl; 
+    printType(a);
     exit(-1);
+
 
 }
 
 using namespace llvm;
-void push_decl(ASTstmt *decl, std::vector<llvm::Type*>& fields){
-    //std::cout << "hello" << std::endl;
-    if(decl == NULL) return;
-    //std::cout << "hello" << std::endl;
+ASTstmt* push_decl(ASTstmt *decl, std::vector<llvm::Type*>& fields){
+    if(decl == NULL) return NULL;
     switch(decl->type){
     case TFDEF:
         CompileFunction(decl->def);
-
         break;
     case TFDECL:
         break;
     case TDECL:
-        //std::cout << "beginf" << std::endl;
         for(auto i : *decl->identifiers){
-            //std::cout << "loopf" << std::endl;
             fields.push_back(translate(decl->t));
         }
         break;
     default:
-        return;
+        return decl;
     }
-    push_decl(decl->tail,fields);
+    return push_decl(decl->tail,fields);
 
 }
 Value* CompileFunction(ASTfdef *func){
@@ -74,11 +73,16 @@ Value* CompileFunction(ASTfdef *func){
 
 
     currentFrame = frame;
-    push_decl(func->body,frame_fields);
+    //do the parameters!
+    for(auto p = func->header->paramlist; p != NULL; p = p->next){
+        frame_fields.push_back(translate(p->p));
+    } 
+    //do the local variables
+    ASTstmt* first = push_decl(func->body,frame_fields);
     if (frame->isOpaque()) {
         frame->setBody(frame_fields, /*isPacked=*/false);
     }
-    //CompileStatements(func->body);
+    CompileStatements(first);
     currentFrame = old;
     //done with definitions start 
     vector<const llvm::Type*> argTypes;
@@ -156,6 +160,7 @@ Value* CompileExpression(ASTExpr* expr){
 
 Value* CompileStatements(ASTstmt* stmt){
     if(stmt == NULL) return NULL;
+    std::cout << "I AM DOING A STATEMENT" << std::endl;
     switch(stmt->type){
         case TSKIP:
             break;
@@ -188,7 +193,7 @@ Value* CompileStatements(ASTstmt* stmt){
         case TASSIGN:
             break;
     }
-    return NULL;
+    return CompileStatements(stmt->tail);
 }
 
 int Compile(ASTfdef* main) {
