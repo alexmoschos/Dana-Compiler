@@ -18,7 +18,7 @@ parser.hpp parser.cpp: parser.y ast.h ast.cpp
 lexer.o: lexer.cpp parser.hpp
 
 llvm.o: llvm.cpp llvm.h
-	$(CPP) llvm.cpp -c `llvm-config --cxxflags` 
+	$(CPP) llvm.cpp -c -$(FLAGS)  `llvm-config --cxxflags` 
 
 
 parser.o: parser.cpp parser.hpp symbol.c symbol.h

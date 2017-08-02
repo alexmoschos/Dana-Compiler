@@ -20,7 +20,8 @@ extern "C"{
 
 llvm::Value* CompileStatements(ASTstmt* stmt);
 llvm::Value* CompileFunction(ASTfdef*);
-
+llvm::Value* CompileExpression(ASTExpr*);
+llvm::AllocaInst* currentAlloca;
 static llvm::LLVMContext context;
 static llvm::IRBuilder<> Builder(context);
 static llvm::Module *mod;
@@ -35,7 +36,8 @@ llvm::Type* translate(Type a){
 
     cout << "Type that i dont know yet.Probably array or byref" << endl; 
     printType(a);
-    exit(-1);
+    return llvm::Type::getVoidTy(context);
+    //exit(-1);
 
 
 }
@@ -82,8 +84,7 @@ Value* CompileFunction(ASTfdef *func){
     if (frame->isOpaque()) {
         frame->setBody(frame_fields, /*isPacked=*/false);
     }
-    CompileStatements(first);
-    currentFrame = old;
+    
     //done with definitions start 
     vector<const llvm::Type*> argTypes;
     FunctionType* ftype = FunctionType::get(translate(func->header->type),false);
@@ -94,12 +95,24 @@ Value* CompileFunction(ASTfdef *func){
     BasicBlock* bl = BasicBlock::Create(context,"",function,0);
     Builder.SetInsertPoint(bl);
 
-    Builder.CreateAlloca(frame, 0, "my_frame");
-    return Builder.CreateRet(ConstantInt::get(llvm::Type::getInt16Ty(context),42,true));
+    currentAlloca = Builder.CreateAlloca(frame, 0, "");
+    //auto lval = new ASTlval(false,"kremmudi");
+    //auto expr = new ASTExpr('i',lval,0,NULL,NULL);
+    //auto res = CompileExpression(expr);
+    CompileStatements(first);
 
+    
+
+
+    currentFrame = old;
+    //Builder.CreateRet(res);
+    //Builder.CreateRet(ConstantInt::get(llvm::Type::getInt16Ty(context),42,true));
+
+    return NULL;
     
 }
 Value* CompileExpression(ASTExpr* expr){
+    std::cout << "I AM DOING AN EXPRESSION" << std::endl;
     if(expr == NULL){
         return NULL;
     }
@@ -148,9 +161,21 @@ Value* CompileExpression(ASTExpr* expr){
         case 'f':
             break;
 
-        case 'i':
+        case 'i':{
+            std::vector<llvm::Value *> values;
+            llvm::APInt zero(32, 0);
+            llvm::APInt offset(32, expr->operand->offset+1);
+            values.push_back(
+            llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), zero));
+            // This is the field offset
+            values.push_back(
+            llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), offset));
+            auto gep = Builder.CreateGEP(currentAlloca,values,"");
+            return Builder.CreateLoad(gep, "");
+            //return Builder.CreateGEP(currentAlloca,indexList,"");
+            //return Builder.CreateStructGEP(currentFrame,currentAlloca,4, "");
 
-            break;
+        }
         default: exit(1);
 
 
@@ -170,13 +195,10 @@ Value* CompileStatements(ASTstmt* stmt){
             break;
         case TIF:
             break;
-        case TFDEF:
-            break;
-        case TFDECL:
-            break;
         case TEXIT:
             break;
         case TRET:
+            Builder.CreateRet(CompileExpression(stmt->expr));
             break;
         case TCONTM:
             break;
@@ -186,12 +208,12 @@ Value* CompileStatements(ASTstmt* stmt){
             break;
         case TBREAK:
             break;
-        case TDECL:
-            break;
         case TLOOP:
             break;
         case TASSIGN:
             break;
+        default:
+            std::cout << "Unexpected statement type" << std::endl;
     }
     return CompileStatements(stmt->tail);
 }
@@ -231,6 +253,10 @@ int Compile(ASTfdef* main) {
     legacy::PassManager pm;
     pm.add(createPrintModulePass(outs()));
     pm.run(*mod);
-//    if(a != NULL) exit(1);
     return 0;
 }
+/*
+int main(){
+    return 0;
+}
+*/

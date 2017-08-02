@@ -31,19 +31,20 @@ class ASTparam;
 class ASTfcall;
 
 class ASTNode{
-        int he;
+public: 
+    int he;
         //ASTNode(int a) { he = a ;}
         //virtual void run() = 0;
 };
 class ASTExpr:ASTNode{
 public:
-        char op;
-        ASTlval* operand;
-        int constant_val;
-        ASTExpr* left;
-        ASTExpr* right;
-        ASTfcall* f = NULL;
-        ASTExpr(char,ASTlval*,int,ASTExpr*,ASTExpr*);
+    char op;
+    ASTlval* operand;
+    int constant_val;
+    ASTExpr* left;
+    ASTExpr* right;
+    ASTfcall* f = NULL;
+    ASTExpr(char,ASTlval*,int,ASTExpr*,ASTExpr*);
 };
 
 class ASTheader:ASTNode{
