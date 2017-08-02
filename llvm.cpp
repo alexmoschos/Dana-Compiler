@@ -211,7 +211,20 @@ Value* CompileStatements(ASTstmt* stmt){
         case TLOOP:
             break;
         case TASSIGN:
+        {
+            std::vector<llvm::Value *> values;
+            llvm::APInt zero(32, 0);
+            llvm::APInt offset(32, stmt->lvalue->offset+1);
+            values.push_back(
+            llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), zero));
+            // This is the field offset
+            values.push_back(
+            llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), offset));
+            Value* gep = Builder.CreateGEP(currentAlloca,values,"");
+            Value* val = CompileExpression(stmt->expr);
+            Builder.CreateStore(val,gep);
             break;
+        }
         default:
             std::cout << "Unexpected statement type" << std::endl;
     }

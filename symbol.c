@@ -623,14 +623,16 @@ unsigned int sizeOfType (Type type)
         case TYPE_INTEGER:
         case TYPE_IARRAY:
         case TYPE_POINTER:
-            return 2;
+            return 1;
+            //return 2;
         case TYPE_BOOLEAN:
         case TYPE_CHAR:
             return 1;
         case TYPE_REAL:
-            return 10;
+            //return 10;
         case TYPE_ARRAY:
-            return type->size * sizeOfType(type->refType);
+            return 1;
+            //return type->size * sizeOfType(type->refType);
     }
     return 0;
 }
