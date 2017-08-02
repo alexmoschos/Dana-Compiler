@@ -1,8 +1,9 @@
-def main is int
+def main is int:x y z as int
   var a b is int
   var c is byte
   def f is byte
    var a is byte
    skip
   var d is int
-  skip
+  a:=1
+  return:a

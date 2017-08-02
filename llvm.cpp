@@ -72,47 +72,79 @@ Value* CompileFunction(ASTfdef *func){
     std::vector<llvm::Type*>frame_fields;
     frame_fields.push_back(PointerType::get(currentFrame, 0));
     //frame_fields.push_back(IntegerType::get(mod->getContext(), 16));
-
-
+    std::vector<llvm::Type*> params;
+    PointerType* frame_ptr = PointerType::get(currentFrame, 0);
+    params.push_back(frame_ptr);
     currentFrame = frame;
     //do the parameters!
+ 
     for(auto p = func->header->paramlist; p != NULL; p = p->next){
-        frame_fields.push_back(translate(p->p));
+        int numparams = p->identifiers->size();
+        for(int j = 0; j < numparams; ++j){
+            frame_fields.push_back(translate(p->p));
+            params.push_back(translate(p->p));
+        }
     } 
     //do the local variables
     ASTstmt* first = push_decl(func->body,frame_fields);
     if (frame->isOpaque()) {
         frame->setBody(frame_fields, /*isPacked=*/false);
     }
-    
+
     //done with definitions start 
     vector<const llvm::Type*> argTypes;
-    FunctionType* ftype = FunctionType::get(translate(func->header->type),false);
+    FunctionType* ftype = FunctionType::get(translate(func->header->type),params,false);
     Function* function = Function::Create(
      /*Type=*/ftype,
      /*Linkage=*/GlobalValue::ExternalLinkage,
      /*Name=*/func->header->identifier, mod);
+    
+    Function::arg_iterator arg_it = function->arg_begin();
+    arg_it->setName("link");
+    arg_it++;
+
+    for(auto p = func->header->paramlist; p != NULL; p = p->next){
+        for(auto id : *p->identifiers){
+            arg_it->setName(id);
+            arg_it++;
+        }
+    } 
     BasicBlock* bl = BasicBlock::Create(context,"",function,0);
     Builder.SetInsertPoint(bl);
-
     currentAlloca = Builder.CreateAlloca(frame, 0, "");
-    //auto lval = new ASTlval(false,"kremmudi");
-    //auto expr = new ASTExpr('i',lval,0,NULL,NULL);
-    //auto res = CompileExpression(expr);
+    unsigned int j = 0;
+    arg_it = function->arg_begin();
+    Value* current = &(*arg_it);
+    std::vector<llvm::Value *> values;
+    llvm::APInt zero(32, 0);
+    values.push_back(llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), zero));
+    values.push_back(llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), zero));
+    auto gep = Builder.CreateGEP(currentAlloca,values,"");
+    current = &(*arg_it);
+    Builder.CreateStore(current,gep);
+    arg_it++;
+    std::cout << params.size() << std::endl;
+
+    for(j=1; j < params.size();++j,++arg_it){
+        std::vector<llvm::Value *> values;
+        llvm::APInt zero(32, 0);
+        llvm::APInt offset(32,j);
+        values.push_back(llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), zero));
+        values.push_back(llvm::Constant::getIntegerValue(llvm::Type::getInt32Ty(context), offset));
+        auto gep = Builder.CreateGEP(currentAlloca,values,"");
+        current = &(*arg_it);
+        Builder.CreateStore(current,gep);
+    }
+
+
+
     CompileStatements(first);
-
-    
-
-
     currentFrame = old;
-    //Builder.CreateRet(res);
-    //Builder.CreateRet(ConstantInt::get(llvm::Type::getInt16Ty(context),42,true));
-
     return NULL;
     
 }
 Value* CompileExpression(ASTExpr* expr){
-    std::cout << "I AM DOING AN EXPRESSION" << std::endl;
+    //std::cout << "I AM DOING AN EXPRESSION" << std::endl;
     if(expr == NULL){
         return NULL;
     }
@@ -192,10 +224,12 @@ Value* CompileStatements(ASTstmt* stmt){
         case TPC:
             break;
         case TFCALL:
+            //CompileFCall(stmt->);
             break;
         case TIF:
             break;
         case TEXIT:
+            Builder.CreateRet(nullptr);
             break;
         case TRET:
             Builder.CreateRet(CompileExpression(stmt->expr));
@@ -235,29 +269,9 @@ int Compile(ASTfdef* main) {
     mod = new Module("arx.ll", getGlobalContext());
     mod->setDataLayout("");
     mod->setTargetTriple("x86_64-pc-linux-gnu");
-    /*
-    vector<const llvm::Type*> argTypes;
-    FunctionType* ftype = FunctionType::get(llvm::Type::getInt16Ty(context),false);
-    Function* mainFunction = Function::Create(
-    // /*Type=*///ftype,
-    // /*Linkage=*/GlobalValue::ExternalLinkage,
-    // /*Name=*/"main", mod);
-    //mainFunction->setCallingConv(CallingConv::C);
-    //BasicBlock* bl = BasicBlock::Create(context,"entry",mainFunction,0);
-    
+
 
     currentFrame = StructType::create(mod->getContext(), "struct.dummy");
-    //auto second_func = new ASTstmt(TFDEF,NULL,NULL,"");
-    //second_func->def =new ASTfdef(new ASTheader(typeInteger,NULL,"asthenoforo"),NULL);
-
-    //auto dec = new ASTstmt(TDECL,NULL,NULL,"");
-    //second_func->def->body = dec;
-    //std::vector<std::string> *id = new std::vector<std::string>();
-    //id->push_back("hello");
-    //id->push_back("world");
-    //dec->identifiers = id;
-    //dec->t = typeInteger; 
-    //CompileFunction(new ASTfdef(new ASTheader(typeChar,NULL,"kremmudi"), second_func));
     CompileFunction(main);
 
     //Builder.SetInsertPoint(bl);
