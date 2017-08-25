@@ -33,7 +33,11 @@ llvm::Type* translate(Type a){
         return llvm::Type::getInt8Ty(context);
     if(equalType(a,typeVoid))
         return llvm::Type::getVoidTy(context);
-
+    //gennaia prospatheia gia arraytype,polla douleuoun out of the box
+    //return llvm::ArrayType::get(llvm::Type::getInt16Ty(context), 10);
+    //we need to do arraytype
+    //iteratively create the type via the indices
+    //just a pointer for IArray
     cout << "Type that i dont know yet.Probably array or byref" << endl; 
     printType(a);
     return llvm::Type::getVoidTy(context);
@@ -191,9 +195,13 @@ Value* CompileExpression(ASTExpr* expr){
         case 'n':
             return Builder.CreateNot(right,"");
         case 'f':
+            //implement a function just doing calls, to use everywhere else
             break;
 
         case 'i':{
+	    //this is the case where nested_diff == 0
+            //to generalize add #nested_diff geps traversing the 
+            //first element of the struct 0 offset
             std::vector<llvm::Value *> values;
             llvm::APInt zero(32, 0);
             llvm::APInt offset(32, expr->operand->offset+1);
@@ -246,6 +254,7 @@ Value* CompileStatements(ASTstmt* stmt){
             break;
         case TASSIGN:
         {
+            //again gep loop
             std::vector<llvm::Value *> values;
             llvm::APInt zero(32, 0);
             llvm::APInt offset(32, stmt->lvalue->offset+1);
@@ -280,6 +289,8 @@ int Compile(ASTfdef* main) {
     legacy::PassManager pm;
     pm.add(createPrintModulePass(outs()));
     pm.run(*mod);
+    //add certain passes to perform optimizations on the intermediate representation
+    //also add passes to create x86-64 code and then perform optimizations on it
     return 0;
 }
 /*
