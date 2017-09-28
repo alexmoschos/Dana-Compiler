@@ -1,3 +1,4 @@
+
 %x COMMENT
 
 	int nl = 1;
@@ -26,6 +27,7 @@ ESCAPE \\(n|t|r|0|\\|\'|\"|x{HEX}{HEX})
 #include "ast.h"
 #include "parser.hpp"
 #include <string.h>
+char* escapeStr(char *s);
 int fixChar (char *str, int *shift);
 int fixHex (char *str);
 int charToInt (char);
@@ -35,35 +37,35 @@ int charToInt (char);
 
 %%
 
-\n 		{nl++;}
-\r 		;
-[ \t]		;
+\n	{nl++;}
+\r 	;
+[ \t]	;
 ^[ ]*\n         {/* Ignore blank lines. */}
 ^[ ]*[^ \n]+    {
-                    char* yynew;
-                    int last = yyleng - 1;
-                    int indent = white_count(yytext);
-                    int counter = process_indent(yytext) ;
-                    yynew = strdup(yytext);
-                    while ((last >= 0) && (yynew[last] != ' ')) {
-                	       unput(yynew[last]);
-                           last-- ;
-                    }
-                    if(counter !=0)
-                        howmany = counter;
-                    //printf("howmanyother %d \n",howmany);
+    char* yynew;
+    int last = yyleng - 1;
+    int indent = white_count(yytext);
+    int counter = process_indent(yytext) ;
+    yynew = strdup(yytext);
+    while ((last >= 0) && (yynew[last] != ' ')) {
+            unput(yynew[last]);
+            last-- ;
+    }
+    if(counter !=0)
+        howmany = counter;
+    //printf("howmanyother %d \n",howmany);
 
-                    while(counter > 0) {
-                	       unput('}');
-                	       counter--;
-                    }
-                }
+    while(counter > 0) {
+            unput('}');
+            counter--;
+    }
+}
 
-[0-9][0-9]* 		{
-                            //printf("Integer %s\n",yytext);
-                            yylval.const_val = atoi(yytext);
-		            return(CONST);
-			}
+[0-9][0-9]* 	{
+    //printf("Integer %s\n",yytext);
+    yylval.const_val = atoi(yytext);
+    return(CONST);
+}
 
 if			{indent_stack[++level] = indent;return(IF);}
 else		{indent_stack[++level] = indent;return(ELSE);}
@@ -75,17 +77,16 @@ as			{return(AS);}
 skip		{return(SKIP);}
 decl		{return(DECL);}
 begin		{return(BEG);}
-"}"		{
-				//printf("howmany %d\n",howmany);
-                    if(howmany>0){
-                        //printf("Keyword: end\n");
-			howmany--;
-			return(END);
-		    } else {
-                        printf("Unexpected Character }");
-			exit(-1);
-                    }
-		}
+"}"		    {
+    //printf("howmany %d\n",howmany);
+    if(howmany>0){
+        howmany--;
+        return(END);
+    } else {
+        printf("Unexpected Character }");
+        exit(-1);
+    }
+}
 def			{indent_stack[++level] = indent;return(DEF);}
 is			{return(IS);}
 var			{return(VAR);}
@@ -101,10 +102,10 @@ return		{return(RETURN);}
 ref 		{return(REF);}
 
 {ID} 		{
-			//printf("Identifier: %s\n",yytext);
-			yylval.idstring = strdup(yytext);
-			return(IDENTIFIER);
-		}
+    //printf("Identifier: %s\n",yytext);
+    yylval.idstring = strdup(yytext);
+    return(IDENTIFIER);
+}
 "("			{return('(');}
 ")"			{return(')');}
 "["			{return('[');}
@@ -130,19 +131,21 @@ ref 		{return(REF);}
 ":"			{return(':');}
 "\""		{printf("Unclosed String Error\n");exit(-1);}
 \"([^\n\"\'\\]|{ESCAPE})*\" {
-        		        //printf("String Literal %s \n",yytext);
-				yylval.idstring = strdup(yytext);
-				return(STRINGLITERAL);
-                            }
+    //printf("String Literal %s \n",yytext);
+    //printf("String literal %s \n" , yytext);
+    //printf("Fixed %s",escapeStr(yytext));
+    yylval.idstring = strdup(escapeStr(yytext));
+    return(STRINGLITERAL);
+}
 \'([^\"\'\\]|{ESCAPE})\'    {
  				//"
 				yylval.const_val = fixChar(yytext+1,NULL);
 				return CHAR_CONST;
 			    }
 
-"#".*            {;}
+"#".*       {;}
 
-"(*"             { ++comment_nesting; BEGIN(COMMENT); }
+"(*"        { ++comment_nesting; BEGIN(COMMENT); }
 
 <COMMENT>{
   "(*"           	{ ++comment_nesting; }
@@ -158,25 +161,25 @@ ref 		{return(REF);}
 
 
 
-<<EOF>>         {
-                        unput(0);
-                        howmany=level;
-                        while(level>0){
-                            unput('}');
-                            level--;
-                        }
-                        printf("Read %d lines\n",nl);
-                        printf("Syntax analysis is Done!\n");
-		}
+<<EOF>>     {
+    unput(0);
+    howmany=level;
+    while(level>0){
+        unput('}');
+        level--;
+    }
+    //printf("Read %d lines\n",nl);
+    //printf("Syntax analysis is Done!\n");
+}
 
-.               {
-    		    if(yytext[0]==0) {
-    		        return 0;
-    		    }
-    		    printf("Unexpected Character %d\n",yytext[0]);
-                printf("Line no: %d \n",nl);
-    		    exit(-1);
-	        }
+.       {
+    if(yytext[0]==0) {
+        return 0;
+    }
+    printf("Unexpected Character %d\n",yytext[0]);
+    printf("Line no: %d \n",nl);
+    exit(-1);
+}
 
 
 
@@ -184,10 +187,10 @@ ref 		{return(REF);}
 
 %%
 unsigned int white_count(char* line) {
-        unsigned int count = 0 ;
-        while (*line == ' ')
-    count++, line++ ;
-  return count ;
+    unsigned int count = 0 ;
+    while (*line == ' ')
+        count++, line++ ;
+    return count ;
 }
 
 int process_indent(char* line) {
@@ -198,9 +201,9 @@ int process_indent(char* line) {
 	int i = 0;
 	//printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
   	while (indent <= indent_stack[level]) {
-    	        --level ;
+    	--level ;
    		i++;
-    	        if(level == -1) break;
+        if(level == -1) break;
 	}
 	return i;
 }
@@ -247,4 +250,27 @@ int charToInt(char c)
 	else
 		printf("lexer: %s not a proper char expression",yytext);
 	return -1;
+}
+char* escapeStr(char *s) {
+    int len = strlen(s);
+    char c;
+    char* result;
+    result = (char *)malloc(len*sizeof(char));
+    int j = 0;
+    for (int i = 0; i < len; ++i){
+        c = s[i];
+        if(c=='\\'){
+            if(s[i+1] == 'x') {
+                c = fixChar(s+i,NULL);
+                i+=3;
+            } else {
+                c = fixChar(s+i,NULL);
+                i++;
+            }
+
+        }
+        result[j] = c;
+        j++;
+    }
+    return result;
 }

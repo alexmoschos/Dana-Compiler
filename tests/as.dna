@@ -1,4 +1,4 @@
-def main is int
+def m is int
   var a b c d e is int
   b := 14
   a := 0

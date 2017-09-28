@@ -1,2 +1,2 @@
-def hello
+def main
     writeString: "Hello world!\n"

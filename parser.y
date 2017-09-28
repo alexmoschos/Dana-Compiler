@@ -10,6 +10,7 @@
 	#include <iostream>
 	#include <stack>
 	#include <vector>
+	#include <algorithm>
 
 	using namespace std;
 	extern int nl;
@@ -21,7 +22,7 @@
     ASTfdef* main_f;
 
 	void yyerror (char const *s) {
-            fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
+        fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
 
 
@@ -77,11 +78,11 @@ mainfunc
     ;
 
 fdef
-	:DEF header {FUNCTION_NAMES.push(new ASTfdef($2,NULL));} decl_list END {$$ = new ASTfdef($2,$4); FUNCTION_NAMES.pop();}
+	: DEF header {FUNCTION_NAMES.push(new ASTfdef($2,NULL));} decl_list END {$$ = new ASTfdef($2,$4); FUNCTION_NAMES.pop();}
 	;
 
 fdecl
-	:DECL header       					 {$$ = new ASTfdef($2,NULL);}
+	: DECL header       					 {$$ = new ASTfdef($2,NULL);}
 	;
 
 header
@@ -138,11 +139,16 @@ type
     | type_term          				 {$$ = $1;}
 	;
 type_term
-	:INT      							 {$$ = typeInteger;}
-	|BYTE     							 {$$ = typeChar;}
+	: INT      							 {$$ = typeInteger;}
+	| BYTE     							 {$$ = typeChar;}
 
 pc
-	: IDENTIFIER ':' param     			 {$$ = new ASTfcall($1); $$->parameters = lastparam; lastparam = new vector<ASTExpr*>();}
+	: IDENTIFIER ':' param     			 {
+		$$ = new ASTfcall($1);
+		$$->parameters = lastparam;
+		//reverse(lastparam->begin(),lastparam->end());
+	 	lastparam = new vector<ASTExpr*>();
+	}
 	| IDENTIFIER               			 {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
 
@@ -175,7 +181,13 @@ stmt
 	;
 
 fcall
-	: IDENTIFIER '(' param ')' 			 {$$ = new ASTfcall($1); $$->parameters = lastparam; lastparam = new vector<ASTExpr*>();}
+	: IDENTIFIER '(' param ')'
+	{
+		$$ = new ASTfcall($1);
+		$$->parameters = lastparam;
+		//reverse($$->parameters->begin(),$$->parameters->end());
+		lastparam = new vector<ASTExpr*>();
+	}
 	| IDENTIFIER '(' ')'       			 {$$ = new ASTfcall($1); $$->parameters = NULL;}
 	;
 
@@ -255,7 +267,7 @@ lval
 %%
 
 int main(){
-	cout << "Parser Version 0.0.1.00" << endl;
+	//cout << "Parser Version 0.0.1.00" << endl;
 	initSymbolTable(997);
     openScope();
     add_lib_Functions();
@@ -263,11 +275,11 @@ int main(){
     lastparam = new vector<ASTExpr*>();
     FUNCTION_NAMES =  stack<ASTfdef*>();
     if(yyparse()) return -1;
-    cout << "Parser is done!" << endl;
+    //cout << "Parser is done!" << endl;
     sem_check_fdef(main_f);
-    cout << "Semantic analysis is done!" << endl;
-	cout << "Emitting LLVM" << endl;
-	cout << endl;
+    //cout << "Semantic analysis is done!" << endl;
+	//cout << "Emitting LLVM" << endl;
+	//cout << endl;
 	Compile(main_f);
     closeScope();
     destroySymbolTable();

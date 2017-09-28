@@ -30,94 +30,94 @@ class ASTExpr;
 class ASTparam;
 class ASTfcall;
 
-class ASTNode{
-public: 
+class ASTNode {
+  public:
     int he;
-        //ASTNode(int a) { he = a ;}
-        //virtual void run() = 0;
+    // ASTNode(int a) { he = a ;}
+    // virtual void run() = 0;
 };
-class ASTExpr:ASTNode{
-public:
+class ASTExpr : ASTNode {
+  public:
     char op;
-    ASTlval* operand;
+    ASTlval *operand;
     int constant_val;
-    ASTExpr* left;
-    ASTExpr* right;
-    ASTfcall* f = NULL;
-    ASTExpr(char,ASTlval*,int,ASTExpr*,ASTExpr*);
+    ASTExpr *left;
+    ASTExpr *right;
+    ASTfcall *f = NULL;
+    ASTExpr(char, ASTlval *, int, ASTExpr *, ASTExpr *);
 };
 
-class ASTheader:ASTNode{
-public:
-    ASTheader(Type,ASTparam*,string);
+class ASTheader : ASTNode {
+  public:
+    ASTheader(Type, ASTparam *, string);
     ASTparam *paramlist;
     string identifier;
     Type type;
 };
 
-class ASTfdef:ASTNode{
-public:
-    ASTfdef(ASTheader*,ASTstmt*);
+class ASTfdef : ASTNode {
+  public:
+    ASTfdef(ASTheader *, ASTstmt *);
     ASTheader *header;
     ASTstmt *body;
 };
 
-class ASTstmt:ASTNode{
-public:
-    ASTstmt(stmt_type,ASTstmt*,ASTstmt*,string);
+class ASTstmt : ASTNode {
+  public:
+    ASTstmt(stmt_type, ASTstmt *, ASTstmt *, string);
 
     stmt_type type;
     string label;
     ASTlval *lvalue;
     ASTExpr *expr;
     ASTif *ifnode;
-    vector<string>* identifiers;
+    vector<string> *identifiers;
     ASTstmt *body;
     ASTstmt *tail;
     ASTfdef *def;
     Type t;
 };
 
-class ASTlval:ASTNode{
-public:
-    ASTlval(bool,string);
+class ASTlval : ASTNode {
+  public:
+    int byRef = 0;
+    ASTlval(bool, string);
     string identifier;
     bool constant;
-    int nesting_diff = 0; //these are the starting values and may change
+    int nesting_diff = 0; // these are the starting values and may change
     int offset = 0;
-    std::vector<ASTExpr*> *indices;
-    void print(){
+    std::vector<ASTExpr *> *indices;
+    void print() {
         cout << "Printing bracket lists" << endl;
-        for(auto i : *indices){
+        for (auto i : *indices) {
             cout << i->constant_val << " ";
         }
         cout << endl;
     }
 };
 
-class ASTparam:ASTNode{
-public:
-    ASTparam(vector<string>*,Type,ASTparam*);
-    vector<string>* identifiers;
+class ASTparam : ASTNode {
+  public:
+    ASTparam(vector<string> *, Type, ASTparam *);
+    vector<string> *identifiers;
     Type p;
     bool byref;
     ASTparam *next;
 };
 
-class ASTfcall:ASTNode{
-public:
+class ASTfcall : ASTNode {
+  public:
     ASTfcall(string);
     string identifier;
-    vector<ASTExpr*> *parameters;
-    int nesting_diff = 0;  //these are the starting values and may change
+    vector<ASTExpr *> *parameters;
+    int nesting_diff; // these are the starting values and may change
 };
 
-class ASTif
-{
-public:
-    ASTif(ASTExpr*,ASTstmt*);
-    ASTExpr* condition;
-    ASTstmt* body;
-    ASTif* tail;
+class ASTif {
+  public:
+    ASTif(ASTExpr *, ASTstmt *);
+    ASTExpr *condition;
+    ASTstmt *body;
+    ASTif *tail;
 };
 #endif

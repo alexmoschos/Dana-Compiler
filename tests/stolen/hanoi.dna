@@ -1,4 +1,4 @@
-def solve
+def main
 
         def hanoi: rings as int, source target auxiliary as byte []
 

@@ -20,14 +20,34 @@ void sem_check_fdef(ASTfdef *func) {
             if (iter->byref)
                 newParameter(st.c_str(), iter->p, PASS_BY_REFERENCE, f);
             else
-                newParameter(st.c_str(), iter->p, PASS_BY_VALUE,
-                             f); // Can arrays be passed by value?? NO parser
-                                 // doesnt allow it
+                newParameter(st.c_str(), iter->p, PASS_BY_VALUE, f);
         }
         iter = iter->next;
     }
     endFunctionHeader(f, header->type);
     sem_check_stmt(func->body);
+    closeScope();
+}
+
+void sem_check_fdecl(ASTfdef *func) {
+    if (func == NULL)
+        exit(-1);
+    ASTheader *header = func->header;
+    SymbolEntry *f = newFunction(header->identifier.c_str());
+    forwardFunction(f);
+    openScope();
+    ASTparam *iter = header->paramlist;
+    while (iter != NULL) {
+        for (auto st : *iter->identifiers) {
+            if (iter->byref)
+                newParameter(st.c_str(), iter->p, PASS_BY_REFERENCE, f);
+            else
+                newParameter(st.c_str(), iter->p, PASS_BY_VALUE, f);
+        }
+        iter = iter->next;
+    }
+    endFunctionHeader(f, header->type);
+    // sem_check_stmt(func->body);
     closeScope();
 }
 
@@ -50,7 +70,8 @@ void sem_check_stmt(ASTstmt *stmt) {
         }
 
         SymbolEntry *par = s->u.eFunction.firstArgument;
-
+        stmt->expr->f->nesting_diff =
+            currentScope->nestingLevel - s->nestingLevel;
         vector<ASTExpr *> *par_vector_ptr = stmt->expr->f->parameters;
         if (par_vector_ptr == NULL) {
             if (par == NULL)
@@ -63,7 +84,7 @@ void sem_check_stmt(ASTstmt *stmt) {
         }
 
         vector<ASTExpr *> par_vector = *(par_vector_ptr);
-        std::reverse(par_vector.begin(), par_vector.end());
+        // std::reverse(par_vector.begin(), par_vector.end());
         int counter = 0, size = par_vector.size();
 
         while (par) {
@@ -73,9 +94,14 @@ void sem_check_stmt(ASTstmt *stmt) {
                 exit(1);
             }
             Type par_type = sem_check_expr(par_vector[counter]);
+            // printType(par_type);
+            printf("\n");
             if (!equalType(par->u.eParameter.type, par_type)) {
                 if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
                     if (par->u.eParameter.type->size > 0) {
+                        printType(par_type);
+                        printf("\n");
+                        printType(par->u.eParameter.type);
                         error("\rType mismatch in real and typical parameters");
                         exit(1);
                     }
@@ -93,8 +119,7 @@ void sem_check_stmt(ASTstmt *stmt) {
 
         stmt->expr->f->nesting_diff =
             currentScope->nestingLevel - s->nestingLevel;
-        printf("%s  %d\n\n", s->id, stmt->expr->f->nesting_diff);
-
+        // printf("%s  %d\n\n", s->id, stmt->expr->f->nesting_diff);
 
         break;
     }
@@ -109,7 +134,8 @@ void sem_check_stmt(ASTstmt *stmt) {
             error("\rnon-void function cannot be called as a command");
             exit(1);
         }
-
+        stmt->expr->f->nesting_diff =
+            currentScope->nestingLevel - s->nestingLevel;
         SymbolEntry *par = s->u.eFunction.firstArgument;
 
         vector<ASTExpr *> *par_vector_ptr = stmt->expr->f->parameters;
@@ -124,7 +150,7 @@ void sem_check_stmt(ASTstmt *stmt) {
         }
 
         vector<ASTExpr *> par_vector = *(par_vector_ptr);
-        std::reverse(par_vector.begin(), par_vector.end());
+        // std::reverse(par_vector.begin(), par_vector.end());
         int counter = 0, size = par_vector.size();
 
         while (par) {
@@ -138,6 +164,10 @@ void sem_check_stmt(ASTstmt *stmt) {
 
                 if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
                     if (par->u.eParameter.type->size > 0) {
+                        printType(par_type);
+                        printf("\n");
+                        printType(par->u.eParameter.type);
+                        printf("%d \n", counter);
                         error("\rType mismatch in real and typical parameters");
                         exit(1);
                     }
@@ -189,13 +219,13 @@ void sem_check_stmt(ASTstmt *stmt) {
 
     case TFDEF: {
         sem_check_fdef(stmt->def);
-        SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),
-                                     LOOKUP_ALL_SCOPES, true);
-        forwardFunction(s);
+        // SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),
+        //                             LOOKUP_ALL_SCOPES, true);
+        // forwardFunction(s);
         break;
     }
     case TFDECL:
-        sem_check_fdef(stmt->def);
+        sem_check_fdecl(stmt->def);
         break;
     case TEXIT:
         break;
@@ -230,10 +260,11 @@ void sem_check_stmt(ASTstmt *stmt) {
     case TCONTM: {
         SymbolEntry *s =
             lookupEntry(stmt->label.c_str(), LOOKUP_ALL_SCOPES, true);
-        if (s->entryType != ENTRY_CONSTANT)
-            internal("NOT a label");
-        if (!equalType(s->u.eConstant.type, typeVoid)) {
-            error("\rFunction type and return type different");
+        if (s->entryType != ENTRY_VARIABLE)
+            error("Loop label error");
+        // internal("NOT a label");
+        if (!equalType(s->u.eVariable.type, typeVoid)) {
+            error("\rYou can only use continue on a loop label");
             exit(1);
         }
         break;
@@ -244,10 +275,10 @@ void sem_check_stmt(ASTstmt *stmt) {
     case TBREAKM: {
         SymbolEntry *s =
             lookupEntry(stmt->label.c_str(), LOOKUP_ALL_SCOPES, true);
-        if (s->entryType != ENTRY_CONSTANT)
-            internal("NOT a label");
-        if (!equalType(s->u.eConstant.type, typeVoid)) {
-            error("\rFunction type and return type different");
+        if (s->entryType != ENTRY_VARIABLE)
+            error("Loop label error");
+        if (!equalType(s->u.eVariable.type, typeVoid)) {
+            error("\rYou can only use break on a constant");
             exit(1);
         }
         break;
@@ -263,21 +294,25 @@ void sem_check_stmt(ASTstmt *stmt) {
     }
     case TLOOP: {
         if ((stmt->label).compare("") != 0)
-            newConstant(stmt->label.c_str(), typeVoid);
+            newVariable(stmt->label.c_str(), typeVoid);
         sem_check_stmt(stmt->body);
+
         break;
     }
     case TASSIGN: {
         Type rval_type = sem_check_expr(stmt->expr);
         SymbolEntry *s = lookupEntry(stmt->lvalue->identifier.c_str(),
                                      LOOKUP_ALL_SCOPES, true);
-
+        stmt->lvalue->nesting_diff =
+            currentScope->nestingLevel - s->nestingLevel;
         if (s == NULL) {
-            cout << "Hello";
+            // cout << "Hello";
             exit(1);
         }
         Type lval_type;
         if (s->entryType == ENTRY_PARAMETER) {
+            if (s->u.eParameter.mode == PASS_BY_REFERENCE)
+                stmt->lvalue->byRef = 1;
             lval_type = s->u.eParameter.type;
             stmt->lvalue->offset = s->u.eParameter.offset;
         } else if (s->entryType == ENTRY_VARIABLE) {
@@ -287,7 +322,11 @@ void sem_check_stmt(ASTstmt *stmt) {
             error("\rNot an lvalue !!");
             exit(1);
         }
-
+        for (auto i : *stmt->lvalue->indices) {
+            if (!equalType(sem_check_expr(i), typeInteger)) {
+                error("\rNeed an integer inside an index");
+            }
+        }
         if ((lval_type->kind == 5 && ((*stmt->lvalue->indices)).size() > 0) ||
             lval_type->kind == 6) {
             int size = (*stmt->lvalue->indices).size();
@@ -300,13 +339,16 @@ void sem_check_stmt(ASTstmt *stmt) {
         if (equalType(lval_type, typeChar) && equalType(rval_type, typeInteger))
             break;
         if (!equalType(lval_type, rval_type)) {
+            printType(lval_type);
+            printType(rval_type);
             error("\rlvalue and rvalue Typemismatch");
             exit(1);
         }
 
         stmt->lvalue->nesting_diff =
             currentScope->nestingLevel - s->nestingLevel;
-        printf("%s\t%d\t%d\n\n", s->id, stmt->lvalue->nesting_diff,stmt->lvalue->offset);
+        // printf("%s\t%d\t%d\n\n", s->id, stmt->lvalue->nesting_diff,
+        //       stmt->lvalue->offset);
 
         break;
     }
@@ -318,7 +360,7 @@ Type sem_check_expr(ASTExpr *expr) {
     if (expr == NULL) {
         return typeVoid;
     }
-    SymbolEntry *a;
+    // SymbolEntry *a;
     Type left = sem_check_expr(expr->left);
     Type right = sem_check_expr(expr->right);
     switch (expr->op) {
@@ -479,13 +521,14 @@ Type sem_check_expr(ASTExpr *expr) {
         return right;
 
     case 'f': {
-
+        // printf("hey\n");
         SymbolEntry *a =
             lookupEntry(expr->f->identifier.c_str(), LOOKUP_ALL_SCOPES, true);
         if (a->entryType != ENTRY_FUNCTION) {
             error("\rExpression not a function");
             exit(1);
         }
+        expr->f->nesting_diff = currentScope->nestingLevel - a->nestingLevel;
 
         SymbolEntry *par = a->u.eFunction.firstArgument;
 
@@ -499,9 +542,10 @@ Type sem_check_expr(ASTExpr *expr) {
                 exit(1);
             }
         }
+        // printf("hey2\n");
 
         vector<ASTExpr *> par_vector = *(par_vector_ptr);
-        std::reverse(par_vector.begin(), par_vector.end());
+        // std::reverse(par_vector.begin(), par_vector.end());
         int counter = 0, size = par_vector.size();
 
         while (par) {
@@ -515,6 +559,11 @@ Type sem_check_expr(ASTExpr *expr) {
 
                 if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
                     if (par->u.eParameter.type->size > 0) {
+                        printType(par_type);
+                        printf("\n");
+                        printType(par->u.eParameter.type);
+                        printf("%d \n", counter);
+
                         error("\rType mismatch in real and typical parameters");
                         exit(1);
                     }
@@ -534,7 +583,8 @@ Type sem_check_expr(ASTExpr *expr) {
             error("\rvoid function in expression!");
 
         expr->f->nesting_diff = currentScope->nestingLevel - a->nestingLevel;
-        printf("%s  %d\n\n", a->id, expr->f->nesting_diff);
+        // printf("function call %s  %d\n\n", expr->f->identifier.c_str(),
+        //       expr->f->nesting_diff);
 
         return a->u.eFunction.resultType;
     }
@@ -544,7 +594,15 @@ Type sem_check_expr(ASTExpr *expr) {
 
         // for stringliteral
         if (lv->constant == true) {
-            return typeArray(strlen(lv->identifier.c_str()) + 1, typeChar);
+            if (lv->indices->size() == 1)
+                return typeChar;
+            if (lv->indices->size() == 0)
+                return typeIArray(typeChar);
+            //    return typeArray(strlen(lv->identifier.c_str()) + 1,
+            //    typeChar);
+            else {
+                error("Too many indices on string literal");
+            }
         }
 
         SymbolEntry *s =
@@ -552,6 +610,8 @@ Type sem_check_expr(ASTExpr *expr) {
         Type lval_type;
 
         if (s->entryType == ENTRY_PARAMETER) {
+            if (s->u.eParameter.mode == PASS_BY_REFERENCE)
+                lv->byRef = 1;
             lval_type = s->u.eParameter.type;
             lv->offset = s->u.eParameter.offset;
         } else if (s->entryType == ENTRY_VARIABLE) {
@@ -563,8 +623,12 @@ Type sem_check_expr(ASTExpr *expr) {
         }
 
         lv->nesting_diff = currentScope->nestingLevel - s->nestingLevel;
-        printf("%s\t%d\t%d\n\n", s->id, lv->nesting_diff,lv->offset);
-
+        // printf("%s\t%d\t%d\n\n", s->id, lv->nesting_diff, lv->offset);
+        for (auto i : *lv->indices) {
+            if (!equalType(sem_check_expr(i), typeInteger)) {
+                error("\rNeed an integer inside an index");
+            }
+        }
         if ((lval_type->kind == 5 && ((*lv->indices)).size() > 0) ||
             lval_type->kind == 6) {
             while (lval_type->refType != NULL) {
@@ -577,19 +641,14 @@ Type sem_check_expr(ASTExpr *expr) {
     return typeVoid;
 }
 
-// ################################################################################################### \\
- // ----------------------------------------- LIBRARY FUNCTIONS ----------------------------------------- \\
-// ####################################################################################################### \\
+// ######################################################
+// ----------------- LIBRARY FUNCTIONS ------------------
+// ######################################################
 
 void add_lib_Functions() {
     vector<string> *param_identifiers;
     ASTparam *second_Param, *first_Param;
-
-    /* -----------------------------------------------------------------------------
-        |----------------------------OUTPUT LIBRARY
-       FUNCTIONS-----------------------|
-        -----------------------------------------------------------------------------
-       */
+    //|------------------------OUTPUT LIBRARY FUNCTIONS-----------------------|
 
     param_identifiers = new vector<string>();
     param_identifiers->push_back("n");
@@ -637,11 +696,7 @@ void add_lib_Functions() {
 
     sem_check_fdef(writeString);
 
-    /* -----------------------------------------------------------------------------
-        |----------------------------INPUT LIBRARY
-       FUNCTIONS------------------------|
-        -----------------------------------------------------------------------------
-       */
+    //|-------------------------INPUT LIBRARY FUNCTIONS----------------------|
 
     ASTheader *readInteger_header =
         new ASTheader(typeInteger, NULL, "readInteger");
@@ -678,9 +733,10 @@ void add_lib_Functions() {
 
     sem_check_fdef(readString);
 
-    /* 
+    /*
     -----------------------------------------------------------------------------
-    |---------------------------CONVERT LIBRARY FUNCTIONS-----------------------|
+    |---------------------------CONVERT LIBRARY
+    FUNCTIONS-----------------------|
     -----------------------------------------------------------------------------
        */
 
@@ -706,7 +762,8 @@ void add_lib_Functions() {
     sem_check_fdef(shrink);
 
     /*-----------------------------------------------------------------------------
-      |----------------------------STRING LIBRARY FUNCTIONS-----------------------|
+      |----------------------------STRING LIBRARY
+      FUNCTIONS-----------------------|
       -----------------------------------------------------------------------------
     */
 
@@ -724,8 +781,7 @@ void add_lib_Functions() {
 
     param_identifiers = new vector<string>();
     param_identifiers->push_back("s2");
-    second_Param = new ASTparam(param_identifiers, typeIArray(typeChar),
-                                NULL); //////WHY typeIArray ???????
+    second_Param = new ASTparam(param_identifiers, typeIArray(typeChar), NULL);
 
     param_identifiers = new vector<string>();
     param_identifiers->push_back("s1");

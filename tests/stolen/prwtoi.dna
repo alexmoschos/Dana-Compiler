@@ -4,16 +4,16 @@ def main
                 var i is int
 
                 if n < 0: return: prime(-n)
-                elif n < 2: return: 0
-                elif n = 2: return: 1
-                elif n % 2 = 0: return: 0
+                elif n < 2: return: false
+                elif n = 2: return: true
+                elif n % 2 = 0: return: false
                 else:
                         i := 3
                         loop:
                                 if i > n / 2: break
-                                elif n % i = 0: return: 0
+                                elif n % i = 0: return: false
                                 i := i + 2
-                        return: 1
+                        return: true
 
         var limit number counter is int
 
