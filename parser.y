@@ -280,7 +280,7 @@ int main(){
     //cout << "Semantic analysis is done!" << endl;
 	//cout << "Emitting LLVM" << endl;
 	//cout << endl;
-	//Compile(main_f);
+	Compile(main_f);
     closeScope();
     destroySymbolTable();
 }

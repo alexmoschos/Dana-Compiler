@@ -1,7 +1,8 @@
 SHELL := /bin/bash
 CPP = clang++
 FLAGS = -std=c++11 -g -O2 -Qunused-arguments -Wno-unknown-warning-option -Wall
-LLVMFLAGS = `/usr/local/Cellar/llvm@3.8/3.8.1/bin/llvm-config-3.8 --cxxflags --ldflags --libs all --system-libs`
+#LLVMFLAGS = `llvm-config-3.8 --cxxflags --ldflags --libs  --system-libs`
+LLVMFLAGS = `llvm-config-3.8 --cxxflags --ldflags --libs all --system-libs`
 
 simple: lexer.o parser.o ast.o symbol.o general.o error.o sem.o llvm.o opt.o
 	$(CPP) -$(FLAGS) -o $@ $^ -lfl  $(LLVMFLAGS)
@@ -18,7 +19,7 @@ parser.hpp parser.cpp: parser.y ast.h ast.cpp
 lexer.o: lexer.cpp parser.hpp
 
 llvm.o: llvm.cpp llvm.h
-	$(CPP) llvm.cpp -c -$(FLAGS)  `/usr/local/Cellar/llvm@3.8/3.8.1/bin/llvm-config-3.8  --cxxflags `
+	$(CPP) llvm.cpp -c -$(FLAGS)  `llvm-config-3.8 --cxxflags`
 
 opt.o: opt.cpp opt.h
 	$(CPP) opt.cpp -c -$(FLAGS)  $(LLVMFLAGS)

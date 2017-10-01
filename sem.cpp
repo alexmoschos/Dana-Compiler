@@ -94,9 +94,13 @@ void sem_check_stmt(ASTstmt *stmt) {
                 exit(1);
             }
             Type par_type = sem_check_expr(par_vector[counter]);
-            // printType(par_type);
+            printType(par_type);
             printf("\n");
+            printf("\n");
+            printType(par->u.eParameter.type);
+
             if (!equalType(par->u.eParameter.type, par_type)) {
+                printType(par_type);
                 if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
                     if (par->u.eParameter.type->size > 0) {
                         printType(par_type);
@@ -160,6 +164,7 @@ void sem_check_stmt(ASTstmt *stmt) {
                 exit(1);
             }
             Type par_type = sem_check_expr(par_vector[counter]);
+            // printType(par_type);
             if (!equalType(par->u.eParameter.type, par_type)) {
 
                 if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
@@ -227,7 +232,7 @@ void sem_check_stmt(ASTstmt *stmt) {
     case TFDECL:
         sem_check_fdecl(stmt->def);
         break;
-    case TEXIT:{
+    case TEXIT: {
 
         if (stmt->def == NULL) {
             error("\rshould have a ASTdef to check function type");
@@ -237,21 +242,21 @@ void sem_check_stmt(ASTstmt *stmt) {
         SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),
                                      LOOKUP_ALL_SCOPES, true);
 
-         if (!equalType(typeVoid, s->u.eFunction.resultType)) {
+        if (!equalType(typeVoid, s->u.eFunction.resultType)) {
 
             printf("%s:\n", s->id);
             error("\rCan't exit from non void function ");
             exit(1);
         }
 
-
         break;
-     }
+    }
     case TRET: {
         Type _TRET_TYPE = sem_check_expr(stmt->expr);
 
         if (stmt->def == NULL) {
-            error("\rshould have a ASTdef to check function type with return type");
+            error("\rshould have a ASTdef to check function type with return "
+                  "type");
             exit(1);
         }
 
@@ -318,7 +323,7 @@ void sem_check_stmt(ASTstmt *stmt) {
     }
     case TASSIGN: {
         Type rval_type = sem_check_expr(stmt->expr);
-        //printType(rval_type);
+        // printType(rval_type);
         SymbolEntry *s = lookupEntry(stmt->lvalue->identifier.c_str(),
                                      LOOKUP_ALL_SCOPES, true);
         stmt->lvalue->nesting_diff =
@@ -523,8 +528,10 @@ Type sem_check_expr(ASTExpr *expr) {
 
     case 'a':
 
-        if ((!equalType(left, typeChar) && !equalType(left, typeInteger) && !equalType(left, typeBoolean)) ||
-            (!equalType(right, typeChar) && !equalType(right, typeInteger) && !equalType(right, typeBoolean))) {
+        if ((!equalType(left, typeChar) && !equalType(left, typeInteger) &&
+             !equalType(left, typeBoolean)) ||
+            (!equalType(right, typeChar) && !equalType(right, typeInteger) &&
+             !equalType(right, typeBoolean))) {
             error("\rand operator requires boolean condition");
             exit(-1);
         }
@@ -532,8 +539,10 @@ Type sem_check_expr(ASTExpr *expr) {
 
     case 'o':
 
-        if ((!equalType(left, typeChar) && !equalType(left, typeInteger) && !equalType(left, typeBoolean)) ||
-            (!equalType(right, typeChar) && !equalType(right, typeInteger) && !equalType(right, typeBoolean))) {
+        if ((!equalType(left, typeChar) && !equalType(left, typeInteger) &&
+             !equalType(left, typeBoolean)) ||
+            (!equalType(right, typeChar) && !equalType(right, typeInteger) &&
+             !equalType(right, typeBoolean))) {
             error("\ror operator requires boolean condition");
             exit(-1);
         }
@@ -541,7 +550,8 @@ Type sem_check_expr(ASTExpr *expr) {
 
     case 'n':
 
-        if ((!equalType(right, typeChar) && !equalType(right, typeInteger) && !equalType(right, typeBoolean))) {
+        if ((!equalType(right, typeChar) && !equalType(right, typeInteger) &&
+             !equalType(right, typeBoolean))) {
             error("\rnot operator requires boolean condition");
             exit(1);
         }
@@ -621,11 +631,12 @@ Type sem_check_expr(ASTExpr *expr) {
 
         // for stringliteral
         if (lv->constant == true) {
-            printf("**\n");
             if (lv->indices->size() == 1)
                 return typeChar;
-            if (lv->indices->size() == 0)
+            if (lv->indices->size() == 0) {
+                // cerr << "HELLO";
                 return typeIArray(typeChar);
+            }
             //    return typeArray(strlen(lv->identifier.c_str()) + 1,
             //    typeChar);
             else {
@@ -657,14 +668,15 @@ Type sem_check_expr(ASTExpr *expr) {
             }
         }
 
-        if ( (lval_type->kind == 5 || lval_type->kind == 6) && ((*lv->indices)).size() > 0) {
+        if ((lval_type->kind == 5 || lval_type->kind == 6) &&
+            ((*lv->indices)).size() > 0) {
 
             while (lval_type->refType != NULL) {
                 lval_type = lval_type->refType;
             }
         }
-       // printType(lval_type);
-        //printf("\n");
+        // printType(lval_type);
+        // printf("\n");
         return lval_type;
     }
     }
