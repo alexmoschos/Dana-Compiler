@@ -3,3 +3,4 @@
 *.s
 *.ll
 simple
+.DS_Store
