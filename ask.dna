@@ -1,0 +1,4 @@
+def main : r as byte[]
+  def l : a as byte[]
+    r := a
+  skip

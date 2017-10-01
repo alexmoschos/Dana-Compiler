@@ -227,14 +227,31 @@ void sem_check_stmt(ASTstmt *stmt) {
     case TFDECL:
         sem_check_fdecl(stmt->def);
         break;
-    case TEXIT:
+    case TEXIT:{
+
+        if (stmt->def == NULL) {
+            error("\rshould have a ASTdef to check function type");
+            exit(1);
+        }
+
+        SymbolEntry *s = lookupEntry(stmt->def->header->identifier.c_str(),
+                                     LOOKUP_ALL_SCOPES, true);
+
+         if (!equalType(typeVoid, s->u.eFunction.resultType)) {
+
+            printf("%s:\n", s->id);
+            error("\rCan't exit from non void function ");
+            exit(1);
+        }
+
+
         break;
+     }
     case TRET: {
         Type _TRET_TYPE = sem_check_expr(stmt->expr);
 
         if (stmt->def == NULL) {
-            error("\rshould have a ASTdef to check function type with return "
-                  "type");
+            error("\rshould have a ASTdef to check function type with return type");
             exit(1);
         }
 
@@ -301,6 +318,7 @@ void sem_check_stmt(ASTstmt *stmt) {
     }
     case TASSIGN: {
         Type rval_type = sem_check_expr(stmt->expr);
+        //printType(rval_type);
         SymbolEntry *s = lookupEntry(stmt->lvalue->identifier.c_str(),
                                      LOOKUP_ALL_SCOPES, true);
         stmt->lvalue->nesting_diff =
@@ -340,7 +358,9 @@ void sem_check_stmt(ASTstmt *stmt) {
             break;
         if (!equalType(lval_type, rval_type)) {
             printType(lval_type);
+            printf("\n");
             printType(rval_type);
+            printf("\n");
             error("\rlvalue and rvalue Typemismatch");
             exit(1);
         }
@@ -502,19 +522,26 @@ Type sem_check_expr(ASTExpr *expr) {
         return typeBoolean;
 
     case 'a':
-        if (!equalType(left, typeBoolean) || !equalType(right, typeBoolean)) {
+
+        if ((!equalType(left, typeChar) && !equalType(left, typeInteger) && !equalType(left, typeBoolean)) ||
+            (!equalType(right, typeChar) && !equalType(right, typeInteger) && !equalType(right, typeBoolean))) {
             error("\rand operator requires boolean condition");
-            exit(1);
+            exit(-1);
         }
         return right;
+
     case 'o':
-        if (!equalType(left, typeBoolean) || !equalType(right, typeBoolean)) {
+
+        if ((!equalType(left, typeChar) && !equalType(left, typeInteger) && !equalType(left, typeBoolean)) ||
+            (!equalType(right, typeChar) && !equalType(right, typeInteger) && !equalType(right, typeBoolean))) {
             error("\ror operator requires boolean condition");
-            exit(1);
+            exit(-1);
         }
         return right;
+
     case 'n':
-        if (!equalType(right, typeBoolean) && !equalType(right, typeChar)) {
+
+        if ((!equalType(right, typeChar) && !equalType(right, typeInteger) && !equalType(right, typeBoolean))) {
             error("\rnot operator requires boolean condition");
             exit(1);
         }
@@ -594,6 +621,7 @@ Type sem_check_expr(ASTExpr *expr) {
 
         // for stringliteral
         if (lv->constant == true) {
+            printf("**\n");
             if (lv->indices->size() == 1)
                 return typeChar;
             if (lv->indices->size() == 0)
@@ -608,7 +636,6 @@ Type sem_check_expr(ASTExpr *expr) {
         SymbolEntry *s =
             lookupEntry(lv->identifier.c_str(), LOOKUP_ALL_SCOPES, true);
         Type lval_type;
-
         if (s->entryType == ENTRY_PARAMETER) {
             if (s->u.eParameter.mode == PASS_BY_REFERENCE)
                 lv->byRef = 1;
@@ -629,12 +656,15 @@ Type sem_check_expr(ASTExpr *expr) {
                 error("\rNeed an integer inside an index");
             }
         }
-        if ((lval_type->kind == 5 && ((*lv->indices)).size() > 0) ||
-            lval_type->kind == 6) {
+
+        if ( (lval_type->kind == 5 || lval_type->kind == 6) && ((*lv->indices)).size() > 0) {
+
             while (lval_type->refType != NULL) {
                 lval_type = lval_type->refType;
             }
         }
+       // printType(lval_type);
+        //printf("\n");
         return lval_type;
     }
     }

@@ -166,7 +166,7 @@ stmt
 	| BREAK ':' IDENTIFIER       		 {$$ = new ASTstmt(TBREAKM,NULL,NULL,$3);}
 	| CONT                       		 {$$ = new ASTstmt(TCONT,NULL,NULL,"");}
 	| CONT ':' IDENTIFIER        		 {$$ = new ASTstmt(TCONTM,NULL,NULL,$3);}
-	| EXIT                       		 {$$ = new ASTstmt(TEXIT,NULL,NULL,"");}
+	| EXIT                       		 {$$ = new ASTstmt(TEXIT,NULL,NULL,""); $$->def = FUNCTION_NAMES.top();}
 	| RETURN ':' expression      		 {$$ = new ASTstmt(TRET,NULL,NULL,""); $$->expr = $3; $$->def = FUNCTION_NAMES.top();}
     | pc                   	     		 {
                                   			 $$ = new ASTstmt(TPC,NULL,NULL,"");
@@ -280,7 +280,7 @@ int main(){
     //cout << "Semantic analysis is done!" << endl;
 	//cout << "Emitting LLVM" << endl;
 	//cout << endl;
-	Compile(main_f);
+	//Compile(main_f);
     closeScope();
     destroySymbolTable();
 }
