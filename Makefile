@@ -46,7 +46,7 @@ blockparser.o: blockparser.cpp blockparser.hpp symbol.c symbol.h
 	$(CPP) $(FLAGS) -c $<
 
 clean :
-	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o *~
+	$(RM) lexer.cpp parser.cpp parser.hpp parser.output *.o *~ *.output blockparser.cpp blockparser.hpp blocklexer.cpp
 
 distclean: clean
-	$(RM) simple
+	$(RM) simple block
