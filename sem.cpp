@@ -84,7 +84,7 @@ void sem_check_stmt(ASTstmt *stmt) {
         }
 
         vector<ASTExpr *> par_vector = *(par_vector_ptr);
-        // std::reverse(par_vector.begin(), par_vector.end());
+        std::reverse(par_vector.begin(), par_vector.end());
         int counter = 0, size = par_vector.size();
 
         while (par) {
@@ -94,19 +94,23 @@ void sem_check_stmt(ASTstmt *stmt) {
                 exit(1);
             }
             Type par_type = sem_check_expr(par_vector[counter]);
-            printType(par_type);
-            printf("\n");
-            printf("\n");
-            printType(par->u.eParameter.type);
+            // printType(par_type);
+            // printf("\n");
+            // printf("\n");
+            // printType(par->u.eParameter.type);
 
             if (!equalType(par->u.eParameter.type, par_type)) {
-                printType(par_type);
-                if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
-                    if (par->u.eParameter.type->size > 0) {
-                        printType(par_type);
-                        printf("\n");
-                        printType(par->u.eParameter.type);
-                        error("\rType mismatch in real and typical parameters");
+                if (not(isArrayType(par_type) &&
+                        isIArrayType(par->u.eParameter.type))) {
+                    printType(par_type);
+                    printf("\n");
+                    printType(par->u.eParameter.type);
+                    error("\rType mismatch in real and typical parameters");
+                    exit(1);
+                } else {
+                    if (!equalType(par->u.eParameter.type->refType,
+                                   par_type->refType)) {
+                        error("Mismatched type");
                         exit(1);
                     }
                 }
@@ -154,7 +158,7 @@ void sem_check_stmt(ASTstmt *stmt) {
         }
 
         vector<ASTExpr *> par_vector = *(par_vector_ptr);
-        // std::reverse(par_vector.begin(), par_vector.end());
+        std::reverse(par_vector.begin(), par_vector.end());
         int counter = 0, size = par_vector.size();
 
         while (par) {
@@ -166,18 +170,39 @@ void sem_check_stmt(ASTstmt *stmt) {
             Type par_type = sem_check_expr(par_vector[counter]);
             // printType(par_type);
             if (!equalType(par->u.eParameter.type, par_type)) {
-
-                if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
-                    if (par->u.eParameter.type->size > 0) {
-                        printType(par_type);
-                        printf("\n");
-                        printType(par->u.eParameter.type);
-                        printf("%d \n", counter);
-                        error("\rType mismatch in real and typical parameters");
+                if (not(isArrayType(par_type) &&
+                        isIArrayType(par->u.eParameter.type))) {
+                    printType(par_type);
+                    printf("\n");
+                    printType(par->u.eParameter.type);
+                    error("\rType mismatch in real and typical parameters");
+                    exit(1);
+                } else {
+                    if (!equalType(par->u.eParameter.type->refType,
+                                   par_type->refType)) {
+                        error("Mismatched type");
                         exit(1);
                     }
                 }
             }
+            //     if (!equalType(par->u.eParameter.type, par_type)) {
+
+            //         if (par_type->kind == 5 && par->u.eParameter.type->kind
+            //         == 5) {
+            //             if (par->u.eParameter.type->size > 0) {
+            //                 printType(par_type);
+            //                 printf("\n");
+            //                 printType(par->u.eParameter.type);
+            //                 printf("%d \n", counter);
+            //                 error("\rType mismatch in real and typical
+            //                 parameters");
+            //                 exit(1);
+            //             }
+            //         } else {
+            //             error("Type mismatch\n");
+            //             exit(1);
+            //         }
+            //     }
 
             counter++;
             par = par->u.eParameter.next;
@@ -582,7 +607,7 @@ Type sem_check_expr(ASTExpr *expr) {
         // printf("hey2\n");
 
         vector<ASTExpr *> par_vector = *(par_vector_ptr);
-        // std::reverse(par_vector.begin(), par_vector.end());
+        std::reverse(par_vector.begin(), par_vector.end());
         int counter = 0, size = par_vector.size();
 
         while (par) {
@@ -593,19 +618,40 @@ Type sem_check_expr(ASTExpr *expr) {
             }
             Type par_type = sem_check_expr(par_vector[counter]);
             if (!equalType(par->u.eParameter.type, par_type)) {
-
-                if (par_type->kind == 5 && par->u.eParameter.type->kind == 5) {
-                    if (par->u.eParameter.type->size > 0) {
-                        printType(par_type);
-                        printf("\n");
-                        printType(par->u.eParameter.type);
-                        printf("%d \n", counter);
-
-                        error("\rType mismatch in real and typical parameters");
+                if (not(isArrayType(par_type) &&
+                        isIArrayType(par->u.eParameter.type))) {
+                    printType(par_type);
+                    printf("\n");
+                    printType(par->u.eParameter.type);
+                    error("\rType mismatch in real and typical parameters");
+                    exit(1);
+                } else {
+                    if (!equalType(par->u.eParameter.type->refType,
+                                   par_type->refType)) {
+                        error("Mismatched type");
                         exit(1);
                     }
                 }
             }
+            // if (!equalType(par->u.eParameter.type, par_type)) {
+
+            //     if (par_type->kind == 5 && par->u.eParameter.type->kind == 5)
+            //     {
+            //         if (par->u.eParameter.type->size > 0) {
+            //             printType(par_type);
+            //             printf("\n");
+            //             printType(par->u.eParameter.type);
+            //             printf("%d \n", counter);
+
+            //             error("\rType mismatch in real and typical "
+            //                   "parameters");
+            //             exit(1);
+            //         }
+            //     } else {
+            //         error("Type mismatch\n");
+            //         exit(1);
+            //     }
+            // }
 
             counter++;
             par = par->u.eParameter.next;
@@ -690,7 +736,8 @@ Type sem_check_expr(ASTExpr *expr) {
 void add_lib_Functions() {
     vector<string> *param_identifiers;
     ASTparam *second_Param, *first_Param;
-    //|------------------------OUTPUT LIBRARY FUNCTIONS-----------------------|
+    //|------------------------OUTPUT LIBRARY
+    // FUNCTIONS-----------------------|
 
     param_identifiers = new vector<string>();
     param_identifiers->push_back("n");
@@ -738,7 +785,8 @@ void add_lib_Functions() {
 
     sem_check_fdef(writeString);
 
-    //|-------------------------INPUT LIBRARY FUNCTIONS----------------------|
+    //|-------------------------INPUT LIBRARY
+    // FUNCTIONS----------------------|
 
     ASTheader *readInteger_header =
         new ASTheader(typeInteger, NULL, "readInteger");
