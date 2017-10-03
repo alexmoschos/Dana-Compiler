@@ -105,6 +105,7 @@ void sem_check_stmt(ASTstmt *stmt) {
                     printType(par_type);
                     printf("\n");
                     printType(par->u.eParameter.type);
+                    printf("\n");
                     error("\rType mismatch in real and typical parameters");
                     exit(1);
                 } else {
@@ -714,11 +715,14 @@ Type sem_check_expr(ASTExpr *expr) {
             }
         }
 
-        if ((lval_type->kind == 5 || lval_type->kind == 6) &&
-            ((*lv->indices)).size() > 0) {
+        int size = (*lv->indices).size();
 
-            while (lval_type->refType != NULL) {
+        if ((lval_type->kind == 5 || lval_type->kind == 6) &&
+            (size > 0)) {
+
+            while (lval_type->refType != NULL  && size) {
                 lval_type = lval_type->refType;
+                size--;
             }
         }
         // printType(lval_type);
