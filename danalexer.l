@@ -76,7 +76,7 @@ byte		{return(BYTE);}
 as			{return(AS);}
 skip		{return(SKIP);}
 decl		{return(DECL);}
-begin		{return(BEG);}
+
 "}"		    {
     //printf("howmany %d\n",howmany);
     if(howmany>0){
