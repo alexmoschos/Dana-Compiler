@@ -25,5 +25,5 @@ The executable supports a number of flags
 -b     Language with begin/end blocks(by default enabled).
 -f     Program in stdin x86_64 Assembly in stdout
 -i     Program in stdin LLVM IR in stdout
--O<n>  Optimization flag where n = {0,1,2,3}(Applied to the IR and the Assembly code)
+-O<n>  Optimization flag where n = {1,2,3}(Applied to the IR and the Assembly code)
 ```

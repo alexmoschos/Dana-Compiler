@@ -255,7 +255,7 @@ char* escapeStr(char *s) {
     int len = strlen(s);
     char c;
     char* result;
-    result = (char *)malloc(len*sizeof(char));
+    result = (char *)malloc((len+1)*sizeof(char));
     int j = 0;
     for (int i = 0; i < len; ++i){
         c = s[i];
@@ -272,5 +272,6 @@ char* escapeStr(char *s) {
         result[j] = c;
         j++;
     }
+    result[len] = '\0';
     return result;
 }

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # if [ "$1" != "" ]; then
 #     echo "Compiling $1"
@@ -8,7 +8,7 @@
 #     llc-3.8 -O3 1.ll -o 1.s
 #     clang 1.s ./edsger_lib-master/lib.a -o a.out
 # fi
-
+set -x
 
 Oflag=0
 layoutflag=true
@@ -25,7 +25,8 @@ do
         -O3)  Oflag=3;;
         -i)   irout=true;;
         -l)   layoutflag=true;;
-        -b)   blockflag=true;;
+        -b)   blockflag=true
+              layoutflag=false;;
         -f)   asmout=true;;
         -*)   ;;
         *)    file="$1"
@@ -33,20 +34,45 @@ do
     shift
 done
 
-if ["$file" = ""] || ["$irout" = true] || ["$asmout"=true];
-then
-    if [ "$layoutflag" = true ]; then
+
+optf=""
+if [ $Oflag -ne 0 ]; then
+    optf=-O$Oflag
+fi
+
+
+if [ "$file" == "" ] || [ "$irout" == true ] ; then
+    if [ "$layoutflag" = true ] ; then
         echo "Compiling from stdin with layout"
         ./simple > 2.ll || exit 1
-        opt-3.8 -O$Oflag 2.ll -S -o 1.ll
+        opt-3.8 $optf 2.ll -S -o 1.ll
+        rm 2.ll
+        if [ "$irout" = true ]
+        then
+            cat 1.ll
+            exit 0
+        fi
+        llc-3.8 $optf 1.ll -o 1.asm
+        if [ "$asmout" = true ]
+        then
+            cat 1.asm
+            exit 0
+        fi
+        clang 1.asm ./edsger_lib-master/lib.a -o a.out
+        exit 0
+    fi
+
+    if [ "$blockflag" = true ] ; then
+        echo "Compiling from stdin with block"
+        ./block > 2.ll || exit 1
+        opt-3.8 $optf 2.ll -S -o 1.ll
         rm 2.ll
         if [ "$irout" = true ]; then
             cat 1.ll
             exit 0
         fi
-        llc-3.8 -O$Oflag 1.ll -o 1.asm
+        llc-3.8 $optf 1.ll -o 1.asm
         if [ "$asmout" = true ]; then
-            llc-3.8 -O$Oflag 1.ll -o 1.asm
             cat 1.asm
             exit 0
         fi
@@ -54,40 +80,36 @@ then
         exit 0
     fi
 
-    if [ "$blockflag" = true ]; then
-        echo "Compiling from stdin with block"
-        ./block > 2.ll || exit 1
-        opt-3.8 -O$Oflag 2.ll -S -o 1.ll
-        rm 2.ll
-        if [ "$irout" = true]; then
-            cat 1.ll
-            exit 0
-        fi
-        llc-3.8 -O$Oflag 1.ll -o 1.asm
-        if ["$asmout"= true]; then
-            llc-3.8 -O$Oflag 1.ll -o 1.asm
-            cat 1.asm
-            exit 0
-        fi
-        clang 1.asm ./edsger_lib-master/lib.a -o a.out
-        exit 0
-    fi
 fi
-
-if [ layoutflag ]; then
+var=$(grep -m 1 'def' "$file" )
+a=( $var )
+entry=${a[1]}
+echo $var
+if [ "$layoutflag" = true ]; then
     echo "Compiling $file with layout"
     ./simple < $file > 2.ll || exit 1
-    opt-3.8 -O$Oflag 2.ll -S -o 1.ll
-    rm 2.ll
+    sed -i 's/main/_main/g' 2.ll
+    sed -i 's/'$entry'/main/g' 2.ll
+
+    #sed -i "s/$entry/main/g" 2.ll
+
+    opt-3.8 $optf 2.ll -S -o 1.ll
+    llc-3.8 $optf 2.ll -o 1.s
+    gcc 1.s ./edsger_lib-master/lib.a -o a.out
+
     exit 0
 fi
 
 if [ "$blockflag" = true ]; then
     echo "Compiling $file with block"
     ./block < $file > 2.ll || exit 1
-    opt-3.8 -O($Oflag) 2.ll -S -o 1.ll
+    sed -i 's/main/_main/g' 2.ll
+    sed -i 's/'$entry'/main/g' 2.ll
+    opt-3.8 $optf 2.ll -S -o 1.ll
+    llc-3.8 $optf 1.ll -o 1.s
+
+    clang 1.s ./edsger_lib-master/lib.a -o a.out
     rm 2.ll
     exit 0
 fi
 
-if [ "$"]
