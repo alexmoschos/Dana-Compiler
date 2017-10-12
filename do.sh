@@ -8,7 +8,14 @@
 #     llc-3.8 -O3 1.ll -o 1.s
 #     clang 1.s ./edsger_lib-master/lib.a -o a.out
 # fi
-set -x
+# VAR=$(grep -m 1 'def' $1 | tr  ' ' ' ')
+# readonly VAR
+
+# Entry_point="$(echo $VAR | awk '{print $NF}')"
+# readonly Entry_point
+# echo ${Entry_point}
+
+#set -x
 
 Oflag=0
 layoutflag=true
@@ -34,69 +41,78 @@ do
     shift
 done
 
-
 optf=""
 if [ $Oflag -ne 0 ]; then
     optf=-O$Oflag
 fi
 
-
-if [ "$file" == "" ] || [ "$irout" == true ] ; then
+if [ "$file" == "" ] || [ "$irout" == true ] || [ "$asmout" == true ] ; then
     if [ "$layoutflag" = true ] ; then
         echo "Compiling from stdin with layout"
-        ./simple > 2.ll || exit 1
+        dd of=input.dana
+        ./simple < input.dana > 2.ll || exit 1
+        var=$(grep -m 1 'def' "input.dana" )
+        a=( $var )
+        entry=${a[1]}
+        sed -i 's/main/_main/g' 2.ll
+        sed -i 's/'$entry'/main/g' 2.ll
         opt-3.8 $optf 2.ll -S -o 1.ll
         rm 2.ll
+        rm input.dana
         if [ "$irout" = true ]
         then
             cat 1.ll
             exit 0
         fi
-        llc-3.8 $optf 1.ll -o 1.asm
+        llc-3.8 $optf 1.ll -o 1.s
         if [ "$asmout" = true ]
         then
-            cat 1.asm
+            cat 1.s
             exit 0
         fi
-        clang 1.asm ./edsger_lib-master/lib.a -o a.out
+        clang 1.s ./edsger_lib-master/lib.a -o a.out
         exit 0
     fi
 
     if [ "$blockflag" = true ] ; then
         echo "Compiling from stdin with block"
-        ./block > 2.ll || exit 1
+        dd of=input.dana
+        ./block < input.dana > 2.ll || exit 1
+        var=$(grep -m 1 'def' "input.dana" )
+        a=( $var )
+        entry=${a[1]}
+        sed -i 's/main/_main/g' 2.ll
+        sed -i 's/'$entry'/main/g' 2.ll
         opt-3.8 $optf 2.ll -S -o 1.ll
         rm 2.ll
+        rm input.dana
         if [ "$irout" = true ]; then
             cat 1.ll
             exit 0
         fi
-        llc-3.8 $optf 1.ll -o 1.asm
+        llc-3.8 $optf 1.ll -o 1.s
         if [ "$asmout" = true ]; then
-            cat 1.asm
+            cat 1.s
             exit 0
         fi
-        clang 1.asm ./edsger_lib-master/lib.a -o a.out
+        clang 1.s ./edsger_lib-master/lib.a -o a.out
         exit 0
     fi
 
 fi
+
 var=$(grep -m 1 'def' "$file" )
 a=( $var )
 entry=${a[1]}
-echo $var
+#echo $var
 if [ "$layoutflag" = true ]; then
     echo "Compiling $file with layout"
     ./simple < $file > 2.ll || exit 1
     sed -i 's/main/_main/g' 2.ll
     sed -i 's/'$entry'/main/g' 2.ll
-
-    #sed -i "s/$entry/main/g" 2.ll
-
     opt-3.8 $optf 2.ll -S -o 1.ll
     llc-3.8 $optf 2.ll -o 1.s
-    gcc 1.s ./edsger_lib-master/lib.a -o a.out
-
+    clang 1.s ./edsger_lib-master/lib.a -o a.out
     exit 0
 fi
 

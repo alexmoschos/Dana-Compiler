@@ -4,6 +4,11 @@ FLAGS = -std=c++11 -g -O2 -Qunused-arguments -Wno-unknown-warning-option -Wall
 #LLVMFLAGS = `llvm-config-3.8 --cxxflags --ldflags --libs  --system-libs`
 LLVMFLAGS = `llvm-config-3.8 --cxxflags --ldflags --libs all --system-libs`
 
+all : simple block libs
+
+libs :
+	cd edsger_lib-master; bash libs.sh
+
 simple: lexer.o parser.o ast.o symbol.o general.o error.o sem.o llvm.o opt.o
 	$(CPP) -$(FLAGS) -o $@ $^ -lfl  $(LLVMFLAGS)
 
@@ -34,7 +39,6 @@ llvm.o: llvm.cpp llvm.h
 
 opt.o: opt.cpp opt.h
 	$(CPP) opt.cpp -c -$(FLAGS)  $(LLVMFLAGS)
-
 
 parser.o: parser.cpp parser.hpp symbol.c symbol.h
 	$(CPP) $(FLAGS) -c $<

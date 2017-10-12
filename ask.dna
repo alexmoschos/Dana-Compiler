@@ -1,5 +1,0 @@
-def main
-  def lop: r as byte[][100]
-    writeString:r[5]
-  exit
-
