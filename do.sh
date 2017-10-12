@@ -49,16 +49,9 @@ fi
 if [ "$file" == "" ] || [ "$irout" == true ] || [ "$asmout" == true ] ; then
     if [ "$layoutflag" = true ] ; then
         echo "Compiling from stdin with layout"
-        dd of=input.dana
-        ./simple < input.dana > 2.ll || exit 1
-        var=$(grep -m 1 'def' "input.dana" )
-        a=( $var )
-        entry=${a[1]}
-        sed -i 's/main/_main/g' 2.ll
-        sed -i 's/'$entry'/main/g' 2.ll
+        ./simple > 2.ll || exit 1
         opt-3.8 $optf 2.ll -S -o 1.ll
         rm 2.ll
-        rm input.dana
         if [ "$irout" = true ]
         then
             cat 1.ll
@@ -76,16 +69,9 @@ if [ "$file" == "" ] || [ "$irout" == true ] || [ "$asmout" == true ] ; then
 
     if [ "$blockflag" = true ] ; then
         echo "Compiling from stdin with block"
-        dd of=input.dana
-        ./block < input.dana > 2.ll || exit 1
-        var=$(grep -m 1 'def' "input.dana" )
-        a=( $var )
-        entry=${a[1]}
-        sed -i 's/main/_main/g' 2.ll
-        sed -i 's/'$entry'/main/g' 2.ll
+        ./block > 2.ll || exit 1
         opt-3.8 $optf 2.ll -S -o 1.ll
         rm 2.ll
-        rm input.dana
         if [ "$irout" = true ]; then
             cat 1.ll
             exit 0
@@ -101,29 +87,30 @@ if [ "$file" == "" ] || [ "$irout" == true ] || [ "$asmout" == true ] ; then
 
 fi
 
-var=$(grep -m 1 'def' "$file" )
-a=( $var )
-entry=${a[1]}
+# var=$(grep -m 1 'def' "$file" )
+# a=( $var )
+# entry=${a[1]}
 #echo $var
 if [ "$layoutflag" = true ]; then
     echo "Compiling $file with layout"
     ./simple < $file > 2.ll || exit 1
-    sed -i 's/main/_main/g' 2.ll
-    sed -i 's/'$entry'/main/g' 2.ll
     opt-3.8 $optf 2.ll -S -o 1.ll
     llc-3.8 $optf 2.ll -o 1.s
     clang 1.s ./edsger_lib-master/lib.a -o a.out
+    rm 2.ll
     exit 0
 fi
 
 if [ "$blockflag" = true ]; then
     echo "Compiling $file with block"
     ./block < $file > 2.ll || exit 1
-    sed -i 's/main/_main/g' 2.ll
-    sed -i 's/'$entry'/main/g' 2.ll
+    # if [ "$entry" != "main" ];
+    # then
+    #     sed -i 's/main/_main/g' 2.ll
+    #     sed -i 's/'$entry'/main/g' 2.ll
+    # fi
     opt-3.8 $optf 2.ll -S -o 1.ll
     llc-3.8 $optf 1.ll -o 1.s
-
     clang 1.s ./edsger_lib-master/lib.a -o a.out
     rm 2.ll
     exit 0

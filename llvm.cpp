@@ -1057,7 +1057,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
 int Compile(ASTfdef *main) {
     mod = new Module("1.ll", getGlobalContext());
     mod->setTargetTriple("x86_64-pc-linux-gnu");
-    mod->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
+    // mod->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
     FunctionType *writeChar_type = FunctionType::get(
         llvm::Type::getVoidTy(context), std::vector<llvm::Type *>{i8}, false);
     Function::Create(writeChar_type, Function::ExternalLinkage, "writeChar",
@@ -1145,6 +1145,8 @@ int Compile(ASTfdef *main) {
 
     currentFrame = StructType::create(mod->getContext(), "struct.dummy");
     CompileFunction(main);
+    auto m = mod->getFunction(main->header->identifier);
+    m->setName("main");
     // Builder.SetInsertPoint(bl);
     // Builder.CreateRet(a);
     // a->print(errs());

@@ -4,7 +4,7 @@ FLAGS = -std=c++11 -g -O2 -Qunused-arguments -Wno-unknown-warning-option -Wall
 #LLVMFLAGS = `llvm-config-3.8 --cxxflags --ldflags --libs  --system-libs`
 LLVMFLAGS = `llvm-config-3.8 --cxxflags --ldflags --libs all --system-libs`
 
-all : simple block libs
+all : simple block
 
 libs :
 	cd edsger_lib-master; bash libs.sh

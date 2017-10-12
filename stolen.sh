@@ -1,7 +1,7 @@
 #/usr/bin/bash/
 for i in "$@"
 do
-	./simple < ${i} > /dev/null
+	./do.sh < ${i} > /dev/null
 	if [ $? -ne 0 ];
 	then
 		echo "Error at testcase $i"
