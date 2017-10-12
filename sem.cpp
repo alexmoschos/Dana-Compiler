@@ -292,11 +292,7 @@ void sem_check_stmt(ASTstmt *stmt) {
             internal("NOT a Function"); // redundant all astdef in stack are
                                         // functions...
 
-        if (!equalType(_TRET_TYPE, s->u.eFunction.resultType) &&
-            !(equalType(_TRET_TYPE, typeInteger) &&
-              equalType(s->u.eFunction.resultType, typeChar)) &&
-            !(equalType(_TRET_TYPE, typeChar) &&
-              equalType(s->u.eFunction.resultType, typeInteger))) {
+        if (!equalType(_TRET_TYPE, s->u.eFunction.resultType)) {
 
             printf("%s:\n", s->id);
             error("\rFunction type and return type different ");
