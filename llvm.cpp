@@ -1145,8 +1145,14 @@ int Compile(ASTfdef *main) {
 
     currentFrame = StructType::create(mod->getContext(), "struct.dummy");
     CompileFunction(main);
-    auto m = mod->getFunction(main->header->identifier);
-    m->setName("main");
+    if (main->header->identifier != "main") {
+        auto oldm = mod->getFunction("main");
+        auto m = mod->getFunction(main->header->identifier);
+        oldm->setName("_oldmain");
+        // _oldmain can't be a name for a dana function because identifiers
+        // can't have _ at their start
+        m->setName("main");
+    }
     // Builder.SetInsertPoint(bl);
     // Builder.CreateRet(a);
     // a->print(errs());

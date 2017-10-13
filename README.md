@@ -7,16 +7,16 @@ Giorgos Petrou
 ```
 Implementation of a compiler for the Dana programming language for the 2017 Compilers Course in NTUA.
 
-Dependencies:
+## Dependencies:
 ```
 1. LLVM 3.8(llc,opt)
 2. flex
 3. bison
 4. clang and clang++
-5. sed
-6. dd
-7. edsger-lib( https://github.com/abenetopoulos/edsger_lib )
+5. edsger-lib( https://github.com/abenetopoulos/edsger_lib )
 ```
+
+## Building:
 
 To build everything do
 
@@ -24,6 +24,7 @@ To build everything do
 make
 ```
 
+## Execution
 To run the compiler with layout do with a sample file `sample.dna`:
 ```shell
 ./do.sh -l sample.dna

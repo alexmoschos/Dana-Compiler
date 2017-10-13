@@ -1,2 +1,0 @@
-def hello
-    writeString: "Hello world!\n"
