@@ -1148,7 +1148,8 @@ int Compile(ASTfdef *main) {
     if (main->header->identifier != "main") {
         auto oldm = mod->getFunction("main");
         auto m = mod->getFunction(main->header->identifier);
-        oldm->setName("_oldmain");
+	if(oldm != NULL)
+            oldm->setName("_oldmain");
         // _oldmain can't be a name for a dana function because identifiers
         // can't have _ at their start
         m->setName("main");
