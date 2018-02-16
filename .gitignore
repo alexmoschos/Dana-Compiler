@@ -3,4 +3,5 @@
 *.s
 *.ll
 simple
+block
 .DS_Store
