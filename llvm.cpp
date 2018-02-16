@@ -1,4 +1,5 @@
 extern "C" {
+#include "error.h"
 #include "symbol.h"
 }
 #include "ast.h"
@@ -79,8 +80,7 @@ llvm::Type *translate(myType a) {
 string transform(string a) { return a.substr(1, a.size() - 2); }
 
 using namespace llvm;
-bool isLibFunction(ASTfcall *f) {
-    string id = f->identifier;
+bool isLibFunction(string id) {
     return id == "writeInteger" or id == "writeByte" or id == "writeChar" or
            id == "writeString" or id == "readInteger" or id == "readByte" or
            id == "readChar" or id == "readString" or id == "extend" or
@@ -208,7 +208,7 @@ Value *CompileRefGEP(ASTExpr *expr) {
         }
         return gep;
     } else {
-        cerr << "You can only call by reference on an lval";
+        cerr << "You can only call by reference on an lval" << endl;
         exit(1);
     }
 }
@@ -218,7 +218,7 @@ Value *CompileArrayGEP(ASTExpr *expr) {
     case 'f':
         cerr << "error: You need to provide a local variable, for saving "
                 "the "
-                "array result";
+                "array result" << endl;
         exit(1);
     case 'i':
         int nesting_diff = expr->operand->nesting_diff;
@@ -247,6 +247,7 @@ Value *CompileArrayGEP(ASTExpr *expr) {
         Value *gep;
         gep = Builder.CreateGEP(jj, values, "");
         for (auto i : *expr->operand->indices) {
+
             std::vector<llvm::Value *> index;
             // i->operand->offset = 2;
             Value *x = CompileExpression(i);
@@ -325,7 +326,7 @@ Value *CompileIf(ASTif *ifnode) {
     return NULL;
 }
 Value *FuncCall(ASTfcall *f) {
-    if (isLibFunction(f)) {
+    if (isLibFunction(f->identifier)) {
         // std::cout << "I have found a lib function" << std::endl;
         Function *CalleeF = mod->getFunction(f->identifier);
         Function::arg_iterator arg_it = CalleeF->arg_begin();
@@ -450,6 +451,9 @@ Value *CompileDeclaration(ASTfdef *func) {
     return function;
 }
 Value *CompileFunction(ASTfdef *func) {
+    if (isLibFunction(func->header->identifier)) {
+        error("\rYou can't redefine a library function\n");
+    }
     StructType *old = currentFrame;
     if (func == NULL)
         return NULL;
@@ -1057,21 +1061,28 @@ Value *CompileStatements(ASTstmt *sstmt) {
 int Compile(ASTfdef *main) {
     mod = new Module("1.ll", getGlobalContext());
     mod->setTargetTriple("x86_64-pc-linux-gnu");
-    mod->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
+    // mod->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
     FunctionType *writeChar_type = FunctionType::get(
         llvm::Type::getVoidTy(context), std::vector<llvm::Type *>{i8}, false);
     Function::Create(writeChar_type, Function::ExternalLinkage, "writeChar",
                      mod);
-
-    FunctionType *writeByte_type = FunctionType::get(
-        llvm::Type::getVoidTy(context), std::vector<llvm::Type *>{i8}, false);
-    Function::Create(writeByte_type, Function::ExternalLinkage, "writeByte",
-                     mod);
-
     FunctionType *writeInteger_type = FunctionType::get(
         llvm::Type::getVoidTy(context), std::vector<llvm::Type *>{i16}, false);
-    Function::Create(writeInteger_type, Function::ExternalLinkage,
+    Value* writeInteger = Function::Create(writeInteger_type, Function::ExternalLinkage,
                      "writeInteger", mod);
+    FunctionType *writeByte_type = FunctionType::get(
+        llvm::Type::getVoidTy(context), std::vector<llvm::Type *>{i8}, false);
+    Function *writeByte = Function::Create(
+        writeByte_type, Function::ExternalLinkage, "writeByte", mod);
+    Function::arg_iterator arg = writeByte->arg_begin();
+    Value *byte = &(*arg);
+    BasicBlock *b = BasicBlock::Create(context, "", writeByte, 0);
+    Builder.SetInsertPoint(b);
+    Value *retint = Builder.CreateSExt(byte, i16);
+    Builder.CreateCall(writeInteger,{retint});
+    Builder.CreateRet(nullptr);
+
+
 
     FunctionType *writeString_type = FunctionType::get(
         llvm::Type::getVoidTy(context),
@@ -1145,6 +1156,15 @@ int Compile(ASTfdef *main) {
 
     currentFrame = StructType::create(mod->getContext(), "struct.dummy");
     CompileFunction(main);
+    if (main->header->identifier != "main") {
+        auto oldm = mod->getFunction("main");
+        auto m = mod->getFunction(main->header->identifier);
+        if (oldm != NULL)
+            oldm->setName("_oldmain");
+        // _oldmain can't be a name for a dana function because identifiers
+        // can't have _ at their start
+        m->setName("main");
+    }
     // Builder.SetInsertPoint(bl);
     // Builder.CreateRet(a);
     // a->print(errs());

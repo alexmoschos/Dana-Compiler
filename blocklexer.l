@@ -200,5 +200,6 @@ char* escapeStr(char *s) {
         result[j] = c;
         j++;
     }
+    result[len]='\0';
     return result;
 }

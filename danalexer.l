@@ -76,7 +76,7 @@ byte		{return(BYTE);}
 as			{return(AS);}
 skip		{return(SKIP);}
 decl		{return(DECL);}
-begin		{return(BEG);}
+
 "}"		    {
     //printf("howmany %d\n",howmany);
     if(howmany>0){
@@ -129,7 +129,7 @@ ref 		{return(REF);}
 "<>"		{return(DIFF);}
 ">"			{return(LARGER);}
 ":"			{return(':');}
-"\""		{printf("Unclosed String Error\n");exit(-1);}
+"\""		{fprintf(stderr,"Unclosed String Error\n");exit(1);}
 \"([^\n\"\'\\]|{ESCAPE})*\" {
     //printf("String Literal %s \n",yytext);
     //printf("String literal %s \n" , yytext);
@@ -154,7 +154,7 @@ ref 		{return(REF);}
   [^(*\n]+       	;
   [(]            	;
   "\n"             	; {nl++;}
-  <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); return -1;}
+  <<EOF>>        ; 	{if (comment_nesting>0) printf("error: unclosed comment in line %d\n",nl); exit(1);}
 }
 
 
@@ -176,9 +176,9 @@ ref 		{return(REF);}
     if(yytext[0]==0) {
         return 0;
     }
-    printf("Unexpected Character %d\n",yytext[0]);
-    printf("Line no: %d \n",nl);
-    exit(-1);
+    fprintf(stderr,"Unexpected Character %d\n",yytext[0]);
+    fprintf(stderr,"Line no: %d \n",nl);
+    exit(1);
 }
 
 
@@ -226,7 +226,7 @@ int fixChar(char * str, int *shift)
 		case '\'': return '\'';
 		case '\"': return '\'';
 		case 'x': {*shift=4;  return fixHex(str+2); }
-		default : {printf("lexer: escape char, unmatched case"); exit(1);}
+		default : {fprintf(stderr,"lexer: escape char, unmatched case"); exit(1);}
 	}
 }
 
@@ -247,15 +247,17 @@ int charToInt(char c)
 		return c-'a'+10;
 	else if(c>='A' && c<='F')
 		return c-'A'+10;
-	else
-		printf("lexer: %s not a proper char expression",yytext);
+	else{
+		fprintf(stderr,"lexer: %s not a proper char expression",yytext);
+        exit(1);
+    }
 	return -1;
 }
 char* escapeStr(char *s) {
     int len = strlen(s);
     char c;
     char* result;
-    result = (char *)malloc(len*sizeof(char));
+    result = (char *)malloc((len+1)*sizeof(char));
     int j = 0;
     for (int i = 0; i < len; ++i){
         c = s[i];
@@ -272,5 +274,6 @@ char* escapeStr(char *s) {
         result[j] = c;
         j++;
     }
+    result[len] = '\0';
     return result;
 }

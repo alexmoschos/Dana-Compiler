@@ -105,6 +105,7 @@ void sem_check_stmt(ASTstmt *stmt) {
                     printType(par_type);
                     printf("\n");
                     printType(par->u.eParameter.type);
+                    printf("\n");
                     error("\rType mismatch in real and typical parameters");
                     exit(1);
                 } else {
@@ -291,11 +292,7 @@ void sem_check_stmt(ASTstmt *stmt) {
             internal("NOT a Function"); // redundant all astdef in stack are
                                         // functions...
 
-        if (!equalType(_TRET_TYPE, s->u.eFunction.resultType) &&
-            !(equalType(_TRET_TYPE, typeInteger) &&
-              equalType(s->u.eFunction.resultType, typeChar)) &&
-            !(equalType(_TRET_TYPE, typeChar) &&
-              equalType(s->u.eFunction.resultType, typeInteger))) {
+        if (!equalType(_TRET_TYPE, s->u.eFunction.resultType)) {
 
             printf("%s:\n", s->id);
             error("\rFunction type and return type different ");
@@ -714,13 +711,18 @@ Type sem_check_expr(ASTExpr *expr) {
             }
         }
 
-        if ((lval_type->kind == 5 || lval_type->kind == 6) &&
-            ((*lv->indices)).size() > 0) {
+        int size = (*lv->indices).size();
 
-            while (lval_type->refType != NULL) {
+        if ((lval_type->kind == 5 || lval_type->kind == 6) &&
+            (size > 0)) {
+
+            while (lval_type->refType != NULL  && size) {
                 lval_type = lval_type->refType;
+                size--;
             }
-        }
+        } else if(size > 0) {
+		error("\rNot an array type with indices\n");
+	}
         // printType(lval_type);
         // printf("\n");
         return lval_type;
