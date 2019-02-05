@@ -25,7 +25,6 @@
         fprintf (stderr, "Syntax error on line %d %s\n",nl, s);
 	}
 
-
 %}
 %union{
 	ASTfdef   *func;
@@ -74,7 +73,7 @@
 %%
 
 mainfunc
-    : fdef 								{$$ = $1;main_f = $1;}
+    : fdef    {$$ = $1;main_f = $1;}
     ;
 
 fdef
@@ -82,7 +81,7 @@ fdef
 	;
 
 fdecl
-	: DECL header       					 {$$ = new ASTfdef($2,NULL);}
+	: DECL header    {$$ = new ASTfdef($2,NULL);}
 	;
 
 header
@@ -101,36 +100,36 @@ optparam
 
 ftype
     : bp      							 {$$ = $1;}
-	| INT     							 {$$ = typeInteger;}
-	| BYTE    							 {$$ = typeChar;}
+	| INT                                {$$ = typeInteger;}
+	| BYTE                               {$$ = typeChar;}
     ;
 
 reftype
-    : REF INT          					 {$$ = typeInteger;}
-    | REF BYTE        					 {$$ = typeChar;}
+    : REF INT                            {$$ = typeInteger;}
+    | REF BYTE                           {$$ = typeChar;}
     ;
 
 bp
-	: INT '['']'       					 {$$ = typeIArray(typeInteger);}
-	| BYTE '['']'      					 {$$ = typeIArray(typeChar);}
-	| INT '['CONST']'  					 {$$ = typeArray($3,typeInteger);}
-	| BYTE '['CONST']' 					 {$$ = typeArray($3,typeChar);}
-	| bp '['CONST']'   					 {$$ = typeArray($3,$1);}
+	: INT '['']'                         {$$ = typeIArray(typeInteger);}
+	| BYTE '['']'                        {$$ = typeIArray(typeChar);}
+	| INT '['CONST']'                    {$$ = typeArray($3,typeInteger);}
+	| BYTE '['CONST']'                   {$$ = typeArray($3,typeChar);}
+	| bp '['CONST']'                     {$$ = typeArray($3,$1);}
 	;
 
 stmt_list
-	: stmt 								 {$$ = $1;}
-	| stmt stmt_list 					 {$1->tail=$2; $$ = $1;}
+	: stmt                               {$$ = $1;}
+	| stmt stmt_list                     {$1->tail=$2; $$ = $1;}
 	;
 
 decl_list
-    : stmt_list 						 {$$ = $1;}
-    | decl decl_list      				 {$$ = $1; $1->tail=$2;}
+    : stmt_list                          {$$ = $1;}
+    | decl decl_list                     {$$ = $1; $1->tail=$2;}
     ;
 
 decl
-    : fdef                  			 {$$ = new ASTstmt(TFDEF,NULL,NULL,""); $$->def = $1;}
-    | fdecl                 			 {$$ = new ASTstmt(TFDECL,NULL,NULL,""); $$->def = $1;}
+    : fdef                               {$$ = new ASTstmt(TFDEF,NULL,NULL,""); $$->def = $1;}
+    | fdecl                              {$$ = new ASTstmt(TFDECL,NULL,NULL,""); $$->def = $1;}
     | VAR idlist IS type    			 {$$ = new ASTstmt(TDECL,NULL,NULL,""); $$->identifiers=$2;$$->t=$4;}
     ;
 
