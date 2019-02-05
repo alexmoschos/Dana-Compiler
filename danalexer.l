@@ -53,7 +53,6 @@ int charToInt (char);
     }
     if(counter !=0)
         howmany = counter;
-    //printf("howmanyother %d \n",howmany);
 
     while(counter > 0) {
             unput('}');
@@ -62,23 +61,21 @@ int charToInt (char);
 }
 
 [0-9][0-9]* 	{
-    //printf("Integer %s\n",yytext);
     yylval.const_val = atoi(yytext);
     return(CONST);
 }
 
-if			{indent_stack[++level] = indent;return(IF);}
-else		{indent_stack[++level] = indent;return(ELSE);}
-elif		{indent_stack[++level] = indent;return(ELIF);}
-loop		{indent_stack[++level] = indent;return(LOOP);}
-int			{return(INT);}
-byte		{return(BYTE);}
-as			{return(AS);}
-skip		{return(SKIP);}
-decl		{return(DECL);}
+if              {indent_stack[++level] = indent;return(IF);}
+else            {indent_stack[++level] = indent;return(ELSE);}
+elif            {indent_stack[++level] = indent;return(ELIF);}
+loop            {indent_stack[++level] = indent;return(LOOP);}
+int             {return(INT);}
+byte            {return(BYTE);}
+as              {return(AS);}
+skip            {return(SKIP);}
+decl            {return(DECL);}
 
-"}"		    {
-    //printf("howmany %d\n",howmany);
+"}"             {
     if(howmany>0){
         howmany--;
         return(END);
@@ -87,61 +84,56 @@ decl		{return(DECL);}
         exit(-1);
     }
 }
-def			{indent_stack[++level] = indent;return(DEF);}
-is			{return(IS);}
-var			{return(VAR);}
-not			{return(NOT);}
-and			{return(AND);}
-or 			{return(OR);}
-true		{return(TRUE);}
-false		{return(FALSE);}
-break		{return(BREAK);}
-continue	{return(CONT);}
-exit		{return(EXIT);}
-return		{return(RETURN);}
-ref 		{return(REF);}
+def             {indent_stack[++level] = indent;return(DEF);}
+is              {return(IS);}
+var             {return(VAR);}
+not             {return(NOT);}
+and             {return(AND);}
+or              {return(OR);}
+true            {return(TRUE);}
+false           {return(FALSE);}
+break           {return(BREAK);}
+continue        {return(CONT);}
+exit            {return(EXIT);}
+return          {return(RETURN);}
+ref             {return(REF);}
 
-{ID} 		{
-    //printf("Identifier: %s\n",yytext);
+{ID}            {
     yylval.idstring = strdup(yytext);
     return(IDENTIFIER);
 }
-"("			{return('(');}
-")"			{return(')');}
-"["			{return('[');}
-"]"			{return(']');}
-
-"."			{return('.');}
-","			{return(',');}
-"+"			{return('+');}
-"-"			{return('-');}
-"*"			{return('*');}
-"/"			{return('/');}
-":="		{return(ASSIGNMENT);}
-"="			{return(EQ);}
-"!"			{return('!');}
-[%]			{return('%');}
-"&" 		{return('&');}
-"|"			{return('|');}
-"<"			{return(SMALLER);}
-"<="		{return(SMALLEREQ);}
-">="		{return(LARGEREQ);}
-"<>"		{return(DIFF);}
-">"			{return(LARGER);}
-":"			{return(':');}
+"("             {return('(');}
+")"             {return(')');}
+"["             {return('[');}
+"]"             {return(']');}
+"."             {return('.');}
+","             {return(',');}
+"+"             {return('+');}
+"-"             {return('-');}
+"*"             {return('*');}
+"/"             {return('/');}
+":="            {return(ASSIGNMENT);}
+"="             {return(EQ);}
+"!"             {return('!');}
+[%]             {return('%');}
+"&"             {return('&');}
+"|"             {return('|');}
+"<"             {return(SMALLER);}
+"<="            {return(SMALLEREQ);}
+">="            {return(LARGEREQ);}
+"<>"            {return(DIFF);}
+">"             {return(LARGER);}
+":"             {return(':');}
 "\""		{fprintf(stderr,"Unclosed String Error\n");exit(1);}
 \"([^\n\"\'\\]|{ESCAPE})*\" {
-    //printf("String Literal %s \n",yytext);
-    //printf("String literal %s \n" , yytext);
-    //printf("Fixed %s",escapeStr(yytext));
     yylval.idstring = strdup(escapeStr(yytext));
     return(STRINGLITERAL);
 }
 \'([^\"\'\\]|{ESCAPE})\'    {
- 				//"
-				yylval.const_val = fixChar(yytext+1,NULL);
-				return CHAR_CONST;
-			    }
+     //"
+     yylval.const_val = fixChar(yytext+1,NULL);
+     return CHAR_CONST;
+}
 
 "#".*       {;}
 
@@ -168,8 +160,6 @@ ref 		{return(REF);}
         unput('}');
         level--;
     }
-    //printf("Read %d lines\n",nl);
-    //printf("Syntax analysis is Done!\n");
 }
 
 .       {
@@ -193,66 +183,68 @@ unsigned int white_count(char* line) {
     return count ;
 }
 
+
 int process_indent(char* line) {
-	indent = white_count(line) ;
+    indent = white_count(line) ;
+    
+    if (indent == 0) return 0;
 
-	if (indent == 0) return 0;
-
-	int i = 0;
-	//printf("indent:%d indent_stack:%d level%d\n",indent,indent_stack[level],level);
-  	while (indent <= indent_stack[level]) {
-    	--level ;
-   		i++;
-        if(level == -1) break;
-	}
-	return i;
+    int i = 0;
+    while (indent <= indent_stack[level]) {
+        --level ;
+   	i++;
+        if (level == -1) break;
+    }
+    return i;
 }
 
-int fixChar(char * str, int *shift)
-{
-	int dummy;
-	if(shift==NULL) shift=&dummy;
 
-	*shift=1;
-	if(str[0]!='\\') return str[0];
+int fixChar(char * str, int *shift) {
+    int dummy;
+    if(shift==NULL) shift=&dummy;
 
-	*shift=2;
-	switch(str[1]){
-		case 'n': return '\n';
-		case 't': return '\t';
-		case 'r': return '\r';
-		case '0': return '\0';
-		case '\\': return '\\';
-		case '\'': return '\'';
-		case '\"': return '\'';
-		case 'x': {*shift=4;  return fixHex(str+2); }
-		default : {fprintf(stderr,"lexer: escape char, unmatched case"); exit(1);}
-	}
+    *shift=1;
+    if(str[0]!='\\') return str[0];
+
+    *shift=2;
+    switch(str[1]){
+        case 'n': return '\n';
+        case 't': return '\t';
+        case 'r': return '\r';
+        case '0': return '\0';
+        case '\\': return '\\';
+        case '\'': return '\'';
+        case '\"': return '\'';
+        case 'x': {*shift=4;  return fixHex(str+2); }
+        default : {fprintf(stderr,"lexer: escape char, unmatched case"); exit(1);}
+    }
 }
 
-int fixHex(char * str)
-{
-	int d1,d2,hex;
-	d1=charToInt(str[0]);
-	d2=charToInt(str[1]);
-	hex = d1*16 + d2;
-	return hex;
+
+int fixHex(char * str) {
+    int d1, d2, hex;
+    d1=charToInt(str[0]);
+    d2=charToInt(str[1]);
+    hex = d1*16 + d2;
+    return hex;
 }
 
-int charToInt(char c)
-{
-	if(c>='0' && c<='9')
-		return c-'0';
-	else if(c>='a' && c<='f')
-		return c-'a'+10;
-	else if(c>='A' && c<='F')
-		return c-'A'+10;
-	else{
-		fprintf(stderr,"lexer: %s not a proper char expression",yytext);
+
+int charToInt(char c) {
+    if(c>='0' && c<='9')
+        return c-'0';
+    else if(c>='a' && c<='f')
+        return c-'a'+10;
+    else if(c>='A' && c<='F')
+        return c-'A'+10;
+    else{
+        fprintf(stderr,"lexer: %s not a proper char expression",yytext);
         exit(1);
     }
-	return -1;
+    return -1;
 }
+
+
 char* escapeStr(char *s) {
     int len = strlen(s);
     char c;
