@@ -8,6 +8,7 @@ addons:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.8
         packages:
+            - nasm
             - clang-3.8
             - llvm-3.8-dev
 
