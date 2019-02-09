@@ -1,11 +1,7 @@
-# Dana Compiler 2017
+# Dana Compiler
+[![Build Status](https://travis-ci.com/alexmoschos/Dana-Compiler.svg?branch=master)](https://travis-ci.com/alexmoschos/Dana-Compiler)
 
-## Authors:
-```
-Alexander Moschos
-Giorgos Petrou
-```
-Implementation of a compiler for the Dana programming language for the 2017 Compilers Course in NTUA.
+Dana is a programming language supporting static type safety, low level programming and nested functions. It was created for the compilers class in NTUA. The lexer and parser are built using flex and bison and the code generation is done using LLVM.
 
 ## Dependencies:
 ```
@@ -13,31 +9,25 @@ Implementation of a compiler for the Dana programming language for the 2017 Comp
 2. flex
 3. bison
 4. clang and clang++
-5. edsger-lib( https://github.com/abenetopoulos/edsger_lib )
+5. edsger-lib( https://github.com/abenetopoulos/edsger_lib , git submodule)
 ```
 
 ## Building:
 
-To build everything do
+To build everything
 
 ```shell
 make
 ```
 
 ## Execution
-To run the compiler with layout do with a sample file `sample.dna`:
+To run the compiler on a sample file `sample.dna`:
 ```shell
-./do.sh -l sample.dna
-```
-To run the compiler with begin/end blocks with input in stdin do:
-```shell
-./do.sh -b -O3
+./danac sample.dna
 ```
 
 The executable supports a number of flags
 ```shell
--l     Language with Layout(by default enabled).
--b     Language with begin/end blocks(by default disabled).
 -f     Program in stdin x86_64 Assembly in stdout.
 -i     Program in stdin LLVM IR in stdout.
 -O<n>  Optimization flag where n = {0,1,2,3}(Applied to the IR and the Assembly code)

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 Oflag=0
+layoutflag=true
 asmout=false
 irout=false
 file=""
@@ -25,7 +26,7 @@ if [ $Oflag -ne 0 ]; then
 fi
 
 if [ "$file" == "" ] || [ "$irout" == true ] || [ "$asmout" == true ] ; then
-    echo "Compiling from stdin"
+    echo "Compiling from stdin with layout"
     ./simple > 2.ll || exit 1
     opt-3.8 $optf 2.ll -S -o 1.ll
     rm 2.ll
@@ -45,11 +46,12 @@ if [ "$file" == "" ] || [ "$irout" == true ] || [ "$asmout" == true ] ; then
 fi
 
 # Compile from file
-echo "Compiling $file"
-./simple < $file > 2.ll || exit 1
-opt-3.8 $optf 2.ll -S -o 1.ll
-llc-3.8 $optf 2.ll -o 1.s
-clang 1.s ./edsger_lib/lib.a -o a.out
-rm 2.ll
-exit 0
-
+if [ "$layoutflag" = true ]; then
+    echo "Compiling $file with layout"
+    ./simple < $file > 2.ll || exit 1
+    opt-3.8 $optf 2.ll -S -o 1.ll
+    llc-3.8 $optf 2.ll -o 1.s
+    clang 1.s ./edsger_lib/lib.a -o a.out
+    rm 2.ll
+    exit 0
+fi
