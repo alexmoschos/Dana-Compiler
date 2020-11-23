@@ -26,31 +26,15 @@ if [ $Oflag -ne 0 ]; then
 fi
 
 if [ "$file" == "" ] || [ "$irout" == true ] || [ "$asmout" == true ] ; then
-    echo "Compiling from stdin with layout"
-    ./simple > 2.ll || exit 1
-    opt-3.8 $optf 2.ll -S -o 1.ll
-    rm 2.ll
-    if [ "$irout" = true ]
-    then
-        cat 1.ll
-        exit 0
-    fi
-    llc-3.8 $optf 1.ll -o 1.s
-    if [ "$asmout" = true ]
-    then
-        cat 1.s
-        exit 0
-    fi
-    clang 1.s ./edsger_lib/lib.a -o a.out
-    exit 0
+    echo "Fatal error: No input files"
+    exit 1
 fi
 
 # Compile from file
 if [ "$layoutflag" = true ]; then
-    echo "Compiling $file with layout"
     ./simple < $file > 2.ll || exit 1
-    opt-3.8 $optf 2.ll -S -o 1.ll
-    llc-3.8 $optf 2.ll -o 1.s
+    opt-10 $optf 2.ll -S -o 1.ll
+    llc-10 $optf 2.ll -o 1.s
     clang 1.s ./edsger_lib/lib.a -o a.out
     rm 2.ll
     exit 0

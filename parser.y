@@ -18,7 +18,7 @@
     vector<string>   *identifiers;
     stack<ASTfdef*>   FUNCTION_NAMES;
 
-    int yylex(void);
+    extern int yylex(void);
     ASTfdef* main_f;
     void yyerror (char const *s) {
         fprintf (stderr, "Syntax error on line %d %s\n",nl, s);

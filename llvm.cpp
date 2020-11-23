@@ -129,8 +129,8 @@ Value *CompileLoop(ASTstmt *loop) {
     OldLoop = LoopBody;
     OldCont = LoopCont;
     Function *TheFunction = Builder.GetInsertBlock()->getParent();
-    LoopBody = BasicBlock::Create(getGlobalContext(), "", TheFunction);
-    LoopCont = BasicBlock::Create(getGlobalContext(), "", TheFunction);
+    LoopBody = BasicBlock::Create(context, "", TheFunction);
+    LoopCont = BasicBlock::Create(context, "", TheFunction);
     Builder.CreateBr(LoopBody);
     Builder.SetInsertPoint(LoopBody);
     if (loop->label != "") {
@@ -286,9 +286,9 @@ Value *CompileIf(ASTif *ifnode) {
     // the
     // end of the function.
     BasicBlock *ThenBB =
-        BasicBlock::Create(getGlobalContext(), "", TheFunction);
-    BasicBlock *MergeBB = BasicBlock::Create(getGlobalContext(), "");
-    BasicBlock *ElseBB = BasicBlock::Create(getGlobalContext(), "");
+        BasicBlock::Create(context, "", TheFunction);
+    BasicBlock *MergeBB = BasicBlock::Create(context, "");
+    BasicBlock *ElseBB = BasicBlock::Create(context, "");
     Builder.CreateCondBr(CondV, ThenBB, ElseBB);
 
     // Emit then value.
@@ -306,8 +306,8 @@ Value *CompileIf(ASTif *ifnode) {
         if (it->condition != NULL) {
             Cond = CompileCondition(it->condition);
             BasicBlock *Then =
-                BasicBlock::Create(getGlobalContext(), "", TheFunction);
-            BasicBlock *Elif = BasicBlock::Create(getGlobalContext(), "");
+                BasicBlock::Create(context, "", TheFunction);
+            BasicBlock *Elif = BasicBlock::Create(context, "");
             Builder.CreateCondBr(Cond, Then, Elif);
             Builder.SetInsertPoint(Then);
             CompileStatements(it->body);
@@ -507,7 +507,7 @@ Value *CompileFunction(ASTfdef *func) {
     }
     InnerFunc(func->body);
     BasicBlock *bl = BasicBlock::Create(context, "", function, 0);
-    RetCont = BasicBlock::Create(getGlobalContext(), "", function);
+    RetCont = BasicBlock::Create(context, "", function);
     Builder.SetInsertPoint(bl);
     currentAlloca = Builder.CreateAlloca(frame, 0, "");
     if (!equalType(func->header->type, typeVoid)) {
@@ -674,9 +674,9 @@ Value *CompileExpression(ASTExpr *expr) {
             left, ConstantInt::get(llvm::Type::getInt1Ty(context), 0, true));
 
         BasicBlock *ThenBB =
-            BasicBlock::Create(getGlobalContext(), "", TheFunction);
-        BasicBlock *MergeBB = BasicBlock::Create(getGlobalContext(), "");
-        BasicBlock *ElseBB = BasicBlock::Create(getGlobalContext(), "");
+            BasicBlock::Create(context, "", TheFunction);
+        BasicBlock *MergeBB = BasicBlock::Create(context, "");
+        BasicBlock *ElseBB = BasicBlock::Create(context, "");
         Builder.CreateCondBr(CondV, ThenBB, ElseBB);
         // Builder.CreateCondBr(CondV, ThenBB, ElseBB);
 
@@ -723,9 +723,9 @@ Value *CompileExpression(ASTExpr *expr) {
             left, ConstantInt::get(llvm::Type::getInt1Ty(context), 1, true));
 
         BasicBlock *ThenBB =
-            BasicBlock::Create(getGlobalContext(), "", TheFunction);
-        BasicBlock *MergeBB = BasicBlock::Create(getGlobalContext(), "");
-        BasicBlock *ElseBB = BasicBlock::Create(getGlobalContext(), "");
+            BasicBlock::Create(context, "", TheFunction);
+        BasicBlock *MergeBB = BasicBlock::Create(context, "");
+        BasicBlock *ElseBB = BasicBlock::Create(context, "");
         Builder.CreateCondBr(CondV, ThenBB, ElseBB);
         // Builder.CreateCondBr(CondV, ThenBB, ElseBB);
 
@@ -907,7 +907,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
             break;
         case TEXIT: {
             Function *function = Builder.GetInsertBlock()->getParent();
-            auto c = BasicBlock::Create(getGlobalContext(), "", function);
+            auto c = BasicBlock::Create(context, "", function);
             Builder.CreateBr(RetCont);
             Builder.SetInsertPoint(c);
             break;
@@ -916,7 +916,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
             result =
                 Builder.CreateStore(CompileExpression(stmt->expr), retAlloca);
             Function *function = Builder.GetInsertBlock()->getParent();
-            auto c = BasicBlock::Create(getGlobalContext(), "", function);
+            auto c = BasicBlock::Create(context, "", function);
             Builder.CreateBr(RetCont);
             Builder.SetInsertPoint(c);
 
@@ -932,7 +932,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
             }
             result = Builder.CreateBr(LoopB);
             // Builder.CreateBr(RetCont);
-            auto c = BasicBlock::Create(getGlobalContext(), "", function);
+            auto c = BasicBlock::Create(context, "", function);
             Builder.SetInsertPoint(c);
             break;
         }
@@ -940,7 +940,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
             Function *function = Builder.GetInsertBlock()->getParent();
             result = Builder.CreateBr(LoopBody);
             // Builder.CreateBr(RetCont);
-            auto c = BasicBlock::Create(getGlobalContext(), "", function);
+            auto c = BasicBlock::Create(context, "", function);
             Builder.SetInsertPoint(c);
             break;
         }
@@ -953,7 +953,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
             }
             result = Builder.CreateBr(LoopB);
             // Builder.CreateBr(RetCont);
-            auto c = BasicBlock::Create(getGlobalContext(), "", function);
+            auto c = BasicBlock::Create(context, "", function);
             Builder.SetInsertPoint(c);
             break;
         }
@@ -962,7 +962,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
             result = Builder.CreateBr(LoopCont);
             // Builder.CreateBr(RetCont);
             auto newblock =
-                BasicBlock::Create(getGlobalContext(), "", function);
+                BasicBlock::Create(context, "", function);
             Builder.SetInsertPoint(newblock);
             break;
         }
@@ -1059,7 +1059,7 @@ Value *CompileStatements(ASTstmt *sstmt) {
 }
 
 int Compile(ASTfdef *main) {
-    mod = new Module("1.ll", getGlobalContext());
+    mod = new Module("1.ll", context);
     mod->setTargetTriple("x86_64-pc-linux-gnu");
     // mod->setDataLayout("e-m:e-i64:64-f80:128-n8:16:32:64-S128");
     FunctionType *writeChar_type = FunctionType::get(

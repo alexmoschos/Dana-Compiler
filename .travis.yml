@@ -1,4 +1,4 @@
-dist: trusty
+dist: focal
 sudo: false
 language: cpp
 
@@ -6,11 +6,11 @@ addons:
     apt:
         sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
+            - llvm-toolchain-10
         packages:
             - nasm
-            - clang-3.8
-            - llvm-3.8-dev
+            - clang-10
+            - llvm-10-dev
 
 script:
     - make
